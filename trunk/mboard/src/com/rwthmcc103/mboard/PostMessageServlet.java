@@ -7,7 +7,8 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-public class PostMessageServlet {
+@SuppressWarnings("serial")
+public class PostMessageServlet extends HttpServlet {
 	private static final Logger log = Logger.getLogger(PostMessageServlet.class.getName());
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
