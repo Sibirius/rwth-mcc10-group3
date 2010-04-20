@@ -13,10 +13,10 @@ public class Profile {
     @Persistent
     private User user;
 	//TODO: picture field and get/set (serializable object?)
-	
+
     public Profile(User user) {
         this.user = user;
-    }    
+    }
 
     public User getUser() {
         return user;
