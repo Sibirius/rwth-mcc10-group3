@@ -51,7 +51,7 @@
   		<div id="messages">
 <%
     PersistenceManager pm = PMF.get().getPersistenceManager();
-    String query = "select from " + Message.class.getName();
+    String query = "select from " + Message.class.getName() + " order by date asc";
     List<Message> messages = (List<Message>) pm.newQuery(query).execute();
     if (messages.isEmpty()) {
 %>

@@ -2,7 +2,6 @@ package com.rwthmcc103.mboard;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.servlet.http.*;
 import com.google.appengine.api.users.User;
@@ -14,8 +13,6 @@ import com.rwthmcc103.mboard.PMF;
 
 @SuppressWarnings("serial")
 public class PostMessageServlet extends HttpServlet {
-	//private static final Logger log = Logger.getLogger(PostMessageServlet.class.getName());
-
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
                 throws IOException {
         UserService userService = UserServiceFactory.getUserService();
@@ -31,17 +28,6 @@ public class PostMessageServlet extends HttpServlet {
         } finally {
             pm.close();
         }
-        
-        /*
-        if (content == null) {
-            content = "(No message)";
-        }
-        if (user != null) {
-            log.info("Message posted by user " + user.getNickname() + ": " + content);
-        } else {
-            log.info("Message posted anonymously: " + content);
-        }
-        */
         
         resp.sendRedirect("/mboard.jsp");
     }
