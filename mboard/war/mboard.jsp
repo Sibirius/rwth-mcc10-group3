@@ -31,7 +31,9 @@
    	if (user != null) {
 %>
 	<p>Logged in as: <%= user.getNickname() %>.
-	(<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">Log Out</a>)</p>	
+	<a href="/profile">Edit Profile</a> <br>
+	(<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">Log Out</a>)
+	</p>	
 <%
    	} else {
 %>
@@ -61,8 +63,7 @@
         for (Message m : messages) {
 %>
     	<div class="message">
-<%
-        	
+<%        	
             if (m.getAuthor() == null) {
 %>
 			<p>An anonymous person wrote:</p>
