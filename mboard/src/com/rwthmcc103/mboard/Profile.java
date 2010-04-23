@@ -1,16 +1,21 @@
 package com.rwthmcc103.mboard;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
 public class Profile {
-	//TODO: makes unique?
+	//TODO: makes unique for each user
+
+    @PrimaryKey
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    private Key key;	
 	
-	@PrimaryKey
     @Persistent
     private User user;
 	
@@ -24,6 +29,10 @@ public class Profile {
         this.img = img;
     }
 
+    public Key getKey() {
+        return key;
+    }
+    
     public User getUser() {
         return user;
     }
