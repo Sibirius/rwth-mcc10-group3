@@ -31,7 +31,7 @@
    	if (user != null) {
 %>
 	<p>Logged in as: <%= user.getNickname() %>.
-	<a href="/profile">Edit Profile</a> <br>
+	<a href="/profile.jsp">Edit Profile</a> <br>
 	(<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">Log Out</a>)
 	</p>	
 <%
@@ -80,7 +80,7 @@
         }
     }
     pm.close();
-%>  		  		  			
+%>
   	</div>
 
   </body>
