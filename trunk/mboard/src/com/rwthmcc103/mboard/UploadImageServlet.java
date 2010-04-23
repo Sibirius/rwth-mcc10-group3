@@ -26,14 +26,15 @@ public class UploadImageServlet extends HttpServlet {
     	throws IOException {
     	    
         Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
-        BlobKey blobKey = blobs.get("myFile");    	
+        BlobKey blobKey = blobs.get("myFile");
     	
         UserService userService = UserServiceFactory.getUserService();
         User user = userService.getCurrentUser();
         
         if (blobKey == null) {
-        	//TODO: proper error, something went wrong
-            resp.sendRedirect("/");
+        	//TODO: proper error message, something went wrong
+            resp.setContentType("text/plain");
+            resp.getWriter().println("Upload failed.");
         } else {
         	//TODO: check if there already is one for the user, update instead of creating new        	
         	Profile profile = new Profile(user, blobKey);
@@ -44,8 +45,8 @@ public class UploadImageServlet extends HttpServlet {
             } finally {
                 pm.close();
             }
-        }        
-            	    	    	
-    	resp.sendRedirect("/mboard.jsp");
+            
+        	resp.sendRedirect("/mboard.jsp");
+        }                    	    	    	
 	}
 }
