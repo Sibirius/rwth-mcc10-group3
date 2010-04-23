@@ -5,7 +5,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.users.User;
-import com.google.appengine.api.datastore.Blob;
+
+import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable
@@ -20,11 +21,11 @@ public class Profile {
     private User user;
 	
     @Persistent
-    private Blob img;
+    private BlobKey img;
 	
 	//TODO: picture field and get/set (serializable object?)
 
-    public Profile(User user, Blob img) {
+    public Profile(User user, BlobKey img) {
         this.user = user;
         this.img = img;
     }
@@ -41,11 +42,11 @@ public class Profile {
         this.user = user;
     }
 
-    public Blob getImg() {
+    public BlobKey getImg() {
         return img;
     }
     
-    public void setImg(Blob img) {
+    public void setImg(BlobKey img) {
         this.img = img;
     }
 

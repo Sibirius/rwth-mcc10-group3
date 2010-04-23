@@ -5,6 +5,7 @@
 <%@ page import="com.google.appengine.api.users.UserService" %>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
 <%@ page import="com.rwthmcc103.mboard.Message" %>
+<%@ page import="com.rwthmcc103.mboard.Profile" %>
 <%@ page import="com.rwthmcc103.mboard.PMF" %>
 
 <html>
@@ -29,6 +30,8 @@
    	UserService userService = UserServiceFactory.getUserService();
    	User user = userService.getCurrentUser();
    	if (user != null) {
+   		//TODO: retrieve and display image for logged in user if one was uploaded, else remind to upload
+   		// maybe retrive image by user id in ServeImage
 %>
 	<p>Logged in as: <%= user.getNickname() %>.
 	<a href="/profile.jsp">Edit Profile</a> <br>
