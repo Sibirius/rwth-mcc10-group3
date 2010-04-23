@@ -12,7 +12,7 @@ public class Profile {
 	
 	@PrimaryKey
     @Persistent
-    private User user;	
+    private User user;
 	
     @Persistent
     private Blob img;
