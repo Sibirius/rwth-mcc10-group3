@@ -29,9 +29,26 @@
 <%
    	UserService userService = UserServiceFactory.getUserService();
    	User user = userService.getCurrentUser();
+   	PersistenceManager pm = PMF.get().getPersistenceManager();
+   	
    	if (user != null) {
+   		//TODO: filter current user
+   	    String query = "select from " + Profile.class.getName();//+ " where user == " + user.getEmail(); //TODO: is it possible to fetch exactly one element?
+   	    		
+   	    List<Profile> profiles = (List<Profile>) pm.newQuery(query).execute();
+   	    
    		//TODO: retrieve and display image for logged in user if one was uploaded, else remind to upload
    		// maybe retrive image by user id in ServeImage
+
+   	    if (profiles.isEmpty()) {
+   	    	%>
+   	    		<p>No Profile Image uploaded yet.</p>
+   	    	<%	
+   	    } else {
+   	    	%>
+   	    		<img src="/serve?blob-key=<%= profiles.get(0).getImg().getKeyString() %>"></img>
+   	    	<%
+   	    }   		
 %>
 	<p>Logged in as: <%= user.getNickname() %>.
 	<a href="/profile.jsp">Edit Profile</a> <br>
@@ -55,7 +72,6 @@
   		
   		<div id="messages">
 <%
-    PersistenceManager pm = PMF.get().getPersistenceManager();
     String query = "select from " + Message.class.getName() + " order by date asc";
     List<Message> messages = (List<Message>) pm.newQuery(query).execute();
     if (messages.isEmpty()) {
