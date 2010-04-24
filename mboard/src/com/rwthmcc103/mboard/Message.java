@@ -1,5 +1,4 @@
-package com.rwthmcc103.mboard;			//testcomment
-
+package com.rwthmcc103.mboard;			
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.users.User;
 
