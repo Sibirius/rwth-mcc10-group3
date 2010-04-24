@@ -13,10 +13,8 @@ import com.google.appengine.api.blobstore.BlobKey;
 
 @PersistenceCapable
 public class Profile {
-	//TODO: makes unique for each user
-	//TODO: use nickname as the primary key!? 
-
-    @PrimaryKey
+	//TODO: make unique: maybe user id instead of nickname?
+	@PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private String nickname;  	
 	
@@ -26,8 +24,6 @@ public class Profile {
     @Persistent
     private BlobKey img;
 	
-	//TODO: picture field and get/set (serializable object?)
-
     public Profile(User user, BlobKey img) {
         this.user = user;
         this.nickname = user.getNickname();
