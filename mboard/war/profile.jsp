@@ -14,6 +14,7 @@
 
 <html>
 	<head>
+		<link type="text/css" rel="stylesheet" href="/css/main.css" />
 		<title>Profile</title> 
 	</head>
 
@@ -29,18 +30,22 @@
    				
    			 	if (p == null) {
 		%>
-					<p>No Image uploaded.</p>
+					<p>No Image uploaded yet.</p>
 		<% 			 		
    			 	} else {
 		%>   				 
-   			 		<p>Image uploaded.</p>
-   			 		<img width="150" height="150" src="/serve?blob-key=<%= p.getImg().getKeyString() %>" />
-		<%   			 		
+					<p>
+						Current profile image:<br>
+   			 			<img width="150" height="150" src="/serve?blob-key=<%= p.getImg().getKeyString() %>" />   			 			
+   			 		</p>
+		<%
+					
    			 	}
 		%>
 		<%
     		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 		%>
+			<p>Upload new profile image:</p>
 			<form action="<%= blobstoreService.createUploadUrl("/upload") %>" method="post" enctype="multipart/form-data"> 
 				<input type="file" name="myFile"> <br>
 				<input type="submit" value="Submit">
@@ -52,8 +57,7 @@
    				<p>Please <a href="<%= userService.createLoginURL(request.getRequestURI()) %>">log in</a> first!</p>
    				<%
    			}
-		%>
-	
-
+			%>   				
+   			<p> Back to <a href="/">mboard</a> </p>
 	</body>
 </html>

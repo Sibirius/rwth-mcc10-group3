@@ -1,0 +1,44 @@
+#container {
+  	width: 650px;
+  	margin: 20px auto;
+} 	
+
+#top {		
+	margin: 0 auto;
+	margin: 4px 0;
+}
+
+#messages {
+	padding: 5px;
+}
+
+.message {
+	clear:both;
+	border: 1px dotted grey;
+	padding-left:  10px;
+	padding-right: 10px;
+	margin: 2px;
+}
+
+.message blockquote {
+	margin-left: 6px;
+}
+
+#profile-image, .message-image {
+		margin: 4px;  		
+	border: solid black 1px;    		
+} 
+
+#profile-image {
+	float: right;   			
+}
+
+.message-image {
+	float: right;     		 
+	margin-top: 20px;
+}
+	
+.stretcher {
+	clear:both;
+	height: 1px;
+}

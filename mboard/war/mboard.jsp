@@ -10,64 +10,53 @@
 
 <html>
   <head>
-  	<style>
-  		#messages {
-  			border: 1px solid black;
-  			padding: 5px;
-  		}
-  		
-  		.message {
-  			border: 1px dotted grey;
-  			padding-left:  10px;
-  			padding-right: 10px;
-  		}
-  	</style>
+  	<link type="text/css" rel="stylesheet" href="/css/main.css" />
+  	<title>mboard</title>
   </head>
 
   <body>
-
-<%
-   	UserService userService = UserServiceFactory.getUserService();
-   	User user = userService.getCurrentUser();
-   	PersistenceManager pm = PMF.get().getPersistenceManager();
-   	
-   	if (user != null) {
-
-	    Profile p = Profile.getProfile(user);
-   	    
-   		//TODO: retrieve and display image for logged in user if one was uploaded, else remind to upload
-   		// maybe retrive image by user id in ServeImage
-
-   	    if (p == null) {
-   	    	%>
-   	    		<p>No Profile Image uploaded yet.</p>
-   	    	<%	
-   	    } else {
-   	    	%>
-   	    		<img width="150" height="150" src="/serve?blob-key=<%= p.getImg().getKeyString() %>" />
-   	    	<%
-   	    }   		
-%>
-	<p>Logged in as: <%= user.getNickname() %>.
-	<a href="/profile.jsp">Edit Profile</a> <br>
-	(<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">Log Out</a>)
-	</p>	
-<%
-   	} else {
-%>
-	<p>
-		(<a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Log In</a>)	
-	</p>
-<%
-   	}
-%>
-
 	<div id="container">
-		<form action="/post" method="post">
-    	<div><textarea name="content" rows="3" cols="60"></textarea></div>
-    	<div><input type="submit" value="Post Message" /></div>
-  		</form>
-  		
+		<div id="top">
+		<%
+		   	UserService userService = UserServiceFactory.getUserService();
+		   	User user = userService.getCurrentUser();
+		   	PersistenceManager pm = PMF.get().getPersistenceManager();
+		   	
+		   	if (user != null) {
+		
+			    Profile p = Profile.getProfile(user);
+		   	    
+		   		// retrieve and display image for logged in user if one was uploaded, else remind to upload
+		   	    if (p == null) {
+		   	    	%>
+		   	    		<p id="profile-image">No Profile Image uploaded yet.</p>
+		   	    	<%	
+		   	    } else {
+		   	    	%>
+		   	    		<img id="profile-image" width="100" height="100" src="/serve?blob-key=<%= p.getImg().getKeyString() %>" />
+		   	    	<%
+		   	    }   		
+		%>
+			<p>Logged in as: <b><%= user.getNickname() %></b>.
+			<a href="/profile.jsp">Edit Profile</a>
+			(<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">Log Out</a>)
+			</p>
+		<%
+		   	} else {
+		%>
+			<p>
+				(<a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Log In</a>)	
+			</p>
+		<%
+		   	}
+		%>	
+	
+			<form action="/post" method="post">
+	    	<div><textarea name="content" rows="3" cols="60"></textarea></div>
+	    	<div><input type="submit" value="Post Message" /></div>
+	  		</form>
+		</div>
+		  		
   		<div id="messages">
 <%
     String query = "select from " + Message.class.getName() + " order by date asc";
@@ -94,7 +83,7 @@
 		    
 		    if(p != null){
 %>			   
-			    <img width="150" height="150" src="/serve?blob-key=<%= p.getImg().getKeyString() %>" />			   
+			    <img class="message-image" width="50" height="50" src="/serve?blob-key=<%= p.getImg().getKeyString() %>" />			   
 <%
 		    }
 %>
@@ -104,6 +93,7 @@
             }
 %>
 			<blockquote><%= m.getContent() %></blockquote>
+			<div class="stretcher"></div>
   		</div>			
 <%
         }
