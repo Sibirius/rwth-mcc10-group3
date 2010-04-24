@@ -12,11 +12,6 @@
 <%@ page import="com.rwthmcc103.mboard.PMF" %>
 <%@ page import="com.rwthmcc103.mboard.Profile" %>
 
-<%
-    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-	//TODO: only let registered users in here
-%>
-
 <html>
 	<head>
 		<title>Profile</title> 
@@ -30,19 +25,21 @@
    			if (user != null) {
    				PersistenceManager pm = PMF.get().getPersistenceManager();
    				
-   				// max one element gotten here
-   			    String query = "select from " + Profile.class.getName() + " where user == " + user.getUserId();
-   			    List<Profile> messages = (List<Profile>) pm.newQuery(query).execute();
+		    	Profile p = Profile.getProfile(user);
    				
-   			 	if (messages.isEmpty()) {
+   			 	if (p == null) {
 		%>
 					<p>No Image uploaded.</p>
 		<% 			 		
    			 	} else {
 		%>   				 
    			 		<p>Image uploaded.</p>
+   			 		<img width="150" height="150" src="/serve?blob-key=<%= p.getImg().getKeyString() %>" />
 		<%   			 		
    			 	}
+		%>
+		<%
+    		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 		%>
 			<form action="<%= blobstoreService.createUploadUrl("/upload") %>" method="post" enctype="multipart/form-data"> 
 				<input type="file" name="myFile"> <br>
@@ -50,7 +47,10 @@
 			</form>
 		<%
    			} else {
-   				//TODO: error? should not happen with restrictions.
+   				//The user is not logged in
+   				%>
+   				<p>Please <a href="<%= userService.createLoginURL(request.getRequestURI()) %>">log in</a> first!</p>
+   				<%
    			}
 		%>
 	
