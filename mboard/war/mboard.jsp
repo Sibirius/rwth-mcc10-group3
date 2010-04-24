@@ -32,21 +32,19 @@
    	PersistenceManager pm = PMF.get().getPersistenceManager();
    	
    	if (user != null) {
-   		//TODO: filter current user
-   	    String query = "select from " + Profile.class.getName();//+ " where user == " + user.getEmail(); //TODO: is it possible to fetch exactly one element?
-   	    		
-   	    List<Profile> profiles = (List<Profile>) pm.newQuery(query).execute();
+
+	    Profile p = Profile.getProfile(user);
    	    
    		//TODO: retrieve and display image for logged in user if one was uploaded, else remind to upload
    		// maybe retrive image by user id in ServeImage
 
-   	    if (profiles.isEmpty()) {
+   	    if (p == null) {
    	    	%>
    	    		<p>No Profile Image uploaded yet.</p>
    	    	<%	
    	    } else {
    	    	%>
-   	    		<img src="/serve?blob-key=<%= profiles.get(0).getImg().getKeyString() %>"></img>
+   	    		<img width="150" height="150" src="/serve?blob-key=<%= p.getImg().getKeyString() %>" />
    	    	<%
    	    }   		
 %>
@@ -88,9 +86,21 @@
 			<p>An anonymous person wrote:</p>
 <%
             } else {
+
+            //String query_profile = "select from " + Profile.class.getName() + " where nickname == '" + m.getAuthor().getNickname() + "' range 0,1";
+		    //List<Profile> profiles = (List<Profile>) pm.newQuery(query_profile).execute();
+		   
+		    Profile p = Profile.getProfile(m.getAuthor());
+		    
+		    if(p != null){
+%>			   
+			    <img width="150" height="150" src="/serve?blob-key=<%= p.getImg().getKeyString() %>" />			   
+<%
+		    }
 %>
 			<p><b><%= m.getAuthor().getNickname() %></b> wrote:</p>
-<%
+<%		    
+		   
             }
 %>
 			<blockquote><%= m.getContent() %></blockquote>

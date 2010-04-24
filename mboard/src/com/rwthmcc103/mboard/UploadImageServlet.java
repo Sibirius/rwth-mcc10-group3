@@ -36,12 +36,15 @@ public class UploadImageServlet extends HttpServlet {
             resp.setContentType("text/plain");
             resp.getWriter().println("Upload failed.");
         } else {
-        	//TODO: check if there already is one for the user, update instead of creating new        	
-        	Profile profile = new Profile(user, blobKey);
-        	
-            PersistenceManager pm = PMF.get().getPersistenceManager();
+        	PersistenceManager pm = PMF.get().getPersistenceManager();
             try {
-                pm.makePersistent(profile);
+    		    if( Profile.getProfile(user) == null){
+    		    	Profile profile = new Profile(user, blobKey);
+            	    pm.makePersistent(profile);
+    		    }else {
+    		    	Profile p = pm.getObjectById(Profile.class,user.getNickname());
+    		    	p.setImg(blobKey);
+    		    }
             } finally {
                 pm.close();
             }
