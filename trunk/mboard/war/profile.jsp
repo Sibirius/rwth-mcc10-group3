@@ -52,7 +52,7 @@
 			</form>
 		<%
    			} else {
-   				//The user is not logged in
+   				//The user is not logged in, should not happen though
    				%>
    				<p>Please <a href="<%= userService.createLoginURL(request.getRequestURI()) %>">log in</a> first!</p>
    				<%

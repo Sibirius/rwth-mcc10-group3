@@ -1,9 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
 <%@ page import="javax.jdo.PersistenceManager" %>
+
 <%@ page import="com.google.appengine.api.users.User" %>
 <%@ page import="com.google.appengine.api.users.UserService" %>
 <%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
+
+<%@ page import="java.util.List" %>
+
 <%@ page import="com.rwthmcc103.mboard.Message" %>
 <%@ page import="com.rwthmcc103.mboard.Profile" %>
 <%@ page import="com.rwthmcc103.mboard.PMF" %>
@@ -59,6 +62,7 @@
 		  		
   		<div id="messages">
 <%
+	// get messages, sorted by date
     String query = "select from " + Message.class.getName() + " order by date asc";
     List<Message> messages = (List<Message>) pm.newQuery(query).execute();
     if (messages.isEmpty()) {
@@ -101,6 +105,5 @@
     pm.close();
 %>
   	</div>
-
   </body>
 </html>

@@ -13,6 +13,7 @@ import com.rwthmcc103.mboard.PMF;
 
 @SuppressWarnings("serial")
 public class PostMessageServlet extends HttpServlet {
+	// gets a posted message and saves it without actually checking/sanitizing the input (oh how mindless)
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
                 throws IOException {
         UserService userService = UserServiceFactory.getUserService();
