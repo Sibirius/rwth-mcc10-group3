@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
 
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
@@ -27,6 +28,7 @@ public class UploadImageServlet extends HttpServlet {
     	
         Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
         BlobKey blobKey = blobs.get("myFile");
+    	String uploadContentType = new BlobInfoFactory().loadBlobInfo(blobKey).getContentType();
     	
         UserService userService = UserServiceFactory.getUserService();
         User user = userService.getCurrentUser();
@@ -36,22 +38,28 @@ public class UploadImageServlet extends HttpServlet {
             resp.setContentType("text/plain");
             resp.getWriter().println("Upload failed.");
         } else {
-        	PersistenceManager pm = PMF.get().getPersistenceManager();
-        	// guarantee uniqueness of profile entries
-            try {
-            	// create new entry
-    		    if( Profile.getProfile(user) == null){
-    		    	Profile profile = new Profile(user, blobKey);
-            	    pm.makePersistent(profile);
-                // modify old one            	    
-    		    }else {
-    		    	Profile p = pm.getObjectById(Profile.class,user.getNickname());
-    		    	p.setImg(blobKey);
-    		    }
-            } finally {
-                pm.close();
-            }
-            
+        	if(uploadContentType.equals("image/jpeg") 
+        	|| uploadContentType.equals("image/png") 
+        	|| uploadContentType.equals("image/gif")){
+	        	PersistenceManager pm = PMF.get().getPersistenceManager();
+	        	// guarantee uniqueness of profile entries
+	            try {
+	            	// create new entry
+	    		    if( Profile.getProfile(user) == null){
+	    		    	Profile profile = new Profile(user, blobKey);
+	            	    pm.makePersistent(profile);
+	                // modify old one            	    
+	    		    }else {
+	    		    	Profile p = pm.getObjectById(Profile.class,user.getNickname());
+	    		    	p.setImg(blobKey);
+	    		    }
+	            } finally {
+	                pm.close();
+	            }
+        	} else {
+        		//file is not an jpeg/png/gif-image
+        		//TODO: redirect to error.jsp
+        	}
         	resp.sendRedirect("/mboard.jsp");
         }                    	    	    	
 	}
