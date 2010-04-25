@@ -24,7 +24,7 @@ public class UploadImageServlet extends HttpServlet {
 	
     public void doPost(HttpServletRequest req, HttpServletResponse resp) 
     	throws IOException {
-    	    
+    	
         Map<String, BlobKey> blobs = blobstoreService.getUploadedBlobs(req);
         BlobKey blobKey = blobs.get("myFile");
     	
@@ -37,10 +37,13 @@ public class UploadImageServlet extends HttpServlet {
             resp.getWriter().println("Upload failed.");
         } else {
         	PersistenceManager pm = PMF.get().getPersistenceManager();
+        	// guarantee uniqueness of profile entries
             try {
+            	// create new entry
     		    if( Profile.getProfile(user) == null){
     		    	Profile profile = new Profile(user, blobKey);
             	    pm.makePersistent(profile);
+                // modify old one            	    
     		    }else {
     		    	Profile p = pm.getObjectById(Profile.class,user.getNickname());
     		    	p.setImg(blobKey);

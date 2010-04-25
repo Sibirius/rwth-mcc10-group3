@@ -9,7 +9,7 @@ import com.google.appengine.api.users.User;
 import javax.jdo.PersistenceManager;
 
 import com.google.appengine.api.blobstore.BlobKey;
-//import com.google.appengine.api.datastore.Key;
+
 
 @PersistenceCapable
 public class Profile {
@@ -50,10 +50,12 @@ public class Profile {
         this.img = img;
     }
     
+    // gets exactly one user profile or null if there is none yet
     public static Profile getProfile(User user){
         PersistenceManager pm = PMF.get().getPersistenceManager();
         Profile result = null;
-        String query = "select from " + Profile.class.getName() + " where nickname == '" + user.getNickname() + "' range 0,1";    
+        String query = "select from " + Profile.class.getName() + " where nickname == '" + user.getNickname() + "' range 0,1";
+        // check if there are results
         if( !(( List<Profile> ) pm.newQuery(query).execute()).isEmpty() ){
         	result = pm.getObjectById(Profile.class,user.getNickname());
         }

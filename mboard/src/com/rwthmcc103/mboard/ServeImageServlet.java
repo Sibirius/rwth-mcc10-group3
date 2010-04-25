@@ -14,8 +14,9 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 public class ServeImageServlet extends HttpServlet {
     private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 
+    // gets blob by Blob Key and serves it
     public void doGet(HttpServletRequest req, HttpServletResponse res)
-    	throws IOException {
+    	throws IOException {    	
         	BlobKey blobKey = new BlobKey(req.getParameter("blob-key"));
         	blobstoreService.serve(blobKey, res);
     }
