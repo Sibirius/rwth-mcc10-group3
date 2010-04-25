@@ -38,6 +38,7 @@ public class UploadImageServlet extends HttpServlet {
             resp.setContentType("text/plain");
             resp.getWriter().println("Upload failed.");
         } else {
+        	//check if uploaded file is an image
         	if(uploadContentType.equals("image/jpeg") 
         	|| uploadContentType.equals("image/png") 
         	|| uploadContentType.equals("image/gif")){
@@ -56,9 +57,6 @@ public class UploadImageServlet extends HttpServlet {
 	            } finally {
 	                pm.close();
 	            }
-        	} else {
-        		//file is not an jpeg/png/gif-image
-        		//TODO: redirect to error.jsp
         	}
         	resp.sendRedirect("/mboard.jsp");
         }                    	    	    	
