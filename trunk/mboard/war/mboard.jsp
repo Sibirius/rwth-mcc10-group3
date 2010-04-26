@@ -14,7 +14,7 @@
 <html>
   <head>
   	<link type="text/css" rel="stylesheet" href="/css/main.css" />
-  	<title>mboard</title>
+  	<title>mboard - TEST</title>
   </head>
 
   <body>
