@@ -10,6 +10,7 @@ import javax.jdo.PersistenceManager;
 
 import com.google.appengine.api.blobstore.BlobKey;
 
+//TEst
 
 @PersistenceCapable
 public class Profile {
