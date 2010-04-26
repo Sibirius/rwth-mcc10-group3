@@ -63,7 +63,7 @@
   		<div id="messages">
 <%
 	// get messages, sorted by date
-    String query = "select from " + Message.class.getName() + " order by date asc";
+    String query = "select from " + Message.class.getName() + " order by date desc";
     List<Message> messages = (List<Message>) pm.newQuery(query).execute();
     if (messages.isEmpty()) {
 %>
