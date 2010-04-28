@@ -4,8 +4,33 @@
     <Require feature="wave" /> 
   </ModulePrefs>
   <Content type="html">
-    <![CDATA[     
-       Hello, Wave!
+ 	<![CDATA[
+       <div id="content_div" style="height: 50px;">Test</div>
+       <script type="text/javascript">
+		
+		gadgets.util.registerOnLoadHandler(init);
+		
+		function init() {
+	      if (wave && wave.isInWaveContainer()) {
+	        wave.setStateCallback(stateUpdated);
+	      }
+	    }
+	
+	    function stateUpdated() {
+	      if(!wave.getState().get('count')) {
+	        div.innerHTML = "The count is 0."
+	      }
+	      else {
+	        div.innerHTML = "The count is " + wave.getState().get('count');
+	      } 
+	    }
+	
+	    // Reset value of "count" to 0
+	    function resetCounter(){
+	      wave.getState().submitDelta({'count': '0'});
+	    }
+	
+	    </script>
     ]]>
   </Content>
 </Module>
