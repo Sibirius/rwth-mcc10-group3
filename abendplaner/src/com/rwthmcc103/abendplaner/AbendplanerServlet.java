@@ -110,6 +110,8 @@ public class AbendplanerServlet extends AbstractRobot {
 		if (!voteStarted) {
 			Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
 			voteStarted = true;
+			Gadget gadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/voting.xml");
+			blip.at(4).insert(gadget);
 		} else {
 			Blip blip = event.getWavelet().reply("\nAlready at it, pay attention please.");
 		}
@@ -118,18 +120,21 @@ public class AbendplanerServlet extends AbstractRobot {
 	
 	// tell preference
 	if ( content.contains("prefer")){
-		if(content.toLowerCase().contains("essen"))
-			preferedActivities[0] = true;
-		else if(content.toLowerCase().contains("trinken"))
-			preferedActivities[1] = true;
-		else if(content.toLowerCase().contains("tanzen"))
-			preferedActivities[2] = true;
-		else if(content.toLowerCase().contains("kino"))
-			preferedActivities[3] = true;
-		else 
-			event.getWavelet().reply("\nUnknown Activity");
+		if(!voteStarted){
+			if(content.toLowerCase().contains("essen"))
+				preferedActivities[0] = true;
+			else if(content.toLowerCase().contains("trinken"))
+				preferedActivities[1] = true;
+			else if(content.toLowerCase().contains("tanzen"))
+				preferedActivities[2] = true;
+			else if(content.toLowerCase().contains("kino"))
+				preferedActivities[3] = true;
+			else 
+				event.getWavelet().reply("\nUnknown Activity");
+		} else {
+			event.getWavelet().reply("\nVoting already started");
+		}
 	}
-	
 	
 	
   }
