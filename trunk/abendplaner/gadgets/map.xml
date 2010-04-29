@@ -1,37 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Hello Wave">
+  <ModulePrefs title="Hello Maps">
     <Require feature="wave" /> 
   </ModulePrefs>
   <Content type="html">
  	<![CDATA[
-       <div id="content_div" style="height: 50px;">Test</div>
-       <script type="text/javascript">
-		
-		gadgets.util.registerOnLoadHandler(init);
-		
-		function init() {
-	      if (wave && wave.isInWaveContainer()) {
-	        wave.setStateCallback(stateUpdated);
-	      }
-	    }
+ 		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAGAP5T4BS8Gn8z_KNdk4MuxQs3QBYDBscCkXn5XVh-PO2erUf9BRLbMyRF04Gc0cJo5xmV5wt1Y7oPQ" type="text/javascript"></script>
+		<script type="text/javascript"> 
 	
-	    function stateUpdated() {
-	      if(!wave.getState().get('count')) {
-	        div.innerHTML = "The count is 0."
-	      }
-	      else {
-	        div.innerHTML = "The count is " + wave.getState().get('count');
-	      } 
+	      // Display the map, with some controls and set the initial location 
+	      var map = new GMap2(document.getElementById("map"));
+	      map.addControl(new GLargeMapControl());
+	      map.addControl(new GMapTypeControl());
+	      map.setCenter(new GLatLng(50.77788,6.07826),8);
+	    	
 	    }
-		
-		function buttonClicked() {
-	      var value = parseInt(wave.getState().get('count', '0'));
-	      wave.getState().submitDelta({'count': value + 1});
-	    }
-	
-	    </script>
-	    <input type=button value="Click Me!" id="butCount" onClick="buttonClicked()">
+		</script>
+    	<div id="map" style="width: 550px; height: 450px"></div>      
     ]]>
   </Content>
 </Module>
