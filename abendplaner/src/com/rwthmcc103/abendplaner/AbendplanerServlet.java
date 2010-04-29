@@ -47,13 +47,13 @@ public class AbendplanerServlet extends AbstractRobot {
 	}
 		
 	  
-	String talk = "\nGreetings, " + peopleAlreadyHere +
-			      "! They call me \"" + this.getRobotName() + "\", at your service. \n" +
-				  "\n" +
-				  "Commands are only processed from top level Blips\n" +
+	String talk = "\nGreetings, " + peopleAlreadyHere + " welcome!\n" +
+			      "They call me \"" + this.getRobotName() + "\", at your service. \n" +
+				  "\n" +				  
 				  "bla I do this bla bla you have to do that bla \n" + // TODO
 				  "\n" +
-				  "Tell me as soon as you are complete, a simple \"Abendplaner, we are complete\" or \"Abendplaner go\" will suffice.";
+				  "Tell me as soon as you are complete, a simple \"Abendplaner, we are complete\" or \"Abendplaner go\" will suffice." +
+				  "Remember, commands are only processed from top level Blips\n";
 
     Blip blip = event.getWavelet().reply(talk);
   }
@@ -97,10 +97,7 @@ public class AbendplanerServlet extends AbstractRobot {
   /** reacts to new submitted messages, interprets commands */
   @Override
   public void onBlipSubmitted(BlipSubmittedEvent event) {
-	// only procede if blip is at root level 
-	if (event.getBlip().getParentBlip() != event.getWavelet().getRootBlip()) {
-		return;
-	}
+	//TODO: only proceed if blip is not a reply? So it will only react to stuff said not as a direct comment to something. 
 	  
 	// command string arrays
 	String[] start = {"Abendplaner, we are complete", "Abendplaner go"}; 
@@ -113,6 +110,7 @@ public class AbendplanerServlet extends AbstractRobot {
 		} else {
 			Blip blip = event.getWavelet().reply("\nAlready at it, pay attention please.");
 		}
-	}
+	}	 
+	
   }
 }
