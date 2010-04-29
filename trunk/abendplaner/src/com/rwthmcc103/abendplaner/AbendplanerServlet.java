@@ -12,7 +12,8 @@ public class AbendplanerServlet extends AbstractRobot {
 
   @Override
   protected String getRobotAvatarUrl() {
-    return "http://code.google.com/apis/wave/extensions/robots/images/robot_avatar.png";
+	// TODO: rather take one from imageshack or something :P.
+    return "http://rlv.zcache.com/awesome_smiley_photo_sculpture_photosculpture-p153359710604909267qdjh_400.jpg";
   }
 
   @Override
