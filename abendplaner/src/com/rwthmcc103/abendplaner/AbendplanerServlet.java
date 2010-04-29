@@ -101,16 +101,32 @@ public class AbendplanerServlet extends AbstractRobot {
 	  
 	// command string arrays
 	String[] start = {"Abendplaner, we are complete", "Abendplaner go"}; 
+	String content = event.getBlip().getContent();
+	String[] contentArray = content.split("[ ]+");
 	
 	// start voting
-	if (containsOne(event.getBlip().getContent(), start)) {
+	if (containsOne(content, start)) {
 		if (!voteStarted) {
 			Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
 			voteStarted = true;
 		} else {
 			Blip blip = event.getWavelet().reply("\nAlready at it, pay attention please.");
 		}
-	}	 
+	}
+	
+	// tell preference
+	if ( contentArray[0] == "prefer"){
+		if(contentArray[1].toLowerCase() == "essen")
+			preferedActivities[0] = true;
+		else if(contentArray[1].toLowerCase() == "trinken")
+			preferedActivities[1] = true;
+		else if(contentArray[1].toLowerCase() == "tanzen")
+			preferedActivities[2] = true;
+		else if(contentArray[1].toLowerCase() == "kino")
+			preferedActivities[3] = true;
+		else 
+			event.getWavelet().reply("\nUnknown Activity");
+	}
 	
   }
 }
