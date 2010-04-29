@@ -25,7 +25,7 @@
 				markerOptions = { icon:movieIcon };
   				var movieMarker = new GMarker(point, markerOptions);
 				
-				map.addOverlay(moviemarker);
+				map.addOverlay(movieMarker);
 			}
 		  }
 		</script>    
