@@ -18,11 +18,12 @@
 
 				var point = new GLatLng(50.77788,6.07826);
 								
-				var movieIcon = new GIcon(G_DEFAULT_ICON);
+				var movieIcon = new GIcon();
 				movieIcon.image = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/film-reel-icon.png";
 				movieIcon.iconSize = new GSize(32, 32);
 				movieIcon.iconAnchor = new GPoint(16, 16);
-				markerOptions = { icon:movieIcon };
+				movieIcon.infoWindowAnchor = new GPoint(5, 1);
+				markerOptions = { icon:movieIcon|shadow:false };
   				var movieMarker = new GMarker(point, markerOptions);
 				
 				map.addOverlay(movieMarker);
