@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<location>
+	<name>vegas</name>
+	
+	<lat>36.095776</lat>
+	<lng>-115.174037</lng>	
+
+	<eat>1</eat>
+	<dance>1</dance>
+	<drink>1</drink>
+	<cinema>1</cinema>
+</location>
+
+<location>
+	<name>moulin rouge</name>
+	
+	<lat>48.884047</lat>
+	<lng>2.332577</lng>	
+
+	<eat>1</eat>
+	<dance>1</dance>
+	<drink>1</drink>
+	<cinema>0</cinema>
+</location>
+
+<location>
+	<name>reichstag</name>
+	
+	<lat>52.518475</lat>
+	<lng>13.375112</lng>	
+
+	<eat>1</eat>
+	<dance>0</dance>
+	<drink>1</drink>
+	<cinema>0</cinema>
+</location>
+
+
+<location>
+	<name>nordeney</name>
+	
+	<lat>53.700426</lat>
+	<lng>7.156162</lng>	
+
+	<eat>0</eat>
+	<dance>1</dance>
+	<drink>1</drink>
+	<cinema>0</cinema>
+</location>
+
+<location>
+	<name>chernobyl</name>
+	
+	<lat>51.267857</lat>
+	<lng>30.216815</lng>	
+
+	<eat>0</eat>
+	<dance>1</dance>
+	<drink>0</drink>
+	<cinema>0</cinema>
+</location>
+
+<location>
+	<name>secret arctic base</name>
+	
+	<lat>-84.334378</lat>
+	<lng>30.659178</lng>
+
+	<eat>1</eat>
+	<dance>1</dance>
+	<drink>1</drink>
+	<cinema>1</cinema>
+</location>
+
+<location>
+	<name>niagara falls</name>
+	
+	<lat>43.08132</lat>
+	<lng>-79.071708</lng>	
+
+	<eat>1</eat>
+	<dance>1</dance>
+	<drink>0</drink>
+	<cinema>0</cinema>
+</location>
+
+<location>
+	<name>mt. everest</name>
+	
+	<lat>27.982129</lat>
+	<lng>86.929253</lng>	
+
+	<eat>0</eat>
+	<dance>1</dance>
+	<drink>1</drink>
+	<cinema>0</cinema>
+</location>
+
+<location>
+	<name>cannes</name>
+	
+	<lat>43.551988</lat>
+	<lng>7.010894</lng>	
+
+	<eat>1</eat>
+	<dance>1</dance>
+	<drink>1</drink>
+	<cinema>1</cinema>
+</location>
