@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.LinkedList;
 
 public class AbendplanerServlet extends AbstractRobot {
-  private boolean voteStarted = false; 
+  private boolean voteStarted = false;
+  private boolean[] preferedActivities = new boolean[4];
 
   @Override
   protected String getRobotName() {
