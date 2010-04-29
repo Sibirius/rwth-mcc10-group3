@@ -11,9 +11,13 @@
 		<script type="text/javascript">
 		  google.load("maps", "2");
 		  function init() {
-		    var map = new google.maps.Map2(document.getElementById("map"));
-		    map.setCenter(new GLatLng(50.77788,6.07826),8);
-			map.setUIToDefault();
+		  	if(GBrowserIsCompatible()){
+			    var map = new google.maps.Map2(document.getElementById("map"));
+			    map.setCenter(new GLatLng(50.77788,6.07826),13);
+				map.setUIToDefault();
+				var point = new GLatLng(50.77788,6.07826);
+				map.addOverlay(new GMarker(point));
+			}
 		  }
 		</script>    
   		</head>
