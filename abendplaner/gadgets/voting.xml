@@ -4,8 +4,56 @@
   <Require feature="wave" /> 
 </ModulePrefs>
 <Content type="html">
-<![CDATA[ 
-	<div> Hello World! </div>
+<![CDATA[
+	<script>
+		function getListOfChoices() {
+			// TODO: hier zur auswahl stehende locations holen
+			return ["something", "else", "now"];
+		}
+		
+		// creates element with label and yes/no choice
+		function createVoteElement(text, number) {
+			var p = document.createElement("p");
+		
+			var select = document.createElement("select");
+	
+			var ja = document.createElement("option");
+			ja.appendChild(document.createTextNode("yes"));
+			var nein = document.createElement("option");
+			nein.appendChild(document.createTextNode("nein"));
+
+			select.appendChild(ja);
+			select.appendChild(nein);			
+
+			p.appendChild(document.createTextNode(text));
+			p.appendChild(select);
+
+			return p;
+		}
+				
+		// inserts before button after all the other choices
+		function insertNewChoice(choice) {
+			var vc = document.getElementById("voting_container");
+			var vb = document.getElementById("voting_btn");
+
+			vc.insertBefore(choice, vb); 
+			 
+		}
+
+		function init() {
+			var list = getListOfChoices();
+
+			for(var i=0; i<list.length; i++){
+				insertNewChoice( createVoteElement(list[i], i) );
+			}
+		}
+
+		//TODO: proper submit action, generate onload, not on click
+	</script>
+
+	<form action="javascript:return;" id="voting_container">
+		<input id="voting_btn" type="button" value="Vote!" onclick="init()"/>
+	</div>
   ]]> 
   </Content>
 </Module>
