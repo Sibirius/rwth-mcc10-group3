@@ -5,18 +5,22 @@
     <Require feature="wave" /> 
   </ModulePrefs>
   <Content type="html">
- 	<![CDATA[ 				
+ 	<![CDATA[ 	
+ 		<head>			
 		<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAGAP5T4BS8Gn8z_KNdk4MuxQs3QBYDBscCkXn5XVh-PO2erUf9BRLbMyRF04Gc0cJo5xmV5wt1Y7oPQ"></script>
 		<script type="text/javascript">
 		  google.load("maps", "2");
 		  function init() {
 		    var map = new google.maps.Map2(document.getElementById("map"));
 		    map.setCenter(new GLatLng(50.77788,6.07826),8);
+			map.setUIToDefault();
 		  }
-		  google.setOnLoadCallback(init); 	
-	    }
 		</script>    
-		<div id="map" style="width: 100%; height: 300px"></div>  		
+  		</head>
+  		<body onload="init()">
+    	  <div id="map" style="width: 100%; height: 300px"></div>  
+		</body>
+		
     ]]>
   </Content>
 </Module>
