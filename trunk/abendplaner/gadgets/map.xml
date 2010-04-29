@@ -16,17 +16,18 @@
 			    map.setCenter(new GLatLng(50.77788,6.07826),13);
 				map.setUIToDefault();
 
-				/*var point = new GLatLng(50.77788,6.07826);
+				var point = new GLatLng(50.77788,6.07826);
 								
 				var movieIcon = new GIcon();
 				movieIcon.image = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/film-reel-icon.png";
+				movieIcon.shadow = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/film-reel-icon-shadow.png";
 				movieIcon.iconSize = new GSize(32, 32);
+				movieIcon.shadowSize = new GSize(46, 46);
 				movieIcon.iconAnchor = new GPoint(16, 16);
 				movieIcon.infoWindowAnchor = new GPoint(5, 1);
-				markerOptions = { icon:movieIcon|shadow:false };
-  				var movieMarker = new GMarker(point, markerOptions);
+  				var movieMarker = new GMarker(point, movieIcon);
 				
-				map.addOverlay(movieMarker);*/
+				map.addOverlay(movieMarker);
 			}
 		  }
 		</script>    
