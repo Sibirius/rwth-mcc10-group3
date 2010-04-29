@@ -115,8 +115,11 @@ public class AbendplanerServlet extends AbstractRobot {
 		}
 	}
 	
+	
+	//TODO fix it -.-
 	// tell preference
 	if ( contentArray[0] == "prefer"){
+		event.getWavelet().reply("\nPrefer Command");
 		if(contentArray[1].toLowerCase() == "essen")
 			preferedActivities[0] = true;
 		else if(contentArray[1].toLowerCase() == "trinken")
@@ -128,8 +131,7 @@ public class AbendplanerServlet extends AbstractRobot {
 		else 
 			event.getWavelet().reply("\nUnknown Activity");
 	}
-	event.getWavelet().reply("\n"+contentArray[0]);
-	event.getWavelet().reply("\n"+contentArray[1]);
+	
 	
   }
 }
