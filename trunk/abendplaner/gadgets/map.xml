@@ -15,8 +15,17 @@
 			    var map = new google.maps.Map2(document.getElementById("map"));
 			    map.setCenter(new GLatLng(50.77788,6.07826),13);
 				map.setUIToDefault();
+
 				var point = new GLatLng(50.77788,6.07826);
-				map.addOverlay(new GMarker(point));
+								
+				var movieIcon = new GIcon(G_DEFAULT_ICON);
+				movieIcon.image = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/film-reel-icon.png";
+				movieIcon.iconSize = new GSize(32, 32);
+				movieIcon.iconAnchor = new GPoint(16, 16);
+				markerOptions = { icon:movieIcon };
+  				var movieMarker = new GMarker(point, markerOptions);
+				
+				map.addOverlay(moviemarker);
 			}
 		  }
 		</script>    
