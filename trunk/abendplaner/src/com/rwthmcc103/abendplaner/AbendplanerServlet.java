@@ -4,10 +4,11 @@ import com.google.wave.api.*;
 import com.google.wave.api.event.*;
 
 import java.util.List;
+import java.util.LinkedList;
 
 public class AbendplanerServlet extends AbstractRobot {
   private boolean voteStarted = false; 
-	
+
   @Override
   protected String getRobotName() {
     return "Abendplaner";
@@ -24,11 +25,16 @@ public class AbendplanerServlet extends AbstractRobot {
   }
 
   /* get list of people, not including robots */
-  private Participants getImportantPeople(Wavelet wavelet) {
-	  Participants p = wavelet.getParticipants();
-	  p.remove(wavelet.getRobotAddress()); //TODO return participants, without robot
+  private List<String> getImportantPeople(Wavelet wavelet) {
+	  List<String> output = new LinkedList<String>();
 	  
-	  return p;
+	  for (String newParticipant: wavelet.getParticipants()) {
+	    if (!newParticipant.contentEquals(wavelet.getRobotAddress())) {
+	    	output.add(newParticipant);
+	    }
+	  }	  
+	  
+	  return output;
   }  
   
   /** introduces user and describes procedure */
@@ -44,6 +50,7 @@ public class AbendplanerServlet extends AbstractRobot {
 	String talk = "\nGreetings, " + peopleAlreadyHere +
 			      "! They call me \"" + this.getRobotName() + "\", at your service. \n" +
 				  "\n" +
+				  "Commands are only processed from top level Blips\n" +
 				  "bla I do this bla bla you have to do that bla \n" + // TODO
 				  "\n" +
 				  "Tell me as soon as you are complete, a simple \"Abendplaner, we are complete\" or \"Abendplaner go\" will suffice.";
@@ -90,6 +97,11 @@ public class AbendplanerServlet extends AbstractRobot {
   /** reacts to new submitted messages, interprets commands */
   @Override
   public void onBlipSubmitted(BlipSubmittedEvent event) {
+	// only procede if blip is at root level 
+	if (event.getBlip().getParentBlip() != event.getWavelet().getRootBlip()) {
+		return;
+	}
+	  
 	// command string arrays
 	String[] start = {"Abendplaner, we are complete", "Abendplaner go"}; 
 	
