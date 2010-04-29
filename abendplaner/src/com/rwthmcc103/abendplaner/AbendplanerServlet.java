@@ -103,7 +103,7 @@ public class AbendplanerServlet extends AbstractRobot {
 	// command string arrays
 	String[] start = {"Abendplaner, we are complete", "Abendplaner go"}; 
 	String content = event.getBlip().getContent();
-	String[] contentArray = content.split("[ ]+");
+	
 	
 	// start voting
 	if (containsOne(content, start)) {
@@ -116,21 +116,20 @@ public class AbendplanerServlet extends AbstractRobot {
 	}
 	
 	
-	//TODO fix it -.-
 	// tell preference
-	if ( contentArray[0] == "prefer"){
-		event.getWavelet().reply("\nPrefer Command");
-		if(contentArray[1].toLowerCase() == "essen")
+	if ( content.contains("prefer")){
+		if(content.toLowerCase().contains("essen"))
 			preferedActivities[0] = true;
-		else if(contentArray[1].toLowerCase() == "trinken")
+		else if(content.toLowerCase().contains("trinken"))
 			preferedActivities[1] = true;
-		else if(contentArray[1].toLowerCase() == "tanzen")
+		else if(content.toLowerCase().contains("tanzen"))
 			preferedActivities[2] = true;
-		else if(contentArray[1].toLowerCase() == "kino")
+		else if(content.toLowerCase().contains("kino"))
 			preferedActivities[3] = true;
 		else 
 			event.getWavelet().reply("\nUnknown Activity");
 	}
+	
 	
 	
   }
