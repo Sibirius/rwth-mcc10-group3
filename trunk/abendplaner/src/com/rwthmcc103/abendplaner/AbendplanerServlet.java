@@ -128,6 +128,8 @@ public class AbendplanerServlet extends AbstractRobot {
 		else 
 			event.getWavelet().reply("\nUnknown Activity");
 	}
+	event.getWavelet().reply("\n"+contentArray[0]);
+	event.getWavelet().reply("\n"+contentArray[1]);
 	
   }
 }
