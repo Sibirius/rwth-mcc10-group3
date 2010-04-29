@@ -3,8 +3,11 @@ package com.rwthmcc103.abendplaner;
 import com.google.wave.api.*;
 import com.google.wave.api.event.*;
 
-public class AbendplanerServlet extends AbstractRobot {
+import java.util.List;
 
+public class AbendplanerServlet extends AbstractRobot {
+  private boolean voteStarted = false; 
+	
   @Override
   protected String getRobotName() {
     return "Abendplaner";
@@ -12,8 +15,7 @@ public class AbendplanerServlet extends AbstractRobot {
 
   @Override
   protected String getRobotAvatarUrl() {
-	// TODO: rather take one from imageshack or something :P.
-    return "http://rlv.zcache.com/awesome_smiley_photo_sculpture_photosculpture-p153359710604909267qdjh_400.jpg";
+    return "http://i39.tinypic.com/351eq00.jpg";
   }
 
   @Override
@@ -23,13 +25,34 @@ public class AbendplanerServlet extends AbstractRobot {
 
   @Override
   public void onWaveletSelfAdded(WaveletSelfAddedEvent event) {
-    Blip blip = event.getWavelet().reply("\nHi everybody!");
+	//event.getWavelet().getParticipants()
+	
+	String talk = "\nGreetings + " + " names of people already here" + //TODO people already here
+			      "! They call me \"" + this.getRobotName() + "\", at your service. \n" +
+				  "\n" +
+				  "bla I do this bla bla you have to do that bla \n" + // TODO
+				  "\n" +
+				  "Tell me as soon as you are complete, a simple 'Abendplaner, we are complete' or 'Abendplaner go' will suffice.";
+
+    Blip blip = event.getWavelet().reply(talk);
   }
 
   @Override
   public void onWaveletParticipantsChanged(WaveletParticipantsChangedEvent event) {
-    for (String newParticipant: event.getParticipantsAdded()) {
-      Blip blip = event.getWavelet().reply("\nHi : " + newParticipant);
-    }
+    String rede = "";
+		
+	for (String newParticipant: event.getParticipantsAdded()) {
+	  if (!newParticipant.contentEquals("rwth-mcc10-group3@appspot.com")) {		
+		  rede += newParticipant + ", ";
+	  }
+	}
+	
+	rede += " welcome. You are ";
+	
+	if (voteStarted) {
+		rede += " too late, the voting has already started.";
+	} else {
+		rede += " just in time, stay and vote if you like.";
+	}	
   }
 }
