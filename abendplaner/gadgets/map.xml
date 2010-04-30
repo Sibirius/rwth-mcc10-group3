@@ -23,7 +23,7 @@
 				var x=domdata.getElementsByTagName("location");
 		        for (i=0;i<x.length;i++){
 						map.addOverlay(new GMarker(new GLatLng(x[i].getElementsByTagName("lat")[0].childNodes[0].nodeValue,
-											   x[i].getElementsByTagName("lng")[0].childNodes[0].nodeValue), drinkIcon));
+											   x[i].getElementsByTagName("lng")[0].childNodes[0].nodeValue)));
 				}			    
 			}	    
 		  
