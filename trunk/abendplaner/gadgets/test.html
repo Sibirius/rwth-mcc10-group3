@@ -1,0 +1,27 @@
+<html>
+<head>
+</head>
+<body>
+<script type="text/javascript">
+function load(){
+if (document.implementation && document.implementation.createDocument)
+{
+xmlDoc=document.implementation.createDocument("","",null);
+xmlDoc.load("locationdb.xml");
+xmlDoc.onload = function(){
+			        var x=xmlDoc.getElementsByTagName("location");
+			        for (i=0;i<x.length;i++){
+			            document.write(x[i].getElementsByTagName("lat")[0].childNodes[0].nodeValue + " ");
+           		        document.write(x[i].getElementsByTagName("lng")[0].childNodes[0].nodeValue + "<br />");
+	  		        }
+			    }
+} else {
+alert('Error opening locationdb.xml');
+}
+
+}
+
+load();
+</script>
+</body>
+</html>
