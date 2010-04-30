@@ -6,9 +6,19 @@
 <Content type="html">
 <![CDATA[
 	<script>
-		function getListOfChoices() {
-			// TODO : hier zur auswahl stehende locations holen
-			return ["something", "else", "now"];
+		function init() {
+		    var params = {};  
+		    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
+		    var url = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/locationdb.xml";  
+		    gadgets.io.makeRequest(url, response, params);
+		}
+		
+		function response(obj){
+			var domdata = obj.data;
+			var x=domdata.getElementsByTagName("location");
+		    for (var i = 0; i<x.length ;i++){
+				insertNewChoice( createVoteElement( x[i].getElementsByTagName("name")[0].childNodes[0].nodeValue, i) );		    
+		    }		
 		}
 		
 		// creates element with label and yes/no choice
@@ -38,14 +48,6 @@
 
 			vc.insertBefore(choice, vb); 
 			 
-		}
-
-		function init() {
-			var list = getListOfChoices();
-
-			for(var i=0; i<list.length; i++){
-				insertNewChoice( createVoteElement(list[i], i) );
-			}
 		}
 
 		//TODO: proper submit action, generate onload, not on click

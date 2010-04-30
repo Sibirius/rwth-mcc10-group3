@@ -98,17 +98,6 @@
 					danceIcon.shadowSize = new GSize(52, 36);
 					danceIcon.iconAnchor = new GPoint(16, 16);
 					danceIcon.infoWindowAnchor = new GPoint(10, 1);
-	
-					//define some markers
-	  				var movieMarker = new GMarker(new GLatLng(50.75788,6.07826), movieIcon);		
-	  				var foodMarker = new GMarker(new GLatLng(50.77788,6.07826), foodIcon);				
-	  				var drinkMarker = new GMarker(new GLatLng(50.78788,6.07826), drinkIcon);				
-	  				var danceMarker = new GMarker(new GLatLng(50.76788,6.07826), danceIcon);
-	
-					map.addOverlay(movieMarker);
-					map.addOverlay(foodMarker);
-					map.addOverlay(drinkMarker);
-					map.addOverlay(danceMarker);
 					
 					loadMarkers();
 				}
