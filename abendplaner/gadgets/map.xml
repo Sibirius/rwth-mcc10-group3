@@ -14,6 +14,12 @@
 		  	//initialise global vars
 		  	var map, movieIcon, foodIcon, drinkIcon, danceIcon;
 		  	
+		  	//get Content by Tag
+		  	//makes to code a little shorter^^
+		  	function getCbT(obj, tag){
+		  		return obj.getElementsByTagName(tag)[0].childNodes[0].nodeValue;
+		  	}
+		  	
 		    function loadMarkers() {    
 		    	var params = {};  
 		        params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
@@ -24,8 +30,30 @@
 		    function response(obj) { 
 			    var domdata = obj.data;
 				var x=domdata.getElementsByTagName("location");
-		        for (i=0;i<x.length;i++){
-					map.addOverlay(new GMarker(new GLatLng(x[i].getElementsByTagName("lat")[0].childNodes[0].nodeValue, x[i].getElementsByTagName("lng")[0].childNodes[0].nodeValue), drinkIcon));
+				var point, infoHtml;
+		        for (var i = 0; i<x.length ;i++){
+		        	infoHtml = "<h5>" + getCbT(x[i],"name") + "</h5>";
+		        	if(getCbT(x[i],"eat") == "1") {
+		        		point = new GMarker(new GLatLng(getCbT(x[i],"lat"), getCbt(x[i],"lng")), foodIcon);
+						GEvent.addListener(point, "click", function() {point.openInfoWindowHtml(infoHtml)} );
+						map.addOverlay(point);
+					}
+		        	if(getCbt(x[i],"dance") == "1") {
+		        		point = new GMarker(new GLatLng(getCbt(x[i],"lat"), getCbt(x[i],"lng")), danceIcon);
+						GEvent.addListener(point, "click", function() {point.openInfoWindowHtml(infoHtml)} );
+						map.addOverlay(point);
+					}
+			       	if(getCbt(x[i],"drink") == "1") {
+		        		point = new GMarker(new GLatLng(getCbt(x[i],"lat"), getCbt(x[i],"lng")), drinkIcon);
+						GEvent.addListener(point, "click", function() {point.openInfoWindowHtml(infoHtml)} );
+						map.addOverlay(point);
+					}
+		        	if(getCbt(x[i],"cinema") == "1") {
+		        		point = new GMarker(new GLatLng(getCbt(x[i],"lat"), getCbt(x[i],"lng")), movieIcon);
+						GEvent.addListener(point, "click", function() {point.openInfoWindowHtml(infoHtml)} );
+						map.addOverlay(point);
+					}
+					
 				}			    
 			}	    
 		  
