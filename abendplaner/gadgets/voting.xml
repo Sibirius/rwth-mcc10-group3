@@ -7,7 +7,7 @@
 <![CDATA[
 	<script>
 		function getListOfChoices() {
-			// TODO: hier zur auswahl stehende locations holen
+			// TODO : hier zur auswahl stehende locations holen
 			return ["something", "else", "now"];
 		}
 		
