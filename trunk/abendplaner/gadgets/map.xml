@@ -47,8 +47,8 @@
 				danceIcon.image = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/vinyl-icon.png";
 				danceIcon.shadow = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/vinyl-icon-shadow.png";
 				danceIcon.iconSize = new GSize(32, 32);
-				danceIcon.shadowSize = new GSize(46, 46);
-				danceIcon.iconAnchor = new GPoint(52, 36);
+				danceIcon.shadowSize = new GSize(52, 36);
+				danceIcon.iconAnchor = new GPoint(16, 16);
 				danceIcon.infoWindowAnchor = new GPoint(10, 1);
   				var danceMarker = new GMarker(new GLatLng(50.76788,6.07826), danceIcon);
 
