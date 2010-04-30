@@ -34,22 +34,22 @@
 		        for (var i = 0; i<x.length ;i++){
 		        	infoHtml = "<h5>" + getCbT(x[i],"name") + "</h5>";
 		        	if(getCbT(x[i],"eat") == "1") {
-		        		point = new GMarker(new GLatLng(getCbT(x[i],"lat"), getCbt(x[i],"lng")), foodIcon);
+		        		point = new GMarker(new GLatLng(getCbT(x[i],"lat"), getCbT(x[i],"lng")), foodIcon);
 						GEvent.addListener(point, "click", function() {point.openInfoWindowHtml(infoHtml)} );
 						map.addOverlay(point);
 					}
-		        	if(getCbt(x[i],"dance") == "1") {
-		        		point = new GMarker(new GLatLng(getCbt(x[i],"lat"), getCbt(x[i],"lng")), danceIcon);
+		        	if(getCbT(x[i],"dance") == "1") {
+		        		point = new GMarker(new GLatLng(getCbT(x[i],"lat"), getCbT(x[i],"lng")), danceIcon);
 						GEvent.addListener(point, "click", function() {point.openInfoWindowHtml(infoHtml)} );
 						map.addOverlay(point);
 					}
-			       	if(getCbt(x[i],"drink") == "1") {
-		        		point = new GMarker(new GLatLng(getCbt(x[i],"lat"), getCbt(x[i],"lng")), drinkIcon);
+			       	if(getCbT(x[i],"drink") == "1") {
+		        		point = new GMarker(new GLatLng(getCbT(x[i],"lat"), getCbT(x[i],"lng")), drinkIcon);
 						GEvent.addListener(point, "click", function() {point.openInfoWindowHtml(infoHtml)} );
 						map.addOverlay(point);
 					}
-		        	if(getCbt(x[i],"cinema") == "1") {
-		        		point = new GMarker(new GLatLng(getCbt(x[i],"lat"), getCbt(x[i],"lng")), movieIcon);
+		        	if(getCbT(x[i],"cinema") == "1") {
+		        		point = new GMarker(new GLatLng(getCbT(x[i],"lat"), getCbT(x[i],"lng")), movieIcon);
 						GEvent.addListener(point, "click", function() {point.openInfoWindowHtml(infoHtml)} );
 						map.addOverlay(point);
 					}
