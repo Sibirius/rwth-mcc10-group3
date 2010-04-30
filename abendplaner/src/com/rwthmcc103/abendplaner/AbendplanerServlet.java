@@ -6,7 +6,7 @@ import com.google.wave.api.event.*;
 import java.util.List;
 import java.util.LinkedList;
 
-public class AbendplanerServlet extends AbstractRobot {
+public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName () function
   private boolean voteStarted = false;
   private boolean[] preferedActivities = new boolean[4];
 
