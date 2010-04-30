@@ -5,6 +5,7 @@
 </ModulePrefs>
 <Content type="html">
 <![CDATA[
+	<body onload="init()">	
 	<script>
 		function init() {
 		    var params = {};  
@@ -14,11 +15,14 @@
 		}
 		
 		function response(obj){
-			var domdata = obj.data;
-			var x=domdata.getElementsByTagName("location");
-		    for (var i = 0; i<x.length ;i++){
-				insertNewChoice( createVoteElement( x[i].getElementsByTagName("name")[0].childNodes[0].nodeValue, i) );		    
-		    }		
+	    	var activities = ["eat","dance","drink","cinema"]; 
+		    var domdata = obj.data;
+			for(var i=0; i<activities.length; i++){
+				var x=domdata.getElementsByTagName(activities[i])[0].getElementsByTagName("location");			        
+		        for (j=0;j<x.length;j++){	
+					insertNewChoice( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, j) );
+				}		    
+	    	}		
 		}
 		
 		// creates element with label and yes/no choice
@@ -50,12 +54,11 @@
 			 
 		}
 
-		//TODO: proper submit action, generate onload, not on click
+		//TODO: proper submit action
 	</script>
-
 	<form action="javascript:return;" id="voting_container">
 		<input id="voting_btn" type="button" value="Vote!" onclick="init()"/>
-	</div>
+	</form>
   ]]> 
   </Content>
 </Module>
