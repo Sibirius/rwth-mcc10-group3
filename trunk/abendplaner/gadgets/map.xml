@@ -12,19 +12,20 @@
 		  	google.load("maps", "2");
 		  	  
 		  	function loadMarkers(){
-				if (window.XMLHttpRequest) {
-				  	xhttp=new XMLHttpRequest();
-				} else { // Internet Explorer 
-				  	xhttp=new ActiveXObject("Microsoft.XMLHTTP");
-				}
-				xhttp.open("GET","locationdb.xml",false);
-				xhttp.send("");
-				xmlDoc=xhttp.responseXML; 
-				var x=xmlDoc.getElementsByTagName("location");
-				for (i=0;i<x.length;i++){				
-  					map.addOverlay(new GMarker(new GLatLng(x[i].getElementsByTagName("lat")[0].childNodes[0].nodeValue,
+				if (document.implementation && document.implementation.createDocument)
+				{
+				xmlDoc=document.implementation.createDocument("","",null);
+				xmlDoc.load("locationdb.xml");
+				xmlDoc.onload = function(){
+							        var x=xmlDoc.getElementsByTagName("location");
+							        for (i=0;i<x.length;i++){
+ 										map.addOverlay(new GMarker(new GLatLng(x[i].getElementsByTagName("lat")[0].childNodes[0].nodeValue,
   														   x[i].getElementsByTagName("lng")[0].childNodes[0].nodeValue), drinkIcon));
-  				}
+  									}
+							    }
+				} else {
+					alert('Error opening locationdb.xml');
+				}
 		  	}
 		  
 		    function init() {
