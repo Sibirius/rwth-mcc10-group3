@@ -11,6 +11,9 @@
 		<script type="text/javascript">
 		  	google.load("maps", "2");
 		  	
+		  	//initialise global vars
+		  	var map, movieIcon, foodIcon, drinkIcon, danceIcon;
+		  	
 		    function loadMarkers() {    
 		    	var params = {};  
 		        params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
@@ -22,19 +25,19 @@
 			    var domdata = obj.data;
 				var x=domdata.getElementsByTagName("location");
 		        for (i=0;i<x.length;i++){
-						alert(x[i].getElementsByTagName("lat")[0].childNodes[0].nodeValue + " " + x[i].getElementsByTagName("lng")[0].childNodes[0].nodeValue);
+					map.addOverlay(new GMarker(new GLatLng(x[i].getElementsByTagName("lat")[0].childNodes[0].nodeValue, x[i].getElementsByTagName("lng")[0].childNodes[0].nodeValue), drinkIcon));
 				}			    
 			}	    
 		  
-		    function init() {
+		    function initMap() {
 		  		if(GBrowserIsCompatible()){
 			  		//create Google Map centered on Aachen
-				    var map = new google.maps.Map2(document.getElementById("map"));
+				    map = new google.maps.Map2(document.getElementById("map"));
 				    map.setCenter(new GLatLng(50.77788,6.07826),13);
 					map.setUIToDefault();
 					
 					//Define MovieIcon				
-					var movieIcon = new GIcon();
+					movieIcon = new GIcon();
 					movieIcon.image = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/film-reel-icon.png";
 					movieIcon.shadow = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/film-reel-icon-shadow.png";
 					movieIcon.iconSize = new GSize(32, 32);
@@ -43,7 +46,7 @@
 					movieIcon.infoWindowAnchor = new GPoint(10, 1);
 	
 					//Define FoodIcon		
-					var foodIcon = new GIcon();
+					foodIcon = new GIcon();
 					foodIcon.image = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/hamburger-icon.png";
 					foodIcon.shadow = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/hamburger-icon-shadow.png";
 					foodIcon.iconSize = new GSize(32, 32);
@@ -52,7 +55,7 @@
 					foodIcon.infoWindowAnchor = new GPoint(10, 1);
 	 				
 					//Define DrinkIcon		  				
-	  				var drinkIcon = new GIcon();
+	  				drinkIcon = new GIcon();
 					drinkIcon.image = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/soft-drink-icon.png";
 					drinkIcon.shadow = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/soft-drink-icon-shadow.png";
 					drinkIcon.iconSize = new GSize(32, 32);
@@ -61,7 +64,7 @@
 					drinkIcon.infoWindowAnchor = new GPoint(10, 1);
 	
 					//Define danceIcon		
-					var danceIcon = new GIcon();
+					danceIcon = new GIcon();
 					danceIcon.image = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/vinyl-icon.png";
 					danceIcon.shadow = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/vinyl-icon-shadow.png";
 					danceIcon.iconSize = new GSize(32, 32);
@@ -79,13 +82,13 @@
 					map.addOverlay(foodMarker);
 					map.addOverlay(drinkMarker);
 					map.addOverlay(danceMarker);
-				
+					
 					loadMarkers();
 				}
 			}
 		</script>    
   		</head>
-  		<body onload="init()">
+  		<body onload="initMap()">
     	  <div id="map" style="width: 100%; height: 300px"></div>  
 		</body>
 		
