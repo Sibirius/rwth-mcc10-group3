@@ -10,23 +10,22 @@
 		<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAGAP5T4BS8Gn8z_KNdk4MuxQs3QBYDBscCkXn5XVh-PO2erUf9BRLbMyRF04Gc0cJo5xmV5wt1Y7oPQ"></script>
 		<script type="text/javascript">
 		  	google.load("maps", "2");
-		  	  
-		  	function loadMarkers(){
-				if (document.implementation && document.implementation.createDocument)
-				{
-				xmlDoc=document.implementation.createDocument("","",null);
-				xmlDoc.load("locationdb.xml");
-				xmlDoc.onload = function(){
-							        var x=xmlDoc.getElementsByTagName("location");
-							        for (i=0;i<x.length;i++){
- 										map.addOverlay(new GMarker(new GLatLng(x[i].getElementsByTagName("lat")[0].childNodes[0].nodeValue,
-  														   x[i].getElementsByTagName("lng")[0].childNodes[0].nodeValue), drinkIcon));
-  									}
-							    }
-				} else {
-					alert('Error opening locationdb.xml');
-				}
-		  	}
+		  	
+		    function loadMarkers() {    
+		    	var params = {};  
+		        params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
+		        var url = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/locationdb.xml";  
+		        gadgets.io.makeRequest(url, response, params);
+		    };
+		    
+		    function response(obj) { 
+			    var domdata = obj.data;
+				var x=domdata.getElementsByTagName("location");
+		        for (i=0;i<x.length;i++){
+						map.addOverlay(new GMarker(new GLatLng(x[i].getElementsByTagName("lat")[0].childNodes[0].nodeValue,
+											   x[i].getElementsByTagName("lng")[0].childNodes[0].nodeValue), drinkIcon));
+				}			    
+			}	    
 		  
 		    function init() {
 		  		if(GBrowserIsCompatible()){
