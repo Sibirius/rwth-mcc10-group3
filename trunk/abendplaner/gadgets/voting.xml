@@ -44,9 +44,12 @@
 					var x=domdata.getElementsByTagName(activities[i])[0].getElementsByTagName("location");			        
 			        for (j=0;j<x.length;j++){	
 						insertNewChoice( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, count) );
+						count++;
 					}		    
+				} else {
+					count += domdata.getElementsByTagName(active[i])[0].getElementsByTagName("location").length;				
 				}
-				count++;
+
 	    	}		
 		}
 		
@@ -83,7 +86,7 @@
 		}
 		
 		function vote(){
-			alert(document.getElementById("select0").options[document.getElementById("select0").selectedIndex].firstChild.nodeValue);
+			alert(document.getElementById("select5").options[document.getElementById("select5").selectedIndex].getAttribute("value");
 		}
 		
 	    function init() {
