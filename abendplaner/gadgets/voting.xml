@@ -39,7 +39,7 @@
 				}		
 			    var params = {};  
 			    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
-			    var url = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/locationdb.xml";  
+			    var url = "http://code.google.com/p/rwth-mcc10-group3/source/browse/svn/trunk/abendplaner/war/WEB-INF/locationdb.xml";  
 			    gadgets.io.makeRequest(url, response, params);
 		    }
 		}
@@ -94,7 +94,7 @@
 		// inserts before button after all the other choices
 		function insertNewChoice(choice) {
 			var vc = document.getElementById("voting_container");
-			var vb = document.getElementById("voting_btn");
+			var vb = document.getElementById("voting_separator");
 
 			vc.insertBefore(choice, vb); 
 			 
@@ -135,7 +135,8 @@
 	    gadgets.util.registerOnLoadHandler(init);	
 	</script>
 	<form action="javascript:return;" id="voting_container">
-		<input style="clear: left;" id="voting_btn" type="button" value="Save!" onclick="vote()"/>
+		<hr id="voting_separator" style="clear: left;" />
+		<input id="voting_btn" type="button" value="Save!" onclick="vote()"/>
 	</form>
   ]]> 
   </Content>
