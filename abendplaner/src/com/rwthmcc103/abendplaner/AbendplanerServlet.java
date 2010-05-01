@@ -110,7 +110,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 		if (!voteStarted) {
 			Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
 			voteStarted = true;
-			Gadget gadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/maps.xml");
+			Gadget gadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/map.xml");
 			gadget.setProperty("value", "9");
 			blip.at(4).insert(gadget);
 		} else {
