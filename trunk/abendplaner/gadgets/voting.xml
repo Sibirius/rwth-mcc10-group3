@@ -7,7 +7,7 @@
 </ModulePrefs>
 <Content type="html">
 <![CDATA[
-	<body onload="init()">	
+	<body>	
 	<script>
 		//initialise global vars	
 		var activities = ["","","",""]; //selected activities
@@ -39,7 +39,7 @@
 				if(activities[i]!=""){
 					var h = document.createElement("h3");
 					h.appendChild( document.createTextNode(activities[i]));
-					insertNewChoise(h);
+					insertNewChoice(h);
 					var x=domdata.getElementsByTagName(activities[i])[0].getElementsByTagName("location");			        
 			        for (j=0;j<x.length;j++){	
 						insertNewChoice( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, j) );
