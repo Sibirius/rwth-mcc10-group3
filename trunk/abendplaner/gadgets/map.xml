@@ -6,13 +6,35 @@
   </ModulePrefs>
   <Content type="html">
  	<![CDATA[ 	
- 		<body onload="initMap()">			
+ 		<body onload="init()">			
 		<script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAGAP5T4BS8Gn8z_KNdk4MuxQs3QBYDBscCkXn5XVh-PO2erUf9BRLbMyRF04Gc0cJo5xmV5wt1Y7oPQ"></script>
 		<script type="text/javascript">
 		  	google.load("maps", "2");
 		  	
 		  	//initialise global vars
 		  	var map, movieIcon, foodIcon, drinkIcon, danceIcon;
+		  	var activities = ["","","",""];		//selected activites
+		  	var active = ["eat","dance","drink","cinema"];
+		    var icons = [foodIcon, danceIcon, drinkIcon, movieIcon];
+		  	
+		  	function init(){
+		  		if (wave && wave.isInWaveContainer()) {
+		  			//selected activities respresented within one integer value
+		  			//like unix-file-permissons
+		  			//eat    <-> 2^3
+		  			//dance  <-> 2^2
+		  			//drink  <-> 2^1
+		  			//cinema <-> 2^0
+					var value = 13; //parseInt(wave.getState.get('value', '0'));
+					for(var i = 1; i < 5; i++){
+						if( Math.floor(value / Math.pow(2,4-i)) == 1 ){
+							activities[i-1] = active[i-1];
+						}
+						value = value % Math.pow(2,4-i);
+					}
+				}
+				initMap();
+		  	}
 		  	
 		  	//get Content by Tag
 		  	//makes the code a little shorter^^
@@ -37,14 +59,14 @@
 		    }	   
 		    		    
 		    function response(obj) {
-		    	var activities = ["eat","dance","drink","cinema"]; 
-		    	var icons = [foodIcon, danceIcon, drinkIcon, movieIcon];
 			    var domdata = obj.data;
 				for(var i=0; i<activities.length; i++){
-					var x=domdata.getElementsByTagName(activities[i])[0].getElementsByTagName("location");			        
-			        for (j=0;j<x.length;j++){			    
-						map.addOverlay(createMarker( new GLatLng(getCbT(x[j],"lat"), getCbT(x[j],"lng") ), icons[i], + activities[i]+"@"+getCbT(x[j],"name") ));
-					}	
+					if(activities[i] != ""){
+						var x=domdata.getElementsByTagName(activities[i])[0].getElementsByTagName("location");			        
+				        for (j=0;j<x.length;j++){			    
+							map.addOverlay(createMarker( new GLatLng(getCbT(x[j],"lat"), getCbT(x[j],"lng") ), icons[i], activities[i]+"@"+getCbT(x[j],"name") ));
+						}	
+					}
 				}		    
 			}	    
 		  
