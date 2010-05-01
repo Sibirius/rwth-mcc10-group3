@@ -23,7 +23,7 @@
 	  			//dance  <-> 2^2
 	  			//drink  <-> 2^1
 	  			//cinema <-> 2^0
-				var value = parseInt(wave.getState.get('value', '0'));
+				var value = parseInt(wave.getState().get('value', '0'));
 				for(var i = 1; i < 5; i++){
 					if( Math.floor(value / Math.pow(2,4-i)) == 1 ){
 						activities[i-1] = active[i-1];
