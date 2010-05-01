@@ -11,7 +11,9 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
   private boolean voteStarted = false;
   //activityorder: "eat","dance","drink","cinema"
   private boolean[] preferedActivities = new boolean[4];
-  private List<String> voters = new LinkedList<String>();
+  private List<String> voters = new LinkedList<String>(); 
+  private int[][] voteResults;
+  private String[] activities = new String[]{"eat","dance","drink","cinema"};
   
   @Override
   protected String getRobotName() {
@@ -57,7 +59,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 				  "bla I do this bla bla you have to do that bla \n" + // TODO
 				  "\n" +
 				  "Tell me your preferences with the following command:\n" +
-				  "prefer [essen|trinken|tanzen|kino]+\n" +
+				  "prefer (essen|trinken|tanzen|kino)+\n" +
 				  "Remember, commands are only processed from top level Blips\n";
 
     event.getWavelet().reply(talk);
@@ -116,14 +118,43 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	    for (Map.Entry<String, String> entry : gadget.getProperties().entrySet()) {
 	    	if(voters.contains(entry.getKey())){
 	    		String participant = entry.getKey();
-	    		String vote = entry.getValue();
+	    		String[] vote = entry.getValue().split("#");
+				if(voteResults == null){
+					voteResults = new int[4][vote[0].length()];
+				}	    		
+	    		for(int i = 0; i<4; i++){
+	    			for(int j = 0; j<vote[i].length(); j++){
+	    				voteResults[i][j] += Integer.parseInt(String.valueOf(vote[i].charAt(j)));
+	    			}
+	    		}
 	    		//		 		 eat # dance # drink # location
 	    		//vote example = 0000#1000#0010#0000
 	    		//one digit each location
 	    		//e.g.: yes to first dance example, no to 2nd-4th dance location
-	    		blip.appendMarkup(participant+ " has voted: " + vote + "\n" );
+	    		blip.appendMarkup("Thanks for your vote, " + participant + "\n" );
+	    		voters.remove(participant);
 	    	}
 	    } 
+		if(voters.isEmpty()){
+			//all votes collected
+			int maxLocationIndex = 0;
+			int maxActivityIndex = 0;
+			for(int i = 0; i<4; i++){
+				for(int j = 0; j < voteResults[i].length; j++){
+					if(voteResults[i][j] > voteResults[maxLocationIndex][maxActivityIndex]){
+						maxLocationIndex = i;
+						maxActivityIndex = j;
+					} else if(voteResults[i][j] == voteResults[maxLocationIndex][maxActivityIndex]){
+						if((int) (Math.random() + 0.5) == 1){
+							maxLocationIndex = i;
+							maxActivityIndex = j;							
+						}
+					}
+				}
+			}
+    		blip.appendMarkup("This evening you'll: " + activities[maxLocationIndex] + "@" + maxActivityIndex + "\n" );
+    		voteStarted = false;
+		}
 	}
 
   }
