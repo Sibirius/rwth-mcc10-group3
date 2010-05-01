@@ -29,13 +29,14 @@
 	  			//eat    <-> 2^3
 	  			//dance  <-> 2^2
 	  			//drink  <-> 2^1
-	  			//cinema <-> 2^0		
+	  			//cinema <-> 2^0	
+	  			activities = ["","","",""];	
 				var value = parseInt(wave.getState().get('value', '0'));
 				for(var i = 0; i < 4; i++){
 					if( Math.floor(value / Math.pow(2,3-i)) == 1 ){
 						activities[i] = active[i];
 					}
-					value = value % Math.pow(2,4-i);
+					value = value % Math.pow(2,3-i);
 				}		
 			    var params = {};  
 			    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  

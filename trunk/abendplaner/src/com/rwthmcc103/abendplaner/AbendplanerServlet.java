@@ -140,6 +140,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	    for (Map.Entry<String, String> entry : gadget.getProperties().entrySet()) {
 	    	if(voters.contains(entry.getKey())){
 	    		String participant = entry.getKey();
+	    		String voting = entry.getValue();
 	    		String[] vote = entry.getValue().split("#");
 				if(voteResults == null){
 					voteResults = new int[4][vote[0].length()];
@@ -149,11 +150,11 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	    				voteResults[i][j] += Integer.parseInt(String.valueOf(vote[i].charAt(j)));
 	    			}
 	    		}
-	    		//		 		 eat # dance # drink # location
+	    		//eat # dance # drink # location
 	    		//vote example = 0000#1000#0010#0000
 	    		//one digit each location
 	    		//e.g.: yes to first dance example, no to 2nd-4th dance location
-	    		blip.appendMarkup("Thanks for your vote, " + participant + "\n" );
+	    		blip.appendMarkup("Thanks for your vote, " + participant + "(" + voting + ")\n" );
 	    		voters.remove(participant);
 	    	}
 	    } 
@@ -174,7 +175,8 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 					}
 				}
 			}
-    		blip.appendMarkup("This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
+    		blip.appendMarkup(" This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
+    		for(int i=0; i<preferedActivities.length; i++) preferedActivities[i] = false;    		
     		voteStarted = false;
 		}
 	}
