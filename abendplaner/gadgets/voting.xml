@@ -38,14 +38,17 @@
 		    var count = 0;
 			for(var i=0; i<activities.length; i++){
 				if(activities[i]!=""){
-					var h = document.createElement("h3");
-					h.appendChild( document.createTextNode(activities[i]));
-					insertNewChoice(h);
+					var f = document.createElement("fieldset");
+					f.setAttribute("id",activities[i]);
+					var l = document.createElement("legend");
+					l.appendChild( document.createTextNode(activities[i]) );
+					f.appendChild(l);
 					var x=domdata.getElementsByTagName(activities[i])[0].getElementsByTagName("location");			        
 			        for (j=0;j<x.length;j++){	
-						insertNewChoice( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, count) );
+						f.appendChild( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, count) );
 						count++;
-					}		    
+					}
+					insertNewChoice(f);		    
 				} else {
 					count += domdata.getElementsByTagName(active[i])[0].getElementsByTagName("location").length;				
 				}
@@ -86,7 +89,19 @@
 		}
 		
 		function vote(){
-			alert(document.getElementById("select5").options[document.getElementById("select5").selectedIndex].getAttribute("value"));
+			for(i=0; i<4; i++){
+				if(activities[i]!=""){
+					var x = document.getElementById(activities[i]).getElementsByTagName("select");
+					var selection = "";
+					for(j=0;j<x.length;j++){
+						selection += x[j].options[x[j].selectedIndex].getAttribute("value");
+					}
+					alert(activities[i]+": "+selection);
+				}
+			}
+			var p = document.createElement("p");
+			p.appendChild( document.createTextNode("Vote saved!");
+			insertNewChoice(p);
 		}
 		
 	    function init() {
