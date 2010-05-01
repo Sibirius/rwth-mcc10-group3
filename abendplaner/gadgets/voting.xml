@@ -86,7 +86,7 @@
 		}
 		
 		function vote(){
-			alert(document.getElementById("select5").options[document.getElementById("select5").selectedIndex].getAttribute("value");
+			alert(document.getElementById("select5").options[document.getElementById("select5").selectedIndex].getAttribute("value"));
 		}
 		
 	    function init() {
