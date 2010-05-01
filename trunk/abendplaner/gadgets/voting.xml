@@ -12,25 +12,28 @@
 		//initialise global vars	
 		var activities = ["","","",""]; //selected activities
 		var active = ["eat","dance","drink","cinema"];
+		var voted = false;
 		  			
 		function stateUpdated() {
-  			//selected activities represented within one integer value
-  			//like unix-file-permissions
-  			//eat    <-> 2^3
-  			//dance  <-> 2^2
-  			//drink  <-> 2^1
-  			//cinema <-> 2^0		
-			var value = parseInt(wave.getState().get('value', '0'));
-			for(var i = 0; i < 4; i++){
-				if( Math.floor(value / Math.pow(2,3-i)) == 1 ){
-					activities[i] = active[i];
-				}
-				value = value % Math.pow(2,4-i);
-			}		
-		    var params = {};  
-		    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
-		    var url = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/locationdb.xml";  
-		    gadgets.io.makeRequest(url, response, params);
+			if(!voted){
+	  			//selected activities represented within one integer value
+	  			//like unix-file-permissions
+	  			//eat    <-> 2^3
+	  			//dance  <-> 2^2
+	  			//drink  <-> 2^1
+	  			//cinema <-> 2^0		
+				var value = parseInt(wave.getState().get('value', '0'));
+				for(var i = 0; i < 4; i++){
+					if( Math.floor(value / Math.pow(2,3-i)) == 1 ){
+						activities[i] = active[i];
+					}
+					value = value % Math.pow(2,4-i);
+				}		
+			    var params = {};  
+			    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
+			    var url = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/locationdb.xml";  
+			    gadgets.io.makeRequest(url, response, params);
+		    }
 		}
 		
 		function response(obj){
@@ -105,6 +108,7 @@
 			}
 			delta = {};
 		    delta[viewerId] = selection;
+		    voted = true;
 		    state.submitDelta(delta);			
 			document.getElementById("voting_btn").disabled = true;
 			var p = document.createElement("p");
