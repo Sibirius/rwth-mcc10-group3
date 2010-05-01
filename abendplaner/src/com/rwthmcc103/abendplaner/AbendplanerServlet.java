@@ -5,6 +5,7 @@ import com.google.wave.api.event.*;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName () function
   private boolean voteStarted = false;
@@ -89,16 +90,6 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	}
   }
   
-  /** tests if string contains at least one fragment from the array */
-  private boolean containsOne(String wo, String[] array) {
-	  for (int i = 0; i < array.length; i++) {
-		if (wo.contains(array[i])) {			
-			return true;
-		}
-	  }	  
-	  return false;
-  }
-  
 	//selected activities represented within one integer value
 	//like unix-file-permissions
 	//eat    <-> 2^3
@@ -111,6 +102,30 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 		  if(prefAct[i]) result += Math.pow(2,3-i);
 	  }
 	  return result;
+  }
+  
+  @Override
+  public void onGadgetStateChanged(GadgetStateChangedEvent event) {
+	if(voteStarted){
+	    Blip blip = event.getBlip();      
+	    Gadget gadget = Gadget.class.cast(blip.at(event.getIndex()).value());
+	    if (!gadget.getUrl().startsWith("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/voting.xml")) {
+	      return;
+	    }
+	
+	    for (Map.Entry<String, String> entry : gadget.getProperties().entrySet()) {
+	    	if(voters.contains(entry.getKey())){
+	    		String participant = entry.getKey();
+	    		String vote = entry.getValue();
+	    		//		 		 eat # dance # drink # location
+	    		//vote example = 0000#1000#0010#0000
+	    		//one digit each location
+	    		//e.g.: yes to first dance example, no to 2nd-4th dance location
+	    		blip.appendMarkup(participant+ " has voted: " + vote + "\n" );
+	    	}
+	    } 
+	}
+
   }
   
   /** reacts to new submitted messages, interprets commands */
@@ -148,6 +163,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 			}
 			if(voters.isEmpty()){
 				voteStarted = true;
+				voters = getImportantPeople(event.getWavelet());
 				Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
 				Gadget mapsGadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/map.xml");
 				mapsGadget.setProperty("value", ""+calcActivityValue(preferedActivities));
