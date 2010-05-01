@@ -89,6 +89,7 @@
 		}
 		
 		function vote(){
+			var viewerId = wave.getViewer().getId();		
 			var state = wave.getState();
 			var selection = "";
 			for(i=0; i<4; i++){
@@ -102,7 +103,9 @@
 				}
 				if(i!=3) selection += "#";
 			}
-			alert(selection);
+			delta = {};
+		    delta[viewerId] = selection;
+		    state.submitDelta(delta);			
 			document.getElementById("voting_btn").disabled = true;
 			var p = document.createElement("p");
 			p.appendChild( document.createTextNode("Vote saved!") );
