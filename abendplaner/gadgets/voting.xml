@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
 <ModulePrefs title="Abendplaner Voting"
-			 height="120"
+			 height="300"
 			 scrolling="true">
   <Require feature="wave" /> 
 </ModulePrefs>
@@ -35,6 +35,7 @@
 		
 		function response(obj){
 		    var domdata = obj.data;
+		    var count = 0;
 			for(var i=0; i<activities.length; i++){
 				if(activities[i]!=""){
 					var h = document.createElement("h3");
@@ -42,9 +43,10 @@
 					insertNewChoice(h);
 					var x=domdata.getElementsByTagName(activities[i])[0].getElementsByTagName("location");			        
 			        for (j=0;j<x.length;j++){	
-						insertNewChoice( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, j) );
+						insertNewChoice( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, count) );
 					}		    
 				}
+				count++;
 	    	}		
 		}
 		
@@ -53,11 +55,14 @@
 			var p = document.createElement("p");
 		
 			var select = document.createElement("select");
+			select.setAttribute("id","select"+number);
 	
 			var ja = document.createElement("option");
 			ja.appendChild(document.createTextNode("yes"));
+			ja.setAttribute("value","1");
 			var nein = document.createElement("option");
 			nein.appendChild(document.createTextNode("nein"));
+			nein.setAttribute("value","0");
 
 			select.appendChild(ja);
 			select.appendChild(nein);			
@@ -77,6 +82,10 @@
 			 
 		}
 		
+		function vote(){
+			alert(document.getElementById("select0").options[document.getElementById("select0").selectedIndex].firstChild.nodeValue;
+		}
+		
 	    function init() {
 	      if (wave && wave.isInWaveContainer()) {
 	        wave.setStateCallback(stateUpdated);
@@ -86,7 +95,7 @@
 	    gadgets.util.registerOnLoadHandler(init);	
 	</script>
 	<form action="javascript:return;" id="voting_container">
-		<input id="voting_btn" type="button" value="Vote!" onclick="init()"/>
+		<input id="voting_btn" type="button" value="Save!" onclick="vote()"/>
 	</form>
   ]]> 
   </Content>
