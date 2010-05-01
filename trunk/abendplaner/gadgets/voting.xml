@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
-<ModulePrefs title="Abendplaner Voting" height="120">
+<ModulePrefs title="Abendplaner Voting"
+			 height="120"
+			 scrolling="true">
   <Require feature="wave" /> 
 </ModulePrefs>
 <Content type="html">
 <![CDATA[
 	<body onload="init()">	
 	<script>
-		function init() {
+		//initialise global vars	
+		var activities = ["","","",""]; //selected activities
+		var active = ["eat","dance","drink","cinema"];
+		  			
+		function stateUpdated() {
+  			//selected activities represented within one integer value
+  			//like unix-file-permissions
+  			//eat    <-> 2^3
+  			//dance  <-> 2^2
+  			//drink  <-> 2^1
+  			//cinema <-> 2^0		
+			var value = parseInt(wave.getState().get('value', '0'));
+			for(var i = 0; i < 4; i++){
+				if( Math.floor(value / Math.pow(2,3-i)) == 1 ){
+					activities[i] = active[i];
+				}
+				value = value % Math.pow(2,4-i);
+			}		
 		    var params = {};  
 		    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
 		    var url = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/locationdb.xml";  
@@ -15,13 +34,17 @@
 		}
 		
 		function response(obj){
-	    	var activities = ["eat","dance","drink","cinema"]; 
 		    var domdata = obj.data;
 			for(var i=0; i<activities.length; i++){
-				var x=domdata.getElementsByTagName(activities[i])[0].getElementsByTagName("location");			        
-		        for (j=0;j<x.length;j++){	
-					insertNewChoice( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, j) );
-				}		    
+				if(activities[i]!=""){
+					var h = document.createElement("h3");
+					h.appendChild( document.createTextNode(activities[i]));
+					insertNewChoise(h);
+					var x=domdata.getElementsByTagName(activities[i])[0].getElementsByTagName("location");			        
+			        for (j=0;j<x.length;j++){	
+						insertNewChoice( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, j) );
+					}		    
+				}
 	    	}		
 		}
 		
@@ -53,8 +76,14 @@
 			vc.insertBefore(choice, vb); 
 			 
 		}
-
-		//TODO: proper submit action
+		
+	    function init() {
+	      if (wave && wave.isInWaveContainer()) {
+	        wave.setStateCallback(stateUpdated);
+	      }
+	    }
+	    
+	    gadgets.util.registerOnLoadHandler(init);	
 	</script>
 	<form action="javascript:return;" id="voting_container">
 		<input id="voting_btn" type="button" value="Vote!" onclick="init()"/>

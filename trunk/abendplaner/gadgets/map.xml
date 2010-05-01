@@ -17,8 +17,8 @@
 		  	var active = ["eat","dance","drink","cinema"];  	
 		  	
 		  	function stateUpdated(){
-	  			//selected activities respresented within one integer value
-	  			//like unix-file-permissons
+	  			//selected activities represented within one integer value
+	  			//like unix-file-permissions
 	  			//eat    <-> 2^3
 	  			//dance  <-> 2^2
 	  			//drink  <-> 2^1
@@ -72,7 +72,7 @@
 		  		if(GBrowserIsCompatible()){
 			  		//create Google Map centered on Aachen
 				    map = new google.maps.Map2(document.getElementById("map"));
-				    map.setCenter(new GLatLng(50.77788,6.07826),14);
+				    map.setCenter(new GLatLng(50.77544155265054,6.083507537841797),14);
 					map.setUIToDefault();
 					
 					//Define MovieIcon				
