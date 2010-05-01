@@ -3,6 +3,7 @@
 <ModulePrefs title="Abendplaner Voting"
 			 height="300">
   <Require feature="wave" /> 
+  <Require feature="dynamic-height"/>  
 </ModulePrefs>
 <Content type="html">
 <![CDATA[
@@ -63,7 +64,8 @@
 					count += domdata.getElementsByTagName(active[i])[0].getElementsByTagName("location").length;				
 				}
 
-	    	}		
+	    	}
+			gadgets.window.adjustHeight();	    			
 		}
 		
 		// creates element with label and yes/no choice
@@ -121,6 +123,7 @@
 			var p = document.createElement("p");
 			p.appendChild( document.createTextNode("Vote saved!") );
 			insertNewChoice(p);
+			gadgets.window.adjustHeight();			
 		}
 		
 	    function init() {
@@ -132,7 +135,7 @@
 	    gadgets.util.registerOnLoadHandler(init);	
 	</script>
 	<form action="javascript:return;" id="voting_container">
-		<input id="voting_btn" type="button" value="Save!" onclick="vote()"/>
+		<input style="clear: left;" id="voting_btn" type="button" value="Save!" onclick="vote()"/>
 	</form>
   ]]> 
   </Content>
