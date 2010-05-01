@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
 <ModulePrefs title="Abendplaner Voting"
-			 height="300"
-			 scrolling="true">
+			 height="400"
   <Require feature="wave" /> 
 </ModulePrefs>
 <Content type="html">
 <![CDATA[
+	<head>
+	<style>
+	fieldset {
+		width: 200px;
+		float: left;
+	}
+	</style>
+	</head>
 	<body>	
 	<script>
 		//initialise global vars	
