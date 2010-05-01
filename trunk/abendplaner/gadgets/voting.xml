@@ -89,16 +89,21 @@
 		}
 		
 		function vote(){
+			var state = wave.getState();
+			var selection = "";
 			for(i=0; i<4; i++){
 				if(activities[i]!=""){
 					var x = document.getElementById(activities[i]).getElementsByTagName("select");
-					var selection = "";
 					for(j=0;j<x.length;j++){
 						selection += x[j].options[x[j].selectedIndex].getAttribute("value");
 					}
-					alert(activities[i]+": "+selection);
+				} else {
+					selection += "0000";
 				}
+				if(i!=3) selection += "#";
 			}
+			alert(selection);
+			document.getElementById("voting_btn").disabled = true;
 			var p = document.createElement("p");
 			p.appendChild( document.createTextNode("Vote saved!") );
 			insertNewChoice(p);
