@@ -15,7 +15,6 @@
 		  	var map, movieIcon, foodIcon, drinkIcon, danceIcon;
 		  	var activities = ["","","",""];		//selected activites
 		  	var active = ["eat","dance","drink","cinema"];
-		    var icons = [foodIcon, danceIcon, drinkIcon, movieIcon];
 		  	
 		  	function init(){
 		  		if (wave && wave.isInWaveContainer()) {
@@ -59,6 +58,7 @@
 		    }	   
 		    		    
 		    function response(obj) {
+		    	var icons = [foodIcon, danceIcon, drinkIcon, movieIcon];		    
 			    var domdata = obj.data;
 				for(var i=0; i<activities.length; i++){
 					if(activities[i] != ""){
