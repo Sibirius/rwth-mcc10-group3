@@ -8,7 +8,9 @@ import java.util.LinkedList;
 
 public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName () function
   private boolean voteStarted = false;
+  //activityorder: "eat","dance","drink","cinema"
   private boolean[] preferedActivities = new boolean[4];
+  private List<String> voters = new LinkedList<String>();
   
   @Override
   protected String getRobotName() {
@@ -45,18 +47,19 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	
 	for (String newParticipant: getImportantPeople(event.getWavelet())) {
 		peopleAlreadyHere += newParticipant + ", ";
+		voters.add(newParticipant);
 	}
-		
 	  
 	String talk = "\nGreetings, " + peopleAlreadyHere + " welcome!\n" +
 			      "They call me \"" + this.getRobotName() + "\", at your service. \n" +
 				  "\n" +				  
 				  "bla I do this bla bla you have to do that bla \n" + // TODO
 				  "\n" +
-				  "Tell me as soon as you are complete, a simple \"Abendplaner, we are complete\" or \"Abendplaner go\" will suffice." +
+				  "Tell me your preferences with the following command:\n" +
+				  "prefer [essen|trinken|tanzen|kino]+\n" +
 				  "Remember, commands are only processed from top level Blips\n";
 
-    Blip blip = event.getWavelet().reply(talk);
+    event.getWavelet().reply(talk);
   }
 
   /** greets new participants */
@@ -68,6 +71,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	for (String newParticipant: event.getParticipantsAdded()) {
 	  if (!newParticipant.contentEquals(event.getWavelet().getRobotAddress())) { // to stop it from greeting itself	
 	    talk += newParticipant + ", ";
+	    voters.add(newParticipant);
 	    peopleCount++;
 	  }
 	}
@@ -81,7 +85,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	}	
 	
 	if (peopleCount > 0) {
-	  Blip blip = event.getWavelet().reply(talk);
+	  event.getWavelet().reply(talk);
 	}
   }
   
@@ -95,48 +99,71 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  return false;
   }
   
+	//selected activities respresented within one integer value
+	//like unix-file-permissons
+	//eat    <-> 2^3
+	//dance  <-> 2^2
+	//drink  <-> 2^1
+	//cinema <-> 2^0
+  private int calcActivityValue(boolean[] prefAct){
+	  int result = 0;
+	  for(int i = 0; i<4; i++){
+		  if(prefAct[i]) result += Math.pow(2,3-i);
+	  }
+	  return result;
+  }
+  
   /** reacts to new submitted messages, interprets commands */
   @Override
   public void onBlipSubmitted(BlipSubmittedEvent event) {
 	//TODO: only proceed if blip is not a reply? So it will only react to stuff said not as a direct comment to something. 
+	//activityorder: "eat","dance","drink","cinema"
 	  
-	// command string arrays
-	String[] start = {"Abendplaner, we are complete", "Abendplaner go"}; 
-	String content = event.getBlip().getContent();
-	
-	
-	// start voting
-	if (containsOne(content, start)) {
-		if (!voteStarted) {
-			Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
-			voteStarted = true;
-			Gadget gadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/map.xml");
-			gadget.setProperty("value", "9");
-			blip.at(4).insert(gadget);
-		} else {
-			Blip blip = event.getWavelet().reply("\nAlready at it, pay attention please.");
-		}
-	}
-	
-	
-	// tell preference
-	if ( content.contains("prefer")){
-		if(!voteStarted){
-			if(content.toLowerCase().contains("essen"))
+	if(!voteStarted && !voters.isEmpty()){
+		if(voters.contains(event.getBlip().getCreator())){
+			String content = event.getBlip().getContent();
+			String talk = "\n";
+			boolean success = false;
+			if( content.matches("^\\nprefer [\\w ]*essen[\\w ]*$") ){
 				preferedActivities[0] = true;
-			else if(content.toLowerCase().contains("trinken"))
+				success = true;
+			}
+			if( content.matches("^\\nprefer [\\w ]*tanzen[\\w ]*$") ){
 				preferedActivities[1] = true;
-			else if(content.toLowerCase().contains("tanzen"))
+				success = true;
+			}
+			if( content.matches("^\\nprefer [\\w ]*trinken[\\w ]*$") ){
 				preferedActivities[2] = true;
-			else if(content.toLowerCase().contains("kino"))
+				success = true;
+			}
+			if( content.matches("^\\nprefer [\\w ]*kino[\\w ]*$") ){
 				preferedActivities[3] = true;
-			else 
-				event.getWavelet().reply("\nUnknown Activity");
-		} else {
-			event.getWavelet().reply("\nVoting already started");
+				success = true;
+			}			
+			if(success){
+				voters.remove(event.getBlip().getCreator());
+			} else {
+				if (content.matches("^\\nprefer [\\w ]*$"))
+					talk += "Didn't understand your preference, " + event.getBlip().getCreator() + "!\n\n";
+			}
+			if(voters.isEmpty()){
+				voteStarted = true;
+				Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
+				voteStarted = true;
+				Gadget gadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/map.xml");
+				gadget.setProperty("value", ""+calcActivityValue(preferedActivities));
+				blip.append(gadget);				
+			} else {
+				talk += "Waiting for the Preferences of:\n";
+				for(String voter: voters){
+					talk += voter + "\n";
+				}
+				event.getWavelet().reply(talk);				
+			}
+				
 		}
-	}
-	
+		
+	} 
 	
   }
 }
