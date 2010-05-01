@@ -83,7 +83,7 @@
 		}
 		
 		function vote(){
-			alert(document.getElementById("select0").options[document.getElementById("select0").selectedIndex].firstChild.nodeValue;
+			alert(document.getElementById("select0").options[document.getElementById("select0").selectedIndex].firstChild.nodeValue);
 		}
 		
 	    function init() {
