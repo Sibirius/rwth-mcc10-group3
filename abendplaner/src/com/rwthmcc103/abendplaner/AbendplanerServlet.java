@@ -175,7 +175,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 					}
 				}
 			}
-    		blip.appendMarkup(" This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
+    		blip.appendMarkup("<br />This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
     		for(int i=0; i<preferedActivities.length; i++) preferedActivities[i] = false;    		
     		voteStarted = false;
 		}
