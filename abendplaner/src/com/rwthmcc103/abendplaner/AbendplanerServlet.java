@@ -99,8 +99,8 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  return false;
   }
   
-	//selected activities respresented within one integer value
-	//like unix-file-permissons
+	//selected activities represented within one integer value
+	//like unix-file-permissions
 	//eat    <-> 2^3
 	//dance  <-> 2^2
 	//drink  <-> 2^1
@@ -143,16 +143,18 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 			if(success){
 				voters.remove(event.getBlip().getCreator());
 			} else {
-				if (content.matches("^\\nprefer [\\w ]*$"))
+				if (content.matches("^\\nprefer[\\w ]*$"))
 					talk += "Didn't understand your preference, " + event.getBlip().getCreator() + "!\n\n";
 			}
 			if(voters.isEmpty()){
 				voteStarted = true;
 				Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
-				voteStarted = true;
-				Gadget gadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/map.xml");
-				gadget.setProperty("value", ""+calcActivityValue(preferedActivities));
-				blip.append(gadget);				
+				Gadget mapsGadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/map.xml");
+				mapsGadget.setProperty("value", ""+calcActivityValue(preferedActivities));
+				blip.append(mapsGadget);	
+				Gadget voteGadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/voting.xml");
+				voteGadget.setProperty("value", ""+calcActivityValue(preferedActivities));
+				blip.append(voteGadget);					
 			} else {
 				talk += "Waiting for the Preferences of:\n";
 				for(String voter: voters){
