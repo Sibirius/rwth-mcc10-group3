@@ -9,7 +9,7 @@ import java.util.LinkedList;
 public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName () function
   private boolean voteStarted = false;
   private boolean[] preferedActivities = new boolean[4];
-
+  
   @Override
   protected String getRobotName() {
     return "Abendplaner";
@@ -110,7 +110,8 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 		if (!voteStarted) {
 			Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
 			voteStarted = true;
-			Gadget gadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/voting.xml");
+			Gadget gadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/maps.xml");
+			gadget.setProperty("value", "9");
 			blip.at(4).insert(gadget);
 		} else {
 			Blip blip = event.getWavelet().reply("\nAlready at it, pay attention please.");
