@@ -6,6 +6,13 @@ import com.google.wave.api.event.*;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import java.io.File; 
+import javax.xml.parsers.*; 
+
+import org.w3c.dom.*; 
+import org.w3c.dom.Element;
 
 public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName () function
   private boolean voteStarted = false;
@@ -106,6 +113,21 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  return result;
   }
   
+  public String getLocationName(int activityIndex, int locationIndex) {
+	    try {
+		  	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
+		    DocumentBuilder builder = factory.newDocumentBuilder(); 
+		    Document document = builder.parse( new File("WEB-INF/locationdb.xml") ); 
+		    org.w3c.dom.Element e = (org.w3c.dom.Element) (document.getElementsByTagName(activities[activityIndex]).item(0));
+		    org.w3c.dom.Element f = (org.w3c.dom.Element) (e.getElementsByTagName("location").item(locationIndex));
+	    	return f.getElementsByTagName("name").item(0).getTextContent();
+	    }
+	    catch(Exception e){
+	    	e.printStackTrace();	    	
+	    }
+    	return "";	  	  
+  }
+  
   @Override
   public void onGadgetStateChanged(GadgetStateChangedEvent event) {
 	if(voteStarted){
@@ -152,7 +174,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 					}
 				}
 			}
-    		blip.appendMarkup("This evening you'll: " + activities[maxLocationIndex] + "@" + maxActivityIndex + "\n" );
+    		blip.appendMarkup("This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
     		voteStarted = false;
 		}
 	}
