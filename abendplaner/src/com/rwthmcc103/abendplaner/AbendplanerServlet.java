@@ -86,7 +86,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  }
 	}
 	
-	//TODO: 
+	//TODO: what happens when a participant leaves the wave?
 	
 	talk += " welcome. You are ";
 	
