@@ -40,13 +40,7 @@
 		  		return obj.getElementsByTagName(tag)[0].childNodes[0].nodeValue;
 		  	}
 		  	
-		    function loadMarkers() {    
-		    	var params = {};  
-		        params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
-		        var url = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/locationdb.xml";  
-		        gadgets.io.makeRequest(url, response, params);
-		    };
-		    		   
+		  	//create an new marker
 		    function createMarker(point, icon, text){
 			    var marker = new GMarker(point, icon);
 			    GEvent.addListener(marker, "click", function() {
@@ -54,7 +48,15 @@
 			    	map.openInfoWindowHtml(point, htmlText);
 			    });
 			    return marker;		    	
-		    }	   
+		    }		  	
+		  	
+		  	//load markers related to preferred activities
+		    function loadMarkers() {    
+		    	var params = {};  
+		        params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
+		        var url = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/locationdb.xml";  
+		        gadgets.io.makeRequest(url, response, params);
+		    };
 		    		    
 		    function response(obj) {
 		    	var icons = [foodIcon, danceIcon, drinkIcon, movieIcon];		    
@@ -69,6 +71,7 @@
 				}		    
 			}	    
 		  
+		    //initialise map and activity icons
 		    function initMap() {
 		  		if(GBrowserIsCompatible()){
 			  		//create Google Map centered on Aachen

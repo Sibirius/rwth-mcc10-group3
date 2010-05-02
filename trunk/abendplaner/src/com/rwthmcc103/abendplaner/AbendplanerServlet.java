@@ -36,7 +36,11 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
     return "http://code.google.com/apis/wave/extensions/robots/java-tutorial.html";
   }
 
-  /* get list of people, not including robots */
+  /**
+   * get list of people, not including robots
+   * @param wavelet current wave
+   * @return list of participant without robots
+   */
   private List<String> getImportantPeople(Wavelet wavelet) {
 	  List<String> output = new LinkedList<String>();
 	  
@@ -49,17 +53,21 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  return output;
   }  
   
-  /** introduces user and describes procedure */
+  /**
+   *  introduces user and describes procedure 
+   */
   @Override
   public void onWaveletSelfAdded(WaveletSelfAddedEvent event) {
 	String peopleAlreadyHere = "";		
 	voteStarted = false;
 	
+	//loop through participant and add them to voters list
 	for (String newParticipant: getImportantPeople(event.getWavelet())) {
 		peopleAlreadyHere += newParticipant + ", ";
 		if(!voteStarted && !voters.contains(newParticipant)) voters.add(newParticipant);
 	}
 	  
+	//welcome message
 	String talk = "\nGreetings, " + peopleAlreadyHere + " welcome!\n" +
 			      "They call me \"" + this.getRobotName() + "\", at your service. \n" +
 				  "\n" +				  
@@ -75,12 +83,15 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
     event.getWavelet().reply(talk);
   }
 
-  /** greets new participants */
+  /**
+   *  greets new participants
+   */
   @Override
   public void onWaveletParticipantsChanged(WaveletParticipantsChangedEvent event) {
     String talk = "\n";
     int peopleCount = 0;
-		
+	
+    //check for new participant and add them to voters list
 	for (String newParticipant: event.getParticipantsAdded()) {
 	  if (!newParticipant.contentEquals(event.getWavelet().getRobotAddress())) { // to stop it from greeting itself	
 	    talk += newParticipant + ", ";
@@ -89,6 +100,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  }
 	}
 	
+	//check if participants have left the wave and remove them from voters list
 	boolean removed = false;
 	for (String oldParticipant: event.getParticipantsRemoved()) {
 	  if (!oldParticipant.contentEquals(event.getWavelet().getRobotAddress())) { // to stop it from greeting itself	
@@ -100,16 +112,18 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  }
 	}
 	
+	//if a participant left the wave, check if voting can now start/be evaluated
 	if(removed && voters.isEmpty() && !getImportantPeople(event.getWavelet()).isEmpty()){
 		if(!voteStarted){
-			startVoting(event);
+			startVoting(event.getWavelet());
 		} else {
-			evalVoting(event);
+			evalVoting(event.getWavelet());
 		}
 	}
 	
 	talk += "welcome. You are ";
 	
+	//say hello to new participants
 	if (voteStarted) {
 	  talk += "too late, the voting has already started.";
 	} else {
@@ -121,13 +135,13 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	}
   }
   
-	//selected activities represented within one integer value
-	//like unix-file-permissions
-	//eat    <-> 2^3
-	//dance  <-> 2^2
-	//drink  <-> 2^1
-	//cinema <-> 2^0
+  /**
+   * calculate the value transmitted to map/voting gadget
+   * @param prefAct preferred activities
+   * @return integer value representing selected activities 
+   */
   private int calcActivityValue(boolean[] prefAct){
+	  //eat <-> 2^3, dance <-> 2^2, drink <-> 2^1, cinema <-> 2^0
 	  int result = 0;
 	  for(int i = 0; i<4; i++){
 		  if(prefAct[i]) result += Math.pow(2,3-i);
@@ -135,8 +149,14 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  return result;
   }
   
-  public String getLocationName(int activityIndex, int locationIndex) {
+  /**
+   * get the name of the selected location
+   * @param activityIndex integer value representing the activity
+   * @param locationIndex integer value representing the location  
+   */
+  private String getLocationName(int activityIndex, int locationIndex) {
 	    try {
+	    	//parse locationdb.xml
 		  	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
 		    DocumentBuilder builder = factory.newDocumentBuilder(); 
 		    Document document = builder.parse( new File("WEB-INF/locationdb.xml") ); 
@@ -150,7 +170,11 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
     	return "";	  	  
   }
   
-  private void evalVoting(Event event){
+  /**
+   * evaluate participants' votes
+   * @param wavelet current wave  
+   */
+  private void evalVoting(Wavelet wavelet){
 	if(voters.isEmpty()){
 		//all votes collected
 		int maxLocationIndex = 0;
@@ -168,24 +192,28 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 				}
 			}
 		}
-		event.getWavelet().reply("\nFinal result: This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
+		wavelet.reply("\nFinal result: This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
 		for(int i=0; i<preferedActivities.length; i++) preferedActivities[i] = false;    		
 	}	  
   }
   
+  /**
+   * collect votes
+   */
   @Override
   public void onGadgetStateChanged(GadgetStateChangedEvent event) {
 	if(voteStarted){
-	    Blip blip = event.getBlip();      
+	    //check if voting-gadgets state has changed
+		Blip blip = event.getBlip();      
 	    Gadget gadget = Gadget.class.cast(blip.at(event.getIndex()).value());
 	    if (!gadget.getUrl().startsWith("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/voting.xml")) {
 	      return;
 	    }
-	
+	    
+	    //loop throw gadget properties looking for votes
 	    for (Map.Entry<String, String> entry : gadget.getProperties().entrySet()) {
 	    	if(voters.contains(entry.getKey())){
 	    		String participant = entry.getKey();
-	    		String voting = entry.getValue();
 	    		String[] vote = entry.getValue().split("#");
 				if(voteResults == null){
 					voteResults = new int[4][vote[0].length()];
@@ -195,7 +223,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	    				voteResults[i][j] += Integer.parseInt(String.valueOf(vote[i].charAt(j)));
 	    			}
 	    		}
-	    		//eat # dance # drink # location
+	    		//               eat # dance # drink # location
 	    		//vote example = 0000#1000#0010#0000
 	    		//one digit each location
 	    		//e.g.: yes to first dance example, no to 2nd-4th dance location
@@ -203,15 +231,18 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	    		voters.remove(participant);
 	    	}
 	    } 
-	    evalVoting(event);
+	    evalVoting(event.getWavelet());
 	}
 
   }
-  
-  private void startVoting(Event event){
+  /**
+   * starts the voting ans appends map and voting gadget to wave
+   * @param wavelet current wave
+   */
+  private void startVoting(Wavelet wavelet){
 	voteStarted = true;
-	voters = getImportantPeople(event.getWavelet());
-	Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
+	voters = getImportantPeople(wavelet);
+	Blip blip = wavelet.reply("\nLET'S DO IT YEAHHH!");
 	Gadget mapsGadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/map.xml");
 	mapsGadget.setProperty("value", ""+calcActivityValue(preferedActivities));
 	blip.append(mapsGadget);	
@@ -220,7 +251,9 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	blip.append(voteGadget);	  
   }
   
-  /** reacts to new submitted messages, interprets commands */
+  /**
+   * reacts to new submitted messages, interprets commands
+   */
   @Override
   public void onBlipSubmitted(BlipSubmittedEvent event) {
 	//TODO: only proceed if blip is not a reply? So it will only react to stuff said not as a direct comment to something. 
@@ -228,6 +261,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  
 	if(!voteStarted && !voters.isEmpty()){
 		if(voters.contains(event.getBlip().getCreator())){
+			//search for "prefer [..]"-command
 			String content = event.getBlip().getContent();
 			String talk = "\n";
 			boolean success = false;
@@ -248,13 +282,15 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 				success = true;
 			}			
 			if(success){
+				//removes participant from voters list, if his preferences have been collected
 				voters.remove(event.getBlip().getCreator());
 			} else {
 				if (content.matches("^\\nprefer[\\w ]*$"))
 					talk += "Didn't understand your preference, " + event.getBlip().getCreator() + "!\n\n";
 			}
 			if(voters.isEmpty()){
-				startVoting(event);
+				//starts voting if all preferences were collected
+				startVoting(event.getWavelet());
 			} else {
 				talk += "Waiting for the Preferences of:\n";
 				for(String voter: voters){
