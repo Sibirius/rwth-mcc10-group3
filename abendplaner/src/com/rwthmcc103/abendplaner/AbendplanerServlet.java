@@ -57,7 +57,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	
 	for (String newParticipant: getImportantPeople(event.getWavelet())) {
 		peopleAlreadyHere += newParticipant + ", ";
-		voters.add(newParticipant);
+		if(!voteStarted && !voters.contains(newParticipant)) voters.add(newParticipant);
 	}
 	  
 	String talk = "\nGreetings, " + peopleAlreadyHere + " welcome!\n" +
@@ -81,17 +81,19 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	for (String newParticipant: event.getParticipantsAdded()) {
 	  if (!newParticipant.contentEquals(event.getWavelet().getRobotAddress())) { // to stop it from greeting itself	
 	    talk += newParticipant + ", ";
-	    voters.add(newParticipant);
+	    if(!voteStarted && !voters.contains(newParticipant)) voters.add(newParticipant);
 	    peopleCount++;
 	  }
 	}
 	
+	//TODO: 
+	
 	talk += " welcome. You are ";
 	
 	if (voteStarted) {
-	  talk += " too late, the voting has already started.";
+	  talk += "too late, the voting has already started.";
 	} else {
-	  talk += " just in time, stay and vote if you like.";
+	  talk += "just in time, stay and vote if you like.";
 	}	
 	
 	if (peopleCount > 0) {
@@ -154,7 +156,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	    		//vote example = 0000#1000#0010#0000
 	    		//one digit each location
 	    		//e.g.: yes to first dance example, no to 2nd-4th dance location
-	    		blip.appendMarkup("Thanks for your vote, " + participant + "(" + voting + ")\n" );
+	    		event.getWavelet().reply("\nThanks for your vote, " + participant + "(" + voting + ")" );
 	    		voters.remove(participant);
 	    	}
 	    } 
@@ -175,7 +177,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 					}
 				}
 			}
-    		blip.appendMarkup("<br />This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
+			event.getWavelet().reply("\nFinal result: This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
     		for(int i=0; i<preferedActivities.length; i++) preferedActivities[i] = false;    		
     		voteStarted = false;
 		}
