@@ -1,0 +1,20 @@
+#summary Wie benutze ich den Abendplaner Robot
+
+= Benutzung =
+
+== Start ==
+
+Eröffne eine neue Wave, und füge deine Freunde sowie den Abendplaner-Robot (Profil: *rwth-mcc10-group3@appspot.com*) hinzu.
+
+== Präferenzen äußern ==
+
+Der Robot begrüßt nun alle Teilnehmer, und wartet darauf, dass diese mit dem Befehl _prefer [Aktivitäten]_ ihre Präferenzen für den Abend angeben. Als Aktivitäten stehen zur Auswahl _essen_, _tanzen_, _trinken_, _kino_.
+Ein Beispiel-Befehl könnte z.B. sein: _prefer tanzen_. Möchte man mehrere Präferenzen äußern, so sind diese mit einem Leerzeichen zu separieren (z.B. _prefer essen trinken kino_). Wichtig ist, dass der Befehl direkt mit _prefer_ beginnt.
+
+== Voting ==
+
+Sobald alle Teilnehmer ihre Präferenzen geäußert haben, bindet der Robot eine Karte mit zu den Präferenzen passenden Locations sowie ein Voting-Formular zur Abstimmung über diese Locations ein. Der Benutzer hat bei der Abstimmung zu jeder Location eine "Ja/Nein"-Auswahl.
+
+== Ergebnis ==
+
+Haben alle Teilnehmer gevotet, verkündet der Robot die Location, wo der heutige Abend verbracht werden soll. Die Auswahl der Location erfolgt nach Beliebtheitsgrad bei der Abstimmung. Haben mehrere Locations die meisten Stimmen bekommen, entscheidet der Zufall.
