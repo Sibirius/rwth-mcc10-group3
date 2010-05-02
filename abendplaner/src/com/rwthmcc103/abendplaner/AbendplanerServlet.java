@@ -20,7 +20,8 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
   private List<String> voters = new LinkedList<String>(); 
   private int[][] voteResults;
   private String[] activities = new String[]{"eat","dance","drink","cinema"};
-  
+  private String[] activityDescripton = new String[]{"have a snack at ","shake a leg at ", "get plastered at ","watch a movie at "}; 
+                 
   @Override
   protected String getRobotName() {
     return "Abendplaner";
@@ -192,7 +193,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 				}
 			}
 		}
-		wavelet.reply("\nFinal result: This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
+		wavelet.reply("\nFinal result: This evening you'll " + activityDescripton[maxLocationIndex] + getLocationName(maxLocationIndex,maxActivityIndex) + "! Have fun!\n" );
 		for(int i=0; i<preferedActivities.length; i++) preferedActivities[i] = false;    		
 	}	  
   }
