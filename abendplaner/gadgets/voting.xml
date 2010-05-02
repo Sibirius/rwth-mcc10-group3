@@ -122,6 +122,7 @@
 		    state.submitDelta(delta);			
 			document.getElementById("voting_btn").disabled = true;
 			var p = document.createElement("p");
+			p.setAttribute("style","clear: left;");
 			p.appendChild( document.createTextNode("Vote saved!") );
 			insertNewChoice(p);
 			gadgets.window.adjustHeight();			

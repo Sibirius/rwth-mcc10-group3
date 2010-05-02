@@ -16,7 +16,6 @@ import org.w3c.dom.Element;
 
 public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName () function
   private boolean voteStarted = false;
-  //activityorder: "eat","dance","drink","cinema"
   private boolean[] preferedActivities = new boolean[4];
   private List<String> voters = new LinkedList<String>(); 
   private int[][] voteResults;
@@ -54,6 +53,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
   @Override
   public void onWaveletSelfAdded(WaveletSelfAddedEvent event) {
 	String peopleAlreadyHere = "";		
+	voteStarted = false;
 	
 	for (String newParticipant: getImportantPeople(event.getWavelet())) {
 		peopleAlreadyHere += newParticipant + ", ";
@@ -63,11 +63,14 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	String talk = "\nGreetings, " + peopleAlreadyHere + " welcome!\n" +
 			      "They call me \"" + this.getRobotName() + "\", at your service. \n" +
 				  "\n" +				  
-				  "bla I do this bla bla you have to do that bla \n" + // TODO
+				  "It's my task to help you to decide what to do tonight.\n" +
+				  "Tell me your preferences! Then I'll suggest some real cool locations related " +
+				  "to your preferences! You can have look at them on a map and vote for " +
+				  "your favorite(s), too. If all of you have voted, I tell you where to go tonight!\n" +
 				  "\n" +
+				  "Come on, let's start! I'm waiting for your preferences!\n" +
 				  "Tell me your preferences with the following command:\n" +
-				  "prefer (essen|trinken|tanzen|kino)+\n" +
-				  "Remember, commands are only processed from top level Blips\n";
+				  "prefer (essen|trinken|tanzen|kino)+\n";
 
     event.getWavelet().reply(talk);
   }
@@ -86,9 +89,26 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	  }
 	}
 	
-	//TODO: what happens when a participant leaves the wave?
+	boolean removed = false;
+	for (String oldParticipant: event.getParticipantsRemoved()) {
+	  if (!oldParticipant.contentEquals(event.getWavelet().getRobotAddress())) { // to stop it from greeting itself	
+	    if(voters.contains(oldParticipant)){
+	    	voters.remove(oldParticipant);
+	    	removed = true;
+	    	event.getWavelet().reply("\nGood Bye, " + oldParticipant);
+	    }
+	  }
+	}
 	
-	talk += " welcome. You are ";
+	if(removed && voters.isEmpty() && !getImportantPeople(event.getWavelet()).isEmpty()){
+		if(!voteStarted){
+			startVoting(event);
+		} else {
+			evalVoting(event);
+		}
+	}
+	
+	talk += "welcome. You are ";
 	
 	if (voteStarted) {
 	  talk += "too late, the voting has already started.";
@@ -130,6 +150,29 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
     	return "";	  	  
   }
   
+  private void evalVoting(Event event){
+	if(voters.isEmpty()){
+		//all votes collected
+		int maxLocationIndex = 0;
+		int maxActivityIndex = 0;
+		for(int i = 0; i<4; i++){
+			for(int j = 0; j < voteResults[i].length; j++){
+				if(voteResults[i][j] > voteResults[maxLocationIndex][maxActivityIndex]){
+					maxLocationIndex = i;
+					maxActivityIndex = j;
+				} else if(voteResults[i][j] == voteResults[maxLocationIndex][maxActivityIndex]){
+					if((int) (Math.random() + 0.5) == 1){
+						maxLocationIndex = i;
+						maxActivityIndex = j;							
+					}
+				}
+			}
+		}
+		event.getWavelet().reply("\nFinal result: This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
+		for(int i=0; i<preferedActivities.length; i++) preferedActivities[i] = false;    		
+	}	  
+  }
+  
   @Override
   public void onGadgetStateChanged(GadgetStateChangedEvent event) {
 	if(voteStarted){
@@ -156,33 +199,25 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 	    		//vote example = 0000#1000#0010#0000
 	    		//one digit each location
 	    		//e.g.: yes to first dance example, no to 2nd-4th dance location
-	    		event.getWavelet().reply("\nThanks for your vote, " + participant + "(" + voting + ")" );
+	    		event.getWavelet().reply("\nThanks for your vote, " + participant );
 	    		voters.remove(participant);
 	    	}
 	    } 
-		if(voters.isEmpty()){
-			//all votes collected
-			int maxLocationIndex = 0;
-			int maxActivityIndex = 0;
-			for(int i = 0; i<4; i++){
-				for(int j = 0; j < voteResults[i].length; j++){
-					if(voteResults[i][j] > voteResults[maxLocationIndex][maxActivityIndex]){
-						maxLocationIndex = i;
-						maxActivityIndex = j;
-					} else if(voteResults[i][j] == voteResults[maxLocationIndex][maxActivityIndex]){
-						if((int) (Math.random() + 0.5) == 1){
-							maxLocationIndex = i;
-							maxActivityIndex = j;							
-						}
-					}
-				}
-			}
-			event.getWavelet().reply("\nFinal result: This evening you'll: " + activities[maxLocationIndex] + "@" + getLocationName(maxLocationIndex,maxActivityIndex) + "\n" );
-    		for(int i=0; i<preferedActivities.length; i++) preferedActivities[i] = false;    		
-    		voteStarted = false;
-		}
+	    evalVoting(event);
 	}
 
+  }
+  
+  private void startVoting(Event event){
+	voteStarted = true;
+	voters = getImportantPeople(event.getWavelet());
+	Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
+	Gadget mapsGadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/map.xml");
+	mapsGadget.setProperty("value", ""+calcActivityValue(preferedActivities));
+	blip.append(mapsGadget);	
+	Gadget voteGadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/voting.xml");
+	voteGadget.setProperty("value", ""+calcActivityValue(preferedActivities));
+	blip.append(voteGadget);	  
   }
   
   /** reacts to new submitted messages, interprets commands */
@@ -219,15 +254,7 @@ public class AbendplanerServlet extends AbstractRobot {		//requires getRobotName
 					talk += "Didn't understand your preference, " + event.getBlip().getCreator() + "!\n\n";
 			}
 			if(voters.isEmpty()){
-				voteStarted = true;
-				voters = getImportantPeople(event.getWavelet());
-				Blip blip = event.getWavelet().reply("\nLET'S DO IT YEAHHH!");
-				Gadget mapsGadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/map.xml");
-				mapsGadget.setProperty("value", ""+calcActivityValue(preferedActivities));
-				blip.append(mapsGadget);	
-				Gadget voteGadget = new Gadget("http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/gadgets/voting.xml");
-				voteGadget.setProperty("value", ""+calcActivityValue(preferedActivities));
-				blip.append(voteGadget);					
+				startVoting(event);
 			} else {
 				talk += "Waiting for the Preferences of:\n";
 				for(String voter: voters){
