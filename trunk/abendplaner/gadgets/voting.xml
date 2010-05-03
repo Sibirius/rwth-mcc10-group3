@@ -30,15 +30,15 @@
 	  			//dance  <-> 2^2
 	  			//drink  <-> 2^1
 	  			//cinema <-> 2^0	
-	  			activities = ["","","",""];	
+	  			activities = ["","","",""];
 				var value = parseInt(wave.getState().get('value', '0'));
 				for(var i = 0; i < 4; i++){
 					if( Math.floor(value / Math.pow(2,3-i)) == 1 ){
 						activities[i] = active[i];
 					}
 					value = value % Math.pow(2,3-i);
-				}		
-			    var params = {};  
+				}
+			    var params = {};
 			    params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;  
 			    var url = "http://rwth-mcc10-group3.googlecode.com/svn/trunk/abendplaner/war/WEB-INF/locationdb.xml";  
 			    gadgets.io.makeRequest(url, response, params);
@@ -60,7 +60,7 @@
 						f.appendChild( createVoteElement( x[j].getElementsByTagName("name")[0].childNodes[0].nodeValue, count) );
 						count++;
 					}
-					insertNewChoice(f);		    
+					insertNewChoice(f);
 				} else {
 					count += domdata.getElementsByTagName(active[i])[0].getElementsByTagName("location").length;				
 				}
@@ -81,7 +81,7 @@
 			ja.appendChild(document.createTextNode("yes"));
 			ja.setAttribute("value","1");
 			var nein = document.createElement("option");
-			nein.appendChild(document.createTextNode("nein"));
+			nein.appendChild(document.createTextNode("no"));
 			nein.setAttribute("value","0");
 
 			select.appendChild(ja);
@@ -119,13 +119,13 @@
 			}
 			delta = {};
 		    delta[viewerId] = selection;
-		    state.submitDelta(delta);			
+		    state.submitDelta(delta);
 			document.getElementById("voting_btn").disabled = true;
 			var p = document.createElement("p");
 			p.setAttribute("style","clear: left;");
 			p.appendChild( document.createTextNode("Vote saved!") );
 			insertNewChoice(p);
-			gadgets.window.adjustHeight();			
+			gadgets.window.adjustHeight();
 		}
 		
 	    function init() {
