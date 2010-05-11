@@ -19,8 +19,8 @@ public class AverageRatings {
 		conf.setOutputValueClass(IntWritable.class);
 
 		// TODO: specify input and output DIRECTORIES (not files)
-	//	conf.setInputPath(new Path("src"));
-		//conf.setOutputPath(new Path("out"));
+		conf.setInputPath(new Path("src"));
+		conf.setOutputPath(new Path("out"));
 
 		// TODO: specify a mapper
 		conf.setMapperClass(org.apache.hadoop.mapred.lib.IdentityMapper.class);
