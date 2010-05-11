@@ -1,3 +1,4 @@
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -5,35 +6,25 @@ import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-
+@SuppressWarnings("deprecation")
 public class AverageRatings {
 
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
-		JobClient client = new JobClient();
-		JobConf conf = new JobConf(AverageRatings.class);
-
-		// TODO: specify output types
-		conf.setOutputKeyClass(Text.class);
-		conf.setOutputValueClass(IntWritable.class);
-
-		// TODO: specify input and output DIRECTORIES (not files)
-		conf.setInputPath(new Path("src"));
-		conf.setOutputPath(new Path("out"));
-
-		// TODO: specify a mapper
-		conf.setMapperClass(org.apache.hadoop.mapred.lib.IdentityMapper.class);
-
-		// TODO: specify a reducer
-		conf.setReducerClass(org.apache.hadoop.mapred.lib.IdentityReducer.class);
-
-		client.setConf(conf);
-		try {
-			JobClient.runJob(conf);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Configuration conf = new Configuration();
+		Job job = new Job(conf, "Average Ratings");
+		job.setJarByClass(AverageRatings.class);
+		job.setMapperClass(AverageRatingsMapper.class);
+		job.setReducerClass(AverageRatingsReducer.class);
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(IntWritable.class);
+		FileInputFormat.addInputPath(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
 
 }

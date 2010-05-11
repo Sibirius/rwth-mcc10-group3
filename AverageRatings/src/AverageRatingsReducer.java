@@ -3,13 +3,12 @@ import java.util.Iterator;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
-import org.apache.hadoop.mapreduce.Mapper.Context;
 
+@SuppressWarnings("deprecation")
 public class AverageRatingsReducer extends MapReduceBase implements
 		Reducer<Text, IntWritable, Text, IntWritable> {
 	public void reduce(Text key, Iterator<IntWritable> values,
