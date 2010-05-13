@@ -28,5 +28,6 @@
 	<classpathentry kind="lib" path="D:/hadoop-0.20.2/hadoop-0.20.2-tools.jar"/>
 	<classpathentry kind="lib" path="D:/hadoop-0.20.2/hadoop-0.20.2-core.jar"/>
 	<classpathentry kind="lib" path="D:/hadoop-0.20.2/hadoop-0.20.2-ant.jar"/>
+	<classpathentry kind="lib" path="D:/hadoop-0.20.2/hadoop-0.20.2-examples.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
