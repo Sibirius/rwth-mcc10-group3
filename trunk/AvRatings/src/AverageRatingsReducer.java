@@ -15,9 +15,8 @@ public class AverageRatingsReducer extends Reducer<Text, IntWritable, Text, IntW
 				count++;
 			}
 			average = sum/count;
-			
 			try {
-				context.write(key, new IntWritable(average));
+				context.write(new Text(String.valueOf(average)), new IntWritable(Integer.parseInt(key.toString())));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
