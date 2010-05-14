@@ -15,14 +15,12 @@ public class AverageRatingsMapper extends Mapper<Object, Text, Text, DoubleWrita
 	}
 
 	private String getMovieId(String line) {
-		String token = "::";
-		String[] strings = line.split(token);
+		String[] strings = line.split("::");
 		return strings[1];
 	}
 
 	private double getrating(String line) {
-		String token = "::";
-		String[] strings = line.split(token);
+		String[] strings = line.split("::");
 		return Double.parseDouble(strings[2]);
 	}
 }
