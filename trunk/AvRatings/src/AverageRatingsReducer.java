@@ -16,8 +16,9 @@ public class AverageRatingsReducer extends Reducer<Text, DoubleWritable, DoubleW
 				count = count +1;
 			}
 			average = sum/count;
+			String idAndCount = key.toString() + "\t"+ String.valueOf(count);
 			try {
-				context.write(new DoubleWritable(average), key);
+				context.write(new DoubleWritable(average), new Text(idAndCount));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
