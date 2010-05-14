@@ -5,13 +5,13 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 
 public class AverageRatingsMapper extends Mapper<Object, Text, Text, DoubleWritable> {
-		
+	private Text id = new Text();
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		String line = value.toString();
-		String movieId = getMovieId(line);
+		id.set(getMovieId(line));
 		double rating = getrating(line);
 		
-		context.write(new Text(movieId), new DoubleWritable(rating));
+		context.write(id, new DoubleWritable(rating));
 	}
 
 	private String getMovieId(String line) {
