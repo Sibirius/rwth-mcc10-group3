@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 
 
-	public class CountMapper extends Mapper<Object, Text, IntWritable, Text> {
+	public class CountMapper extends Mapper<Object, Text, Text, IntWritable> {
 		private final static IntWritable one = new IntWritable(1);
 		private Text id = new Text();
 		
