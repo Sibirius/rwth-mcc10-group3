@@ -27,8 +27,6 @@ public class WordCount {
              word.set(itr.nextToken());
              context.write(word, one);
          }
-
-
        }
   }
 
