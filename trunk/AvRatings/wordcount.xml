@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project name="WordCount" default="compile">
+    <target name="clean" description="remove old class files">
+        <delete dir="wordcount_classes"/>
+    </target>
+    <target name="clobber" depends="clean" description="remove old wordcount.jar">
+        <delete file="jar/wordcount.jar"/>
+    </target>
+    <target name="compile" description="compile the Java source code to class files">
+        <mkdir dir="wordcount_classes"/>
+        <javac srcdir="./src" destdir="wordcount_classes" classpath="/opt/hadoop-0.20.2/hadoop-0.20.2-core.jar"/>
+    </target>
+    <target name="jar" depends="compile" description="create Jar file">
+        <jar destfile="jar/wordcount.jar">
+            <fileset dir="wordcount_classes" includes="WordCount*.class"/>
+            <manifest>
+                <attribute name="Main-Class" value="WordCount"/>
+            </manifest>
+        </jar>
+    </target>
+</project>
+
