@@ -1,26 +1,24 @@
 import java.io.IOException;
+import java.util.StringTokenizer;
+
 	import org.apache.hadoop.io.*;
-	import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Mapper;
 
 
 
 	public class CountMapper extends Mapper<Object, Text, IntWritable, Text> {
+		private final static IntWritable one = new IntWritable(1);
 		private Text id = new Text();
 		
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			String line = value.toString();
 			id.set(getMovieId(line));
-			context.write(new IntWritable(getCount(line)), id);
+			context.write(id, one);
 		}
 
 		private String getMovieId(String line) {
-			String[] strings = line.split("\\s+");
+			String[] strings = line.split("::");
 			return strings[1];
-		}
-
-		private int getCount(String line) {
-			String[] strings = line.split("\\s+");
-			return Integer.parseInt(strings[2]);
 		}
 	}
 
