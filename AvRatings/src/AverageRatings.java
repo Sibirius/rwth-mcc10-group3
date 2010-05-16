@@ -18,8 +18,8 @@ public class AverageRatings {
 		job.setJarByClass(AverageRatings.class);
 		job.setMapperClass(AverageRatingsMapper.class);
 		job.setReducerClass(AverageRatingsReducer.class);
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(DoubleWritable.class);
+		job.setOutputKeyClass(DoubleWritable.class);
+		job.setOutputValueClass(Text.class);
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		job.waitForCompletion(true);

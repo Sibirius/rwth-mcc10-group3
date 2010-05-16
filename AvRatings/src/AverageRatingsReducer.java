@@ -4,27 +4,24 @@ import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-
-public class AverageRatingsReducer extends Reducer<Text, DoubleWritable, DoubleWritable, Text> {
-	   	 
+public class AverageRatingsReducer extends Reducer<Text, DoubleWritable, DoubleWritable, Text> {  	 
 	public void reduce(Text key, Iterable<DoubleWritable> values, Context context) throws IOException {
-		   	double sum = 0;
-			int count =0;
-			double average;
+		   	int count = 0;
+		   	double rating_sum = 0;
+			
 			for (DoubleWritable value : values) {
-				sum += value.get();
-				count = count+1;
+				count++;
+				rating_sum += value.get();
 			}
-			average = sum/count;
-			String idAndCount = key.toString() + "\t"+ String.valueOf(count);
+			
+			double average = rating_sum / count;
+			
 			try {
-				context.write(new DoubleWritable(average), new Text(idAndCount));
+				context.write(new DoubleWritable(average), key);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-		
-	   
 	}
 }
+
