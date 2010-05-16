@@ -15,7 +15,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 
 public class Sort {
-	
+	/** Die Top 10 Filme nach den durchschnittlichen Ratings finden. */
 	public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
 		
 		//read config-file
