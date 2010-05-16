@@ -1,7 +1,6 @@
-Movies = LOAD 'movies2.dat' USING PigStorage(':') AS (id:int, title:chararray, genre:chararray);
-Ratings = LOAD 'ratings2.dat' USING PigStorage(':') AS (id:int, mid:int, rating:float, time:int);
-Joined = JOIN Movies BY id, Ratings BY mid;
-Grouped = GROUP Joined BY Movies::id;
-Averaged = FOREACH Grouped GENERATE AVG(Joined.rating), Joined.title;
-Ordered = ORDER Averaged BY $0 DESC;
+Movies = LOAD '/user/DrWho/input/input/movies2.dat' USING PigStorage(':') AS (id:int, title:chararray, genre:chararray);
+Ratings = LOAD '/user/DrWho/input/input/ratings2.dat' USING PigStorage(':') AS (id:int, mid:int, rating:float, time:int);
+Grouped = COGROUP Movies BY id, Ratings BY mid;
+Averaged = FOREACH Grouped GENERATE FLATTEN(Movies.title), AVG(Ratings.rating);
+Ordered = ORDER Averaged BY $1 DESC;
 DUMP Ordered;

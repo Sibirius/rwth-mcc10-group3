@@ -1,6 +1,7 @@
-Movies = LOAD 'movies2.dat' USING PigStorage(':') AS (id:int, title:chararray, genre:chararray);
-Ratings = LOAD 'ratings2.dat' USING PigStorage(':') AS (id:int, mid:int, rating:float, time:int);
-Grouped = GROUP Ratings By mid;
-Counted = FOREACH Grouped GENERATE COUNT(Ratings);
-Limited = LIMIT Counted 10;
+Movies = LOAD '/user/DrWho/input/input/movies2.dat' USING PigStorage(':') AS (id:int, title:chararray, genre:chararray);
+Ratings = LOAD '/user/DrWho/input/input/ratings2.dat' USING PigStorage(':') AS (id:int, mid:int, rating:float, time:int);
+Grouped = COGROUP Movies BY id, Ratings BY mid;
+Counted = FOREACH Grouped GENERATE FLATTEN(Movies.title), COUNT(Ratings);
+Ordered = ORDER Counted BY $1 DESC;
+Limited = LIMIT Ordered 10;
 DUMP Limited;
