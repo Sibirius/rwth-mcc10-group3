@@ -9,7 +9,7 @@ public class AverageRatingsMapper extends Mapper<Object, Text, Text, DoubleWrita
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		String line = value.toString();
 		id.set(getMovieId(line));
-		double rating = getrating(line);
+		double rating = getRating(line);
 		
 		context.write(id, new DoubleWritable(rating));
 	}
@@ -19,7 +19,7 @@ public class AverageRatingsMapper extends Mapper<Object, Text, Text, DoubleWrita
 		return strings[1];
 	}
 
-	private double getrating(String line) {
+	private double getRating(String line) {
 		String[] strings = line.split("::");
 		return Double.parseDouble(strings[2]);
 	}

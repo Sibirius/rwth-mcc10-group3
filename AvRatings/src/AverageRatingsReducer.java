@@ -13,7 +13,7 @@ public class AverageRatingsReducer extends Reducer<Text, DoubleWritable, DoubleW
 			double average;
 			for (DoubleWritable value : values) {
 				sum += value.get();
-				count = count +1;
+				count = count+1;
 			}
 			average = sum/count;
 			String idAndCount = key.toString() + "\t"+ String.valueOf(count);
