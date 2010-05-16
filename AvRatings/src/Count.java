@@ -11,7 +11,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class Count {
-
+	/** Die Top 10 Filme nach der Anzahl der Ratings finden. */
 	public static void main(String[] args) throws IOException,
 			InterruptedException, ClassNotFoundException {
 		

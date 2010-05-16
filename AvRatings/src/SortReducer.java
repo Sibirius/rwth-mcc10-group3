@@ -5,17 +5,21 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 
-public class SortReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+public class SortReducer extends Reducer<Text, DoubleWritable, DoubleWritable, Text> {
 	   	 
-	public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException {
-		   	int id= 0;
+	public void reduce(Text key, Iterable<DoubleWritable> values, Context context) throws IOException {
+		   	int count = 0;
+		   	double rating_sum = 0;
 			
-			
-			for (IntWritable value : values) {
-				id = value.get();
+			for (DoubleWritable value : values) {
+				count++;
+				rating_sum += value.get();
 			}
+			
+			double average = rating_sum / count;
+			
 			try {
-				context.write(key, new IntWritable(id));
+				context.write(new DoubleWritable(average), key);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

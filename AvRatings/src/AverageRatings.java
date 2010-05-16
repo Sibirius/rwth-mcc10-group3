@@ -11,8 +11,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 
 public class AverageRatings {
-
-	
+	/** Die Filme nach den durchschnittlichen Ratings sortieren. */
 	public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
 		Configuration conf = new Configuration();
 		Job job = new Job(conf, "Average Ratings");

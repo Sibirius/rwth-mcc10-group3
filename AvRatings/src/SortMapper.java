@@ -4,23 +4,26 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 
 
-public class SortMapper extends Mapper<Object, Text, Text, IntWritable> {
-	private Text rating = new Text();
+public class SortMapper extends Mapper<Object, Text, Text, DoubleWritable> {
+	private Text id = new Text();
+	private DoubleWritable rating = new DoubleWritable();
 	
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		String line = value.toString();
-		rating.set(getrating(line));
-		context.write(rating, new IntWritable(getMovieId(line)));
-	}
-
-	private int getMovieId(String line) {
 		
-		String[] strings = line.split("\\s+");
-		return Integer.parseInt(strings[1]);
+		id.set(getMovieId(line));
+		rating.set(getRating(line));
+		
+		context.write(id, rating);
 	}
 
-	private String getrating(String line) {
-		String[] strings = line.split("\\s+");
-		return strings[0];
+	private String getMovieId(String line) {
+		String[] strings = line.split("::");
+		return strings[1];
+	}
+
+	private double getRating(String line) {
+		String[] strings = line.split("::");
+		return Double.parseDouble(strings[2]);
 	}
 }
