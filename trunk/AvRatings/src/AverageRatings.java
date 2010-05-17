@@ -13,6 +13,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 
 
+
 public class AverageRatings {
 	
 	/** Die Filme nach den durchschnittlichen Ratings sortieren. */
@@ -36,11 +37,11 @@ public class AverageRatings {
 		jobSort.setOutputKeyClass(DoubleWritable.class);
 		jobSort.setOutputValueClass(Text.class);
 		FileInputFormat.addInputPath(jobSort, new Path("tmp/tmp1"));
-		FileOutputFormat.setOutputPath(jobSort, new Path(args[1]));
+		FileOutputFormat.setOutputPath(jobSort, new Path(args[1]+"/average"));
 		jobSort.waitForCompletion(true);
 								
-		//Sort.main(args);
-		//Count.main(args);
+		Sort.main(args);
+		Count.main(args);
 	}
 
 }

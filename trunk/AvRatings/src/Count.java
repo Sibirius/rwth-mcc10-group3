@@ -3,12 +3,14 @@ import java.io.*;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import org.apache.hadoop.mapreduce.lib.map.InverseMapper;
+import org.apache.hadoop.mapreduce.Reducer;
 
 public class Count {
 	/** Die Top 10 Filme nach der Anzahl der Ratings finden. */
@@ -29,15 +31,23 @@ public class Count {
 		jobcount.setOutputValueClass(IntWritable.class);
 		
 		//set paths
-		FileInputFormat.addInputPaths(jobcount, args[1]);
-		Path CountOutput = new Path("CountOutput");
-		FileOutputFormat.setOutputPath(jobcount, CountOutput);
-		
-		//wait until job is complete
+		FileInputFormat.addInputPaths(jobcount, new Path(args[0]));
+		FileOutputFormat.setOutputPath(jobcount, new Path("tmp/tmp2"));		
 		jobcount.waitForCompletion(true);
+
+		Configuration confSort = new Configuration();
+		Job jobSort = new Job(confSort, "Sort Counted Ratings");
+		jobSort.setJarByClass(AverageRatings.class);
+		jobSort.setMapperClass(InverseMapper.class);
+		jobSort.setReducerClass(Reducer.class);
+		jobSort.setOutputKeyClass(IntWritable.class);
+		jobSort.setOutputValueClass(Text.class);
+		FileInputFormat.addInputPath(jobSort, new Path("tmp/tmp2"));
+		FileOutputFormat.setOutputPath(jobSort, new Path(args[1]+"/count"));
+		jobSort.waitForCompletion(true);
 		
 		//write top10
-		Top10(CountOutput, confcount);
+		Top10(new Path(args[1]+"/count"), jobSort);
 	}
 
 	public static void Top10(Path path, Configuration conf) throws IOException {
