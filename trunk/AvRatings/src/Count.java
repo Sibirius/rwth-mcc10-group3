@@ -25,8 +25,8 @@ public class Count {
 		jobcount.setJarByClass(AverageRatings.class);
 		jobcount.setMapperClass(CountMapper.class);
 		jobcount.setReducerClass(CountReducer.class);
-		jobcount.setOutputKeyClass(IntWritable.class);
-		jobcount.setOutputValueClass(Text.class);
+		jobcount.setOutputKeyClass(Text.class);
+		jobcount.setOutputValueClass(IntWritable.class);
 		
 		//set paths
 		FileInputFormat.addInputPaths(jobcount, args[1]);
