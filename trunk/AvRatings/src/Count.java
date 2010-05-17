@@ -31,7 +31,7 @@ public class Count {
 		jobcount.setOutputValueClass(IntWritable.class);
 		
 		//set paths
-		FileInputFormat.addInputPaths(jobcount, new Path(args[0]));
+		FileInputFormat.addInputPaths(jobcount, args[0]);
 		FileOutputFormat.setOutputPath(jobcount, new Path("tmp/tmp2"));		
 		jobcount.waitForCompletion(true);
 
@@ -47,7 +47,7 @@ public class Count {
 		jobSort.waitForCompletion(true);
 		
 		//write top10
-		Top10(new Path(args[1]+"/count"), jobSort);
+		Top10(new Path(args[1]+"/count"), confSort);
 	}
 
 	public static void Top10(Path path, Configuration conf) throws IOException {
