@@ -28,8 +28,8 @@ public class Sort {
 		jobsort.setJarByClass(AverageRatings.class);
 		jobsort.setMapperClass(SortMapper.class);
 		jobsort.setReducerClass(SortReducer.class);
-		jobsort.setOutputKeyClass(DoubleWritable.class);
-		jobsort.setOutputValueClass(Text.class);
+		jobsort.setOutputKeyClass(Text.class);
+		jobsort.setOutputValueClass(DoubleWritable.class);
 		
 		//set paths
 		FileInputFormat.addInputPaths(jobsort, args[1]);
