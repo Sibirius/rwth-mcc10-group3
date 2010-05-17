@@ -8,14 +8,12 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import org.apache.hadoop.mapred.lib.InverseMapper;
-import org.apache.hadoop.mapred.lib.IdentityReducer;
+import org.apache.hadoop.mapreduce.lib.map.InverseMapper;
+import org.apache.hadoop.mapreduce.Reducer;
 
 
 
 public class AverageRatings {
-	public static class ARIdentityReducer extends IdentityReducer<Text, DoubleWritable> {}
-	public static class ARInverseMapper extends InverseMapper<DoubleWritable, Text> {}
 	
 	/** Die Filme nach den durchschnittlichen Ratings sortieren. */
 	public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
@@ -33,8 +31,8 @@ public class AverageRatings {
 		Configuration confSort = new Configuration();
 		Job jobSort = new Job(confSort, "Sort Average Ratings");
 		jobSort.setJarByClass(AverageRatings.class);
-		jobSort.setMapperClass(ARInverseMapper.class);
-		jobSort.setReducerClass(ARIdentityReducer.class);
+		jobSort.setMapperClass(InverseMapper.class);
+		jobSort.setReducerClass(Reducer.class);
 		jobSort.setOutputKeyClass(DoubleWritable.class);
 		jobSort.setOutputValueClass(Text.class);
 		FileInputFormat.addInputPath(jobSort, new Path("tmp/tmp1"));
