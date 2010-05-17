@@ -62,11 +62,12 @@ public class Sort {
 		jobSort.setOutputKeyClass(DoubleWritable.class);
 		jobSort.setOutputValueClass(Text.class);
 		FileInputFormat.addInputPath(jobSort, new Path("tmp/tmp3"));
-		FileOutputFormat.setOutputPath(jobSort, new Path(args[1]+"/sorted"));
+		Path outputPath = new Path(args[1]+"/sorted");
+		FileOutputFormat.setOutputPath(jobSort, outputPath);
 		jobSort.waitForCompletion(true);
 		
 		//write top10
-		Top10(new Path(args[1]+"/sorted"), confsort);
+		Top10(outputPath, confsort);
 	}
 	
 	
@@ -75,7 +76,6 @@ public class Sort {
 		FileSystem fs = path.getFileSystem(conf);
 		fs.copyToLocalFile(path, path);
 
-		
 		String line = "";
 		String completeString = "";
 		
