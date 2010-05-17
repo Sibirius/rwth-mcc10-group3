@@ -17,6 +17,21 @@ import org.apache.hadoop.mapreduce.lib.map.InverseMapper;
 import org.apache.hadoop.mapreduce.Reducer;
 
 public class Sort {
+	public static class SortInverseMapper extends Mapper<Object, Text, DoubleWritable, Text> {
+		private Text id = new Text();
+		private DoubleWritable rating = new DoubleWritable();		
+		
+		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+			String line = value.toString();
+			String[] strings = line.split("\\s+");
+			
+			id.set(strings[0]);
+			rating.set(Double.parseDouble(strings[1]));
+			
+			context.write(rating, id);
+		}
+	}
+	
 	/** Die Top 10 Filme nach den durchschnittlichen Ratings finden. */
 	public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
 		
@@ -36,18 +51,18 @@ public class Sort {
 		//set paths
 		FileInputFormat.addInputPaths(jobsort, args[0]);
 		FileOutputFormat.setOutputPath(jobsort, new Path("tmp/tmp3"));		
-		jobsort.waitForCompletion(true);
+		//jobsort.waitForCompletion(true);
 
 		Configuration confSort = new Configuration();
 		Job jobSort = new Job(confSort, "Sort Sorted Average Ratings");
 		jobSort.setJarByClass(AverageRatings.class);
-		jobSort.setMapperClass(InverseMapper.class);
+		jobSort.setMapperClass(SortInverseMapper.class);
 		jobSort.setReducerClass(Reducer.class);
 		jobSort.setOutputKeyClass(DoubleWritable.class);
 		jobSort.setOutputValueClass(Text.class);
 		FileInputFormat.addInputPath(jobSort, new Path("tmp/tmp3"));
 		FileOutputFormat.setOutputPath(jobSort, new Path(args[1]+"/sorted"));
-		jobSort.waitForCompletion(true);		
+		jobSort.waitForCompletion(true);
 		
 		//write top10
 		Top10(new Path(args[1]+"/sorted"), confsort);
