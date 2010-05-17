@@ -47,7 +47,7 @@ public class Count {
 		jobSort.waitForCompletion(true);
 		
 		//write top10
-		Top10(new Path(args[1]+"/count"), confSort);
+		Top10(new Path(args[1]+"/count"), confcount);
 	}
 
 	public static void Top10(Path path, Configuration conf) throws IOException {
