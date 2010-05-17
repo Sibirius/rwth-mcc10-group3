@@ -1,3 +1,17 @@
+JAR
+
 AverageRatings: 4mins,  4secs	Filme nach den durchschnittlichen Ratings sortieren 
- SortedRatings: 3mins, 22secs   Top 10 Filme nach den durchschnittlichen Ratings
+SortedRatings: 3mins, 22secs   Top 10 Filme nach den durchschnittlichen Ratings
 CountedRatings: 3mins, 57secs   Top 10 Filme nach der Anzahl der Ratings
+
+PIG
+
+AverageRatings 9min, 42sec
+SortedRatings 9min, 38sec
+CountedRatings 9min, 20sec
+
+PSQL
+
+AverageRatings 7h 17m 35s 648ms
+SortedRatings 6h 58m 40s 211ms 
+CountedRatings 18.47h (Pentium M 1,73Ghz 1GB RAM)
