@@ -5,7 +5,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 
-public class SortReducer extends Reducer<Text, DoubleWritable, DoubleWritable, Text> {
+public class SortReducer extends Reducer<Text, DoubleWritable, Text, DoubleWritable> {
 	   	 
 	public void reduce(Text key, Iterable<DoubleWritable> values, Context context) throws IOException {
 		   	int count = 0;
@@ -19,7 +19,7 @@ public class SortReducer extends Reducer<Text, DoubleWritable, DoubleWritable, T
 			double average = rating_sum / count;
 			
 			try {
-				context.write(new DoubleWritable(average), key);
+				context.write(key, new DoubleWritable(average));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

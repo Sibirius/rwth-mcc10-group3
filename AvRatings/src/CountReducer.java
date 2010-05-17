@@ -5,7 +5,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 
-public class CountReducer extends Reducer<Text, IntWritable, IntWritable, Text > {
+public class CountReducer extends Reducer<Text, IntWritable, Text, IntWritable > {
 	   	 
 	public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 			int count = 0;
@@ -14,6 +14,6 @@ public class CountReducer extends Reducer<Text, IntWritable, IntWritable, Text >
 				count += value.get();
 	        }
 			
-			context.write(new IntWritable(count), key);
+			context.write(key, new IntWritable(count));
 	}
 }
