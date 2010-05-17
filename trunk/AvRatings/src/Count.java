@@ -59,11 +59,12 @@ public class Count {
 		jobSort.setOutputKeyClass(IntWritable.class);
 		jobSort.setOutputValueClass(Text.class);
 		FileInputFormat.addInputPath(jobSort, new Path("tmp/tmp2"));
-		FileOutputFormat.setOutputPath(jobSort, new Path(args[1]+"/count"));
+		Path outputPath = new Path(args[1]+"/count");
+		FileOutputFormat.setOutputPath(jobSort, outputPath);
 		jobSort.waitForCompletion(true);
 		
 		//write top10
-		Top10(new Path(args[1]+"/count"), confcount);
+		Top10(outputPath, confcount);
 	}
 
 	public static void Top10(Path path, Configuration conf) throws IOException {
