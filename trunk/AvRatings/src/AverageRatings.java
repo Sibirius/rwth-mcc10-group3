@@ -42,7 +42,7 @@ public class AverageRatings {
 		job.setOutputValueClass(DoubleWritable.class);
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path("tmp/tmp1"));
-		//job.waitForCompletion(true);
+		job.waitForCompletion(true);
 
 		Configuration confSort = new Configuration();
 		Job jobSort = new Job(confSort, "Sort Average Ratings");
