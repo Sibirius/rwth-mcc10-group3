@@ -13,6 +13,21 @@ import org.apache.hadoop.mapreduce.lib.map.InverseMapper;
 import org.apache.hadoop.mapreduce.Reducer;
 
 public class Count {
+	public static class CountInverseMapper extends Mapper<Object, Text, IntWritable, Text> {
+		private Text id = new Text();
+		private IntWritable count = new IntWritable();		
+		
+		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+			String line = value.toString();
+			String[] strings = line.split("\\s+");
+			
+			id.set(strings[0]);
+			count.set(Integer.parseInt(strings[1]));
+			
+			context.write(count, id);
+		}
+	}
+	
 	/** Die Top 10 Filme nach der Anzahl der Ratings finden. */
 	public static void main(String[] args) throws IOException,
 			InterruptedException, ClassNotFoundException {
@@ -33,12 +48,12 @@ public class Count {
 		//set paths
 		FileInputFormat.addInputPaths(jobcount, args[0]);
 		FileOutputFormat.setOutputPath(jobcount, new Path("tmp/tmp2"));		
-		jobcount.waitForCompletion(true);
+		//jobcount.waitForCompletion(true);
 
 		Configuration confSort = new Configuration();
 		Job jobSort = new Job(confSort, "Sort Counted Ratings");
 		jobSort.setJarByClass(AverageRatings.class);
-		jobSort.setMapperClass(InverseMapper.class);
+		jobSort.setMapperClass(CountInverseMapper.class);
 		jobSort.setReducerClass(Reducer.class);
 		jobSort.setOutputKeyClass(IntWritable.class);
 		jobSort.setOutputValueClass(Text.class);
