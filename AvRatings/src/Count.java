@@ -49,7 +49,7 @@ public class Count {
 		//set paths
 		FileInputFormat.addInputPaths(jobcount, args[0]);
 		FileOutputFormat.setOutputPath(jobcount, new Path("tmp/tmp2"));		
-		//jobcount.waitForCompletion(true);
+		jobcount.waitForCompletion(true);
 
 		Configuration confSort = new Configuration();
 		Job jobSort = new Job(confSort, "Sort Counted Ratings");

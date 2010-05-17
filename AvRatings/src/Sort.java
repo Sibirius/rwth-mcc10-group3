@@ -52,7 +52,7 @@ public class Sort {
 		//set paths
 		FileInputFormat.addInputPaths(jobsort, args[0]);
 		FileOutputFormat.setOutputPath(jobsort, new Path("tmp/tmp3"));		
-		//jobsort.waitForCompletion(true);
+		jobsort.waitForCompletion(true);
 
 		Configuration confSort = new Configuration();
 		Job jobSort = new Job(confSort, "Sort Sorted Average Ratings");
