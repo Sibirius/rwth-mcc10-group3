@@ -31,7 +31,7 @@ public class AverageRatings {
 		job.waitForCompletion(true);
 
 		Configuration confSort = new Configuration();
-		Job jobSort = new Job(conf2, "Average Ratings");
+		Job jobSort = new Job(confSort, "Sort Average Ratings");
 		jobSort.setJarByClass(AverageRatings.class);
 		jobSort.setMapperClass(ARInverseMapper.class);
 		jobSort.setReducerClass(ARIdentityReducer.class);
