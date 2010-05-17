@@ -1,0 +1,3 @@
+AverageRatings: 4mins,  4secs	Filme nach den durchschnittlichen Ratings sortieren 
+ SortedRatings: 3mins, 22secs   Top 10 Filme nach den durchschnittlichen Ratings
+CountedRatings: 3mins, 57secs   Top 10 Filme nach der Anzahl der Ratings
