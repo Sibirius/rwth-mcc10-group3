@@ -4,16 +4,12 @@
 		<script language="javascript" src="js/jquery-1.4.2.min.js"></script>
 		<script language="javascript" src="js/constants.js"></script>
 		
-		<script>
-			function doSend() {			
-			}
-		</script>
-
+				
 		<title>upload</title>
 	</head>
 	
 	<body>
-		<form action="doSend();" enctype="multipart/form-data" method="post">			
+		<form action="http://s3.amazonaws.com/<bucketname>/" enctype="multipart/form-data" method="post">			
 			<div>
 				Titel:<br>
 				<input type="text" name="titel" size="30"><br>				
@@ -32,3 +28,4 @@
 		
 	</body>
 </html>
+
