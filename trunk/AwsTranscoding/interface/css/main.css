@@ -41,3 +41,41 @@
 	clear: both;
 	height: 1px;
 }
+
+#upload-form {
+	float: left;
+	padding-left: 10px;
+}
+
+#upload-list {
+	float: left;
+	border: solid 1px black;
+	width: 300;
+	min-height: 400;
+}
+
+.upload-item, #addNewItem {
+	border: 1px black solid;
+	margin: 2px;
+	padding-left: 1px;
+	cursor: pointer;
+}
+
+.selected-item {
+	background-color: grey;
+}
+
+.uploaded-item {
+	background-color: green;
+}
+
+.failed-item {
+	background-color: red;
+}
+
+#addNewItem {
+	text-align: center;
+	background-color: blue;	
+	cursor: crosshair;
+}
+
