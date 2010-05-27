@@ -79,3 +79,6 @@
 	cursor: crosshair;
 }
 
+#uploadButton {
+	clear: both;	
+}
