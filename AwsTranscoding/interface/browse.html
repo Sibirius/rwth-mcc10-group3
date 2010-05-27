@@ -1,22 +1,64 @@
 <html>
 	<head>
+		<title>Browse videos</title>
+	
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
 		<script language="javascript" src="js/jquery-1.4.2.min.js"></script>
 		<script language="javascript" src="js/constants.js"></script>
 		
-		<script>					
-		 $(document).ready(function() {
-			   $("#templateItem").hide();
-			 });			
-		</script>
+		<script>
+			// datastructure for video informations
+			// should tags be an array?
+			function videoItemInfo(title, description, tags) {				
+				this.title = title;
+				this.description = description;
+				this.tags = tags;				
+			} 
 
-		<title>browse</title>
+			function addGenericItem() {
+				data = new videoItemInfo("something", "blabla bla blabla", "tag tag tag");
+				createVideoItem(data);
+			}
+
+			// takes a videoItemInfo object as videoData
+			function createVideoItem(videoData) {
+				var newItem = $("#templateItem").clone();
+
+				newItem.find(".video-title").append(videoData.title);
+				newItem.find(".video-description").append(videoData.description);
+				newItem.find(".video-tags").append(videoData.tags);
+
+				newItem.attr("id",""); // TODO: set unique video id
+
+				newItem.appendTo("#browse-container").show();
+			}
+			
+			function populateList() {
+				$("#browse-container").empty();
+				// TODO: get videos and create video-items from them
+			}
+		
+			$(document).ready(function() {
+			   $("#templateItem").hide();
+			   populateList();
+			});			
+		</script>
 	</head>
 	
 	<body>
+		<a href="#" onClick="addGenericItem();"> Add generic item </a>
 		
+		<div id="browse-container">
+			<a> No videos to show yet. </a>
+		</div>
+				
 		<!-- hidden on load -->
-		<div id="templateItem">
+		<div id="templateItem" class="video-item">			
+			<img></img>
+			<a class="video-title"></a> <br>
+			<a class="video-description"></a> <br>
+			<a class="video-tags"></a> 
+			<div class="div-clearer"></div>
 		</div>		
 	</body>
 </html>
