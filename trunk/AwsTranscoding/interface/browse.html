@@ -12,7 +12,7 @@
 			function videoItemInfo(title, description, tags) {				
 				this.title = title;
 				this.description = description;
-				this.tags = tags;				
+				this.tags = tags;
 			} 
 
 			function addGenericItem() {
@@ -24,11 +24,13 @@
 			function createVideoItem(videoData) {
 				var newItem = $("#templateItem").clone();
 
-				newItem.find(".video-title").append(videoData.title);
+				newItem.find(".video-title").append(videoData.title);				
 				newItem.find(".video-description").append(videoData.description);
 				newItem.find(".video-tags").append(videoData.tags);
 
 				newItem.attr("id",""); // TODO: set unique video id
+
+				//TODO: set right hrefs to function buttons
 
 				newItem.appendTo("#browse-container").show();
 			}
@@ -55,6 +57,10 @@
 		<!-- hidden on load -->
 		<div id="templateItem" class="video-item">			
 			<img></img>
+			<div class="video-controls">
+				<a href="#">delete</a>
+				<a href="#">stream</a>
+			</div>
 			<a class="video-title"></a> <br>
 			<a class="video-description"></a> <br>
 			<a class="video-tags"></a> 
