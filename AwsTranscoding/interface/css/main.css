@@ -17,6 +17,7 @@
 
 .video-controls {
 	float: right;
+	margin: 3px;
 }
 
 .video-item a {
