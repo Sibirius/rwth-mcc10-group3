@@ -1,31 +1,91 @@
 <html>
 	<head>
+		<title>Upload Videos</title>
+	
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
 		<script language="javascript" src="js/jquery-1.4.2.min.js"></script>
 		<script language="javascript" src="js/constants.js"></script>
 		
-				
-		<title>upload</title>
+		<script>
+			var maxUploadId = 0;
+			var uploadItems = [];
+
+			var currentlySelectedItem = -1;
+
+			function uploadItemInfo(title, description, tags, file) {				
+				this.title = title;
+				this.description = description;
+				this.tags = tags;
+				this.file = file;
+			} 			
+
+			function selectItem(upload_id) {
+				alert(upload_id);
+			}
+			
+			function addNewItem() {
+				var newItem = $("#templateUploadItem").clone();
+
+				newItem.find(".upload-title").append("new Item");
+				newItem.attr("id","");
+				newItem.attr("upload-id",maxUploadId); // set unique id
+				uploadItems[""+maxUploadId] = new uploadItemInfo("new Item","","","");				
+
+				// set select event
+				newItem.click(function() {
+					  selectItem(maxUploadId);
+				});
+
+				//TODO: set right hrefs to function buttons
+
+				newItem.insertBefore("#addNewItem").show();
+				maxUploadId++;
+			}
+
+			function removeItem(upload_id) {
+				uploadItems.remove(""+upload_id);
+				$("[upload-id"+upload_id+"]").remove();
+			}
+
+			function startUpload() {
+				//TODO: actually do something
+			}
+		
+			$(document).ready(function() {
+			   $("#templateUploadItem").hide();			  
+			});				
+		</script>
 	</head>
 	
 	<body>
-		<form action="http://s3.amazonaws.com/<bucketname>/" enctype="multipart/form-data" method="post">			
-			<div>
-				Titel:<br>
-				<input type="text" name="titel" size="30"><br>				
-				Beschreibung:<br>
-				<input type="text" name="titel" size="30"><br>
-				Tags:<br>					
-				Datei:<br>
-				<input type="file" name="datafile" size="40"><br>
-			</div>
-			
-			<div>
-				<input type="submit" value="Senden">
-			</div>
+		<div id="upload-list">
+			<div id="addNewItem" onClick="addNewItem();"> + Add + </div>
+		</div>
+	
+		<div id="upload-form">
+			<form action="http://s3.amazonaws.com/<bucketname>/" enctype="multipart/form-data" method="post">			
+				<div>
+					Title:<br>
+					<input type="text" name="titel" size="40"><br>				
+					Description:<br>
+					<textarea cols="45" rows="4" name="description"></textarea><br>
+					Tags:<br>					
+					<input type="text" name="tags" size="40"><br>
+					File:<br>
+					<input type="file" name="datafile" size="40"><br>
+				</div>				
+				<div>
+					<input type="submit" value="Senden">
+				</div>		
+			</form>
+		</div>
 		
-		</form>		
+		<a href="#" onClick="startUpload();">Upload</a>
 		
+		<!-- template, hidden on load -->
+		<div id="templateUploadItem" class="upload-item">		
+			<a class="upload-title"></a>				
+		</div>				
 	</body>
 </html>
 
