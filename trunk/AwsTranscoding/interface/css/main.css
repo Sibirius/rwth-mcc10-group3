@@ -1,0 +1,38 @@
+#browse-container {
+
+}
+
+.video-item {
+	margin: 8px;
+	border: solid 1px black;	
+}
+
+.video-item img {
+	margin: 4px;	
+	float: left;
+	width: 320px;
+	height: 240px;
+	border: solid 1px black;
+}
+
+.video-item a {
+	margin-bottom: 3px;	
+}
+
+.video-title {
+	font-size: 2em;
+}
+
+.video-description {
+	font-size: 1em;
+}
+
+.video-tags {
+	font-size: 0.8em;
+	color: grey;
+}
+
+.div-clearer {
+	clear: both;
+	height: 1px;
+}
