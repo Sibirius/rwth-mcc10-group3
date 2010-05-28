@@ -18,7 +18,7 @@
 				this.tags = tags;
 				this.file = file;
 
-				this.uploaded = 0; // 0 = not yet, 1 = yes, -1 = failed
+				this.uploaded = -1; // -1 = not yet, 1 = yes, 0 = failed
 			} 			
 
 			function fillForm(uploadData) {
@@ -93,16 +93,81 @@
 				}
 				
 				uploadItems.remove(""+upload_id);
-				$("[upload-id"+upload_id+"]").remove();
+				$("[upload-id="+upload_id+"]").remove();
 			}
 
-			function startUpload() {
+			function dummy() {
+
+			}
+			
+			function uploadItemStart(upload_id) {
+				// set item active to show what is being uploaded
+				var item = $("[upload-id="+upload_id+"]");
+				item.addClass("working-item");
+
+				// TODO: show progress?
+				// TODO: actually upload here
+				var result = Math.floor(Math.random()*2)
+				setTimeout("uploadItemFinish("+upload_id+","+result+")", 3000);	//simulate upload, callback function
+			}
+
+			// callback function to show result and start next upload
+			function uploadItemFinish(upload_id, result) {
+				var item = $("[upload-id="+upload_id+"]");
+				
+				// show success/failure & save
+				item.removeClass("working-item");
+				if (result == 0) { // failure
+					item.addClass("failed-item");
+				} else { // failure
+					item.addClass("uploaded-item");
+				}
+
+				// save if uploaded
+				uploadItems[""+upload_id].uploaded = result;				
+
+				// call next
+				uploadNext(upload_id);
+			}
+				
+			function startUpload() { 				
+				for (var index in uploadItems) {
+					uploadItemStart(index);
+					break;
+				}
+				
 				//TODO: actually do something (try to upload everything from the list)
 				// <form id="upload-form" action="http://s3.amazonaws.com/<bucketname>/" enctype="multipart/form-data" method="post">
 			}
+
+			// crude and ugly, i am ashamed of this method
+			function uploadNext(upload_id) {
+				var flag = false;
+				
+				for (var index in uploadItems) {
+					if (flag) {
+						uploadItemStart(index);
+						return;
+					}
+					
+					if (index == upload_id) {
+						flag = true;
+						continue;
+					}
+				}
+
+				uploadComplete();
+			}
+
+			// say something about the upload, clear the successfully uploaded items, give feedback   
+			function uploadComplete() {
+				$("#uploadMessage").append("I guess everything went as it should, have a glorious day")
+				$("#uploadMessage").show();
+			}
 		
 			$(document).ready(function() {
-				$("#templateUploadItem").hide();		
+				$("#templateUploadItem").hide();	
+				$("#uploadMessage").hide();
 			   	$("#upload-form").find(":enabled").change(function() {
 					updateCurrentInformation();
 			   	});
@@ -113,6 +178,9 @@
 	</head>
 	
 	<body>
+		<a id="uploadMessage"></a> <br>
+		<a id="uploadButton" href="#" onClick="startUpload();">Upload</a>
+		
 		<div id="upload-list">
 			<div id="addNewItem" onClick="addNewItem();"> + Add + </div>
 		</div>
@@ -129,9 +197,7 @@
 				<input type="file" name="file" size="40"><br>
 			</div>				
 		</form>
-
-		<a id="uploadButton" href="#" onClick="startUpload();">Upload</a>
-				
+		
 		<!-- template, hidden on load -->
 		<div id="templateUploadItem" class="upload-item">		
 			<a class="upload-title"></a>				
