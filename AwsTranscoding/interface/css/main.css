@@ -48,6 +48,7 @@
 }
 
 #upload-list {
+	clear: both;
 	float: left;
 	border: solid 1px black;
 	width: 300;
@@ -65,6 +66,10 @@
 	background-color: orange;
 }
 
+.working-item {
+	background-color: yellow;	
+}
+
 .uploaded-item {
 	background-color: green;
 }
@@ -80,5 +85,9 @@
 }
 
 #uploadButton {
-	clear: both;	
+	float: left;	
+}
+
+#uploadMessage {		
+	float: left;
 }
