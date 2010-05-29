@@ -23,7 +23,7 @@
 
 <h1><a href="./index.jsp">AWS based picture and video uploading</a></h1>
 
-	<p class="uploadlink"><a href="./index.jsp">Back to Galery</a></p>
+	<p class="uploadlink"><a href="./index.jsp">Back to Gallery</a></p>
 
 <fieldset>
 <legend>Upload-Form</legend>
