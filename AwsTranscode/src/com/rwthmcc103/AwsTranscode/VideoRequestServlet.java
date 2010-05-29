@@ -43,10 +43,13 @@ public class VideoRequestServlet extends HttpServlet {
         
         String selection = "";
         String fileName = "";      
+ 
+        String argumentType = "" + request.getParameter("type");        
+        String argumentFileName = "" + request.getParameter("fileName"); 
         
-        if(request.getParameter("type").equals("stream") ) selection = "streamfileReq";
-        if(request.getParameter("type").equals("mobile") ) selection = "mobilefileReq";
-        if(request.getParameter("fileName").matches("[a-zA-Z0-9-_.]*")) fileName = request.getParameter("fileName"); // any combination of upper/lower case letters, numbers underscore, dash and dot    
+        if(argumentType.equals("stream") ) selection = "streamfileReq";
+        if(argumentType.equals("mobile") ) selection = "mobilefileReq";
+        if(argumentFileName.matches("[a-zA-Z0-9-_.]*")) fileName = argumentFileName; // any combination of upper/lower case letters, numbers underscore, dash and dot    
         
         if(selection != "" && fileName != ""){ // TODO: what about Null? -> cannot be null, defined as "" some lines before
         

@@ -24,13 +24,20 @@ import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
-import com.amazonaws.services.simpledb.model.ReplaceableItem;
- 
+
+/**
+ * Servlet implementation class UploadServlet
+ */
 public class UploadServlet extends HttpServlet {
- 
-	private final String TMP = "/tmp/"; 
+	private static final long serialVersionUID = 1L;
 	
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private final String TMP = "/tmp/"; 
+    
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */	
+    @SuppressWarnings("unchecked")
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     	if(ServletFileUpload.isMultipartContent(request)){
 
     		response.setContentType("text/plain");
@@ -65,10 +72,8 @@ public class UploadServlet extends HttpServlet {
     		    		tags = item.getString();
     		    	}    		    			        
     		    } else {
-    		        String fieldName = item.getFieldName();
     		        String fileName = item.getName();
-    		        String contentType = item.getContentType();
-    		        long sizeInBytes = item.getSize();    		        
+    		        String contentType = item.getContentType();  		        
     		        
     		        Boolean isVideo = contentType.startsWith("video");
     		        Boolean isPicture = contentType.startsWith("image"); 

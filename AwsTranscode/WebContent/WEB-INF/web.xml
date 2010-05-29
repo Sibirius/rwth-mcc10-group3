@@ -29,4 +29,14 @@
     <servlet-name>VideoRequestServlet</servlet-name>
     <url-pattern>/VideoRequestServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>DeleteFileServlet</display-name>
+    <servlet-name>DeleteFileServlet</servlet-name>
+    <servlet-class>com.rwthmcc103.AwsTranscode.DeleteFileServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DeleteFileServlet</servlet-name>
+    <url-pattern>/DeleteFileServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

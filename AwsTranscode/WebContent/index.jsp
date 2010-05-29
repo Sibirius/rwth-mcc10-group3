@@ -74,7 +74,7 @@ $(function() {
 		<p class="title"><%= title %></p>
 		<p><%= description %></p>
 		<p class="tags"><b>Tags:</b> <%= tags %></p>
-		<p class="links"><%= streamVid.equals("") ? ( streamReq.equals("1") ? "Stream pending" : "<a href=\"./VideoRequestServlet?type=stream&fileName=" + fileName + "\">Request Stream</a>" ) : "<a href=\"./stream.jsp?fileURL="+ streamVid +"\">Stream</a>"  %>  | <%= mobileVid.equals("") ? ( mobileReq.equals("1") ? "Download pending" : "<a href=\"./VideoRequestServlet?type=mobile&fileName=" + fileName + "\">Request Download</a>" ) : "<a href=\"d1465bq2op7ksa.cloudfront.net/" + mobileVid + "\">Download req</a>" %></p>
+		<p class="links"><a href="./DeleteFileServlet?fileID=<%= itemName %>">Delete</a><br />"<%= streamVid.equals("") ? ( streamReq.equals("1") ? "Stream pending" : "<a href=\"./VideoRequestServlet?type=stream&fileName=" + fileName + "\">Request Stream</a>" ) : "<a href=\"./stream.jsp?fileURL="+ streamVid +"\">Stream</a>"  %>  <br /> <%= mobileVid.equals("") ? ( mobileReq.equals("1") ? "Download pending" : "<a href=\"./VideoRequestServlet?type=mobile&fileName=" + fileName + "\">Request Download</a>" ) : "<a href=\"d1465bq2op7ksa.cloudfront.net/" + mobileVid + "\">Download req</a>" %></p>
 		</div>	    
 	    <%
 	}
@@ -107,6 +107,7 @@ $(function() {
 		<p class="title"><%= title %></p>
 		<p><%= description %></p>
 		<p class="tags"><b>Tags:</b> <%= tags %></p>
+		<p class="links"><a href="./DeleteFileServlet?fileID=<%= itemName %>">Delete</a></p>		
 		</div>	    
 	    <%
 	}
