@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>AWSTranscode - Watch video</title>
  <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
 <script type="text/javascript" src="js/swfobject.js"></script>
 </head>
