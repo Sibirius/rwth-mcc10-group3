@@ -18,9 +18,11 @@ import com.amazonaws.auth.PropertiesCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
-import com.amazonaws.services.simpledb.model.BatchPutAttributesRequest;
+import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import com.amazonaws.services.simpledb.model.ReplaceableItem;
  
@@ -66,13 +68,10 @@ public class UploadServlet extends HttpServlet {
     		        String fieldName = item.getFieldName();
     		        String fileName = item.getName();
     		        String contentType = item.getContentType();
-    		        long sizeInBytes = item.getSize();
-    		        out.println(fieldName + ": " + fileName + ": " + contentType + ": " + sizeInBytes + "\n");       		        
+    		        long sizeInBytes = item.getSize();    		        
     		        
     		        Boolean isVideo = contentType.startsWith("video");
     		        Boolean isPicture = contentType.startsWith("image"); 
-    		        out.println(contentType);
-    		        out.println(isVideo);
     		        
     		        if( isPicture || isVideo ) {
  	
@@ -83,9 +82,9 @@ public class UploadServlet extends HttpServlet {
 	    		        	    		        
 	    		        String cmd;
 	    		        if(isVideo){
-	    		        	cmd = "sh /home/stephan/Desktop/moviethumb.sh " + TMP + uploadedFileName;
+	    		        	cmd = "sh moviethumb.sh " + TMP + uploadedFileName;
 	    		        } else {
-	    		        	cmd = "sh /home/stephan/Desktop/imagethumb.sh " + TMP + uploadedFileName;
+	    		        	cmd = "sh imagethumb.sh " + TMP + uploadedFileName;
 	    		        }
 	    		        
 	    		        Process p = Runtime.getRuntime().exec(cmd);
@@ -97,7 +96,7 @@ public class UploadServlet extends HttpServlet {
 	    		        	String thumbFileName = uploadedFileBaseName + "_thumb.gif";
 	    		        	File thumbFile = new File(TMP+thumbFileName);        	
 	    		        	
-	    		    		PropertiesCredentials pC = new PropertiesCredentials(new File("/home/stephan/Desktop/AwsCredentials.properties"));
+	    		    		PropertiesCredentials pC = new PropertiesCredentials(new File("AwsCredentials.properties"));
 	    		        	
 	    		            AmazonS3 s3 = new AmazonS3Client(pC);	
 	    		            String bucketName = "7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media";
@@ -106,46 +105,49 @@ public class UploadServlet extends HttpServlet {
 	    		            String myDomain = "mcc10group3media";	    		            
 
 	    		            s3.putObject(new PutObjectRequest(bucketName, uploadedFileName, uploadedFile));
+	    		            s3.setObjectAcl(bucketName, uploadedFileName, CannedAccessControlList.PublicRead);	    		            
 	    		            s3.putObject(new PutObjectRequest(bucketName, thumbFileName, thumbFile));
-	    		            
-	    		            List<ReplaceableItem> data = new ArrayList<ReplaceableItem>();
+	    		            s3.setObjectAcl(bucketName, thumbFileName, CannedAccessControlList.PublicRead);
+
+	    		            List<ReplaceableAttribute> data = new ArrayList<ReplaceableAttribute>();
 	    		            
 	    		            if(isVideo){
 	    		            	String animatedThumbFileName = uploadedFileBaseName+"_thumba.gif";
 	    		            	File animatedThumbFile = new File(TMP+animatedThumbFileName);
 		    		            s3.putObject(new PutObjectRequest(bucketName, animatedThumbFileName, animatedThumbFile));	
 		    		            
-		    		            data.add(new ReplaceableItem().withName(id).withAttributes(
-		    		            		new ReplaceableAttribute().withName("Type").withValue("Video"),
-		    		                    new ReplaceableAttribute().withName("Title").withValue(title),
-		    		                    new ReplaceableAttribute().withName("Description").withValue(description),
-		    		                    new ReplaceableAttribute().withName("Tags").withValue(tags),
-		    		                    new ReplaceableAttribute().withName("FileName").withValue(uploadedFileName),
-		    		                    new ReplaceableAttribute().withName("ThumbnailName").withValue(thumbFileName),
-		    		                    new ReplaceableAttribute().withName("aniThumbnailName").withValue(animatedThumbFileName),
-		    		                    new ReplaceableAttribute().withName("streamFileName").withValue(""),
-		    		                    new ReplaceableAttribute().withName("streamFileReq").withValue("0"),
-		    		                    new ReplaceableAttribute().withName("mobileFileName").withValue(""),		    		                    
-		    		                    new ReplaceableAttribute().withName("mobileFileReq").withValue("0")));
+		    		            data.add(new ReplaceableAttribute().withName("Type").withValue("Video"));
+		    		            data.add(new ReplaceableAttribute().withName("Title").withValue(title));
+		    		            data.add(new ReplaceableAttribute().withName("Description").withValue(description));
+	            				data.add(new ReplaceableAttribute().withName("Tags").withValue(tags));
+	            				data.add(new ReplaceableAttribute().withName("FileName").withValue(uploadedFileName));
+	            				data.add(new ReplaceableAttribute().withName("ThumbnailName").withValue(thumbFileName));
+	            				data.add(new ReplaceableAttribute().withName("aniThumbnailName").withValue(animatedThumbFileName));
+	            				data.add(new ReplaceableAttribute().withName("streamFileName").withValue(""));
+	            				data.add(new ReplaceableAttribute().withName("streamFileReq").withValue("0"));
+	            				data.add(new ReplaceableAttribute().withName("mobileFileName").withValue(""));		    		                    
+	            				data.add(new ReplaceableAttribute().withName("mobileFileReq").withValue("0"));
 		    		            
 	    		            } else {
-	    		            	data.add(new ReplaceableItem().withName(id).withAttributes(
-		    		            		new ReplaceableAttribute().withName("Type").withValue("Picture"),
-		    		                    new ReplaceableAttribute().withName("Title").withValue(title),
-		    		                    new ReplaceableAttribute().withName("Description").withValue(description),
-		    		                    new ReplaceableAttribute().withName("Tags").withValue(tags),
-		    		                    new ReplaceableAttribute().withName("FileName").withValue(uploadedFileName),
-		    		                    new ReplaceableAttribute().withName("ThumbnailName").withValue(thumbFileName)));	    		            
+	    		            	data.add(new ReplaceableAttribute().withName("Type").withValue("Picture"));
+	    		            	data.add(new ReplaceableAttribute().withName("Title").withValue(title));
+	    		            	data.add(new ReplaceableAttribute().withName("Description").withValue(description));
+	    		            	data.add(new ReplaceableAttribute().withName("Tags").withValue(tags));
+	    		            	data.add(new ReplaceableAttribute().withName("FileName").withValue(uploadedFileName));
+	    		            	data.add(new ReplaceableAttribute().withName("ThumbnailName").withValue(thumbFileName));	    		            
 	    		            }
 	    		            
-	    		            // TODO: FRAGE: warum genau batchPut?
-	    		            sdb.batchPutAttributes(new BatchPutAttributesRequest(myDomain, data));
+	    		            sdb.putAttributes(new PutAttributesRequest(myDomain, id, data));
 	    		            
 	    		            response.sendRedirect("./success.jsp?what=upload");
 	    		            
+	    		        } else {
+	    		        	out.println("Error while generating thumbs");
 	    		        }
    
-    		        }
+    		        } else {
+    		        	out.println("Wrong filetype");
+    		        } 
     		    }
     		}
     		} catch(Exception e){
