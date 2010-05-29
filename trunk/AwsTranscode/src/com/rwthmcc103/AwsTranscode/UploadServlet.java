@@ -92,6 +92,7 @@ public class UploadServlet extends HttpServlet {
 		        	    		        
 	    		        if( p.waitFor() == 0){
 	    		        	
+	    		        	// cut off 3-letter ending if there is one to get the base name 
 	    		        	String uploadedFileBaseName = uploadedFileName.contains(".") ? (uploadedFileName.substring(0, uploadedFileName.lastIndexOf('.'))) : uploadedFileName; 
 	    		        	String thumbFileName = uploadedFileBaseName + "_thumb.gif";
 	    		        	File thumbFile = new File(TMP+thumbFileName);        	
@@ -137,6 +138,7 @@ public class UploadServlet extends HttpServlet {
 		    		                    new ReplaceableAttribute().withName("ThumbnailName").withValue(thumbFileName)));	    		            
 	    		            }
 	    		            
+	    		            // TODO: FRAGE: warum genau batchPut?
 	    		            sdb.batchPutAttributes(new BatchPutAttributesRequest(myDomain, data));
 	    		            
 	    		            response.sendRedirect("./success.jsp?what=upload");

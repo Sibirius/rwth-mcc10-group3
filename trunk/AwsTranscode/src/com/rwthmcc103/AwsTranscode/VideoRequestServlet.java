@@ -34,7 +34,7 @@ public class VideoRequestServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		response.setContentType("text/plain");
-        //PrintWriter out = response.getWriter();		
+        //PrintWriter out = response.getWriter();	
 		
 		PropertiesCredentials pC = new PropertiesCredentials(new File("/home/stephan/Desktop/AwsCredentials.properties"));
         
@@ -46,12 +46,12 @@ public class VideoRequestServlet extends HttpServlet {
         
         if(request.getParameter("type").equals("stream") ) selection = "streamfileReq";
         if(request.getParameter("type").equals("mobile") ) selection = "mobilefileReq";
-        if(request.getParameter("fileName").matches("[a-z0-9-_.]*")) fileName = request.getParameter("fileName");    
+        if(request.getParameter("fileName").matches("[a-zA-Z0-9-_.]*")) fileName = request.getParameter("fileName"); // any combination of upper/lower case letters, numbers underscore, dash and dot    
         
-        if(selection != "" && fileName != ""){
+        if(selection != "" && fileName != ""){ // TODO: what about Null?
         
 	        String selectExpression = "select " + selection + " from `" + myDomain + "` where FileName = '" + fileName + "'";
-            SelectRequest selectRequest = new SelectRequest(selectExpression);	
+            SelectRequest selectRequest = new SelectRequest(selectExpression);
             List<Item> items = sdb.select(selectRequest).getItems();
                         
             if(items.size() == 1){
