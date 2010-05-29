@@ -12,7 +12,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>AWSTranscode - Gallery</title>
 <link rel="stylesheet" type="text/css" href="css/jquery.lightbox-0.5.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
  <script src='js/jquery-1.4.2.min.js' type="text/javascript"></script>
@@ -32,7 +32,8 @@ $(function() {
 	<p class="uploadlink"><a href="./upload.jsp">Upload new files</a></p>
 	
 	<%
-	AmazonSimpleDB sdb = new AmazonSimpleDBClient(new PropertiesCredentials(new File("/home/stephan/Desktop/AwsCredentials.properties")));
+	PropertiesCredentials pC = new PropertiesCredentials(new File("/home/stephan/Desktop/AwsCredentials.properties"));
+	AmazonSimpleDB sdb = new AmazonSimpleDBClient(pC);
 	String myDomain = "mcc10group3media";	 
 	%>
 	
@@ -46,18 +47,25 @@ $(function() {
 	    String title = "";
 	    String description = "";
 	    String tags = "";
+	    String fileName ="";
 	    String thumb = "";
 	    String aniThumb = "";
 	    String streamVid = "";
 	    String mobileVid = "";
+	    String streamReq = "";
+	    String mobileReq = "";	   
+	    
 	    for (Attribute a : item.getAttributes()) {
 	    	if(a.getName().equals("Title")) title = a.getValue();
 	    	else if(a.getName().equals("Description")) description = a.getValue();
 	    	else if(a.getName().equals("Tags")) tags = a.getValue();
+	    	else if(a.getName().equals("FileName")) fileName = a.getValue();	    	
 	    	else if(a.getName().equals("ThumbnailName")) thumb = a.getValue();
 	    	else if(a.getName().equals("aniThumbnailName")) aniThumb = a.getValue();
 	    	else if(a.getName().equals("streamFileName")) streamVid = a.getValue();
-	    	else if(a.getName().equals("mobileFileName")) mobileVid = a.getValue();	    	
+	    	else if(a.getName().equals("streamFileReq")) streamReq = a.getValue();
+	    	else if(a.getName().equals("mobileFileName")) streamVid = a.getValue();	    	
+	    	else if(a.getName().equals("mobileFileReq")) mobileReq = a.getValue();	    	
 	    }
 	    %>
 		<div class="media">
@@ -65,7 +73,7 @@ $(function() {
 		<p class="title"><%= title %></p>
 		<p><%= description %></p>
 		<p class="tags"><b>Tags:</b> <%= tags %></p>
-		<p class="links"><%= (streamVid.equals("") ? "<a href=\"#streamReq\">Stream req</a>" : "<a href=\"./stream.jsp?fileURL="+ streamVid +"\">Stream</a>"  ) %>  | <%= (mobileVid.equals("") ? "<a href=\"#downreq\">Download req</a>" : "<a href=\"d1465bq2op7ksa.cloudfront.net/" + mobileVid + "\">Download req</a>") %></p>
+		<p class="links"><%= streamVid.equals("") ? ( streamReq.equals("1") ? "Stream pending" : "<a href=\"./VideoRequestServlet?type=stream&fileName=" + fileName + "\">Request Stream</a>" ) : "<a href=\"./stream.jsp?fileURL="+ streamVid +"\">Stream</a>"  %>  | <%= mobileVid.equals("") ? ( mobileReq.equals("1") ? "Download pending" : "<a href=\"./VideoRequestServlet?type=mobile&fileName=" + fileName + "\">Request Download</a>" ) : "<a href=\"d1465bq2op7ksa.cloudfront.net/" + mobileVid + "\">Download req</a>" %></p>
 		</div>	    
 	    <%
 	}
@@ -83,16 +91,18 @@ $(function() {
 	    String title = "";
 	    String description = "";
 	    String tags = "";
+	    String fileName = "";
 	    String thumb = "";
 	    for (Attribute a : item.getAttributes()) {
 	    	if(a.getName().equals("Title")) title = a.getValue();
 	    	else if(a.getName().equals("Description")) description = a.getValue();
 	    	else if(a.getName().equals("Tags")) tags = a.getValue();
+	    	else if(a.getName().equals("FileName")) fileName = a.getValue();	    	
 	    	else if(a.getName().equals("ThumbnailName")) thumb = a.getValue();  	
 	    }
 	    %>
 		<div class="media">
-		<a class="lb" href="200x150.gif"><img src="http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/<%= thumb %>" alt="<%= itemName %>" /></a>
+		<a class="lb" href="http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/<%= fileName %>"><img src="http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/<%= thumb %>" alt="<%= itemName %>" /></a>
 		<p class="title"><%= title %></p>
 		<p><%= description %></p>
 		<p class="tags"><b>Tags:</b> <%= tags %></p>

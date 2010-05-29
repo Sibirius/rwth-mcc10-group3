@@ -30,6 +30,7 @@ public class UploadServlet extends HttpServlet {
 	
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     	if(ServletFileUpload.isMultipartContent(request)){
+
     		response.setContentType("text/plain");
             PrintWriter out = response.getWriter();
            
@@ -95,10 +96,12 @@ public class UploadServlet extends HttpServlet {
 	    		        	String thumbFileName = uploadedFileBaseName + "_thumb.gif";
 	    		        	File thumbFile = new File(TMP+thumbFileName);        	
 	    		        	
-	    		            AmazonS3 s3 = new AmazonS3Client(new PropertiesCredentials(new File("/home/stephan/Desktop/AwsCredentials.properties")));	
+	    		    		PropertiesCredentials pC = new PropertiesCredentials(new File("/home/stephan/Desktop/AwsCredentials.properties"));
+	    		        	
+	    		            AmazonS3 s3 = new AmazonS3Client(pC);	
 	    		            String bucketName = "7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media";
  
-	    		            AmazonSimpleDB sdb = new AmazonSimpleDBClient(new PropertiesCredentials(new File("/home/stephan/Desktop/AwsCredentials.properties")));	    		            
+	    		            AmazonSimpleDB sdb = new AmazonSimpleDBClient(pC);	    		            
 	    		            String myDomain = "mcc10group3media";	    		            
 
 	    		            s3.putObject(new PutObjectRequest(bucketName, uploadedFileName, uploadedFile));
@@ -120,7 +123,9 @@ public class UploadServlet extends HttpServlet {
 		    		                    new ReplaceableAttribute().withName("ThumbnailName").withValue(thumbFileName),
 		    		                    new ReplaceableAttribute().withName("aniThumbnailName").withValue(animatedThumbFileName),
 		    		                    new ReplaceableAttribute().withName("streamFileName").withValue(""),
-		    		                    new ReplaceableAttribute().withName("mobileFileName").withValue("")));
+		    		                    new ReplaceableAttribute().withName("streamFileReq").withValue("0"),
+		    		                    new ReplaceableAttribute().withName("mobileFileName").withValue(""),		    		                    
+		    		                    new ReplaceableAttribute().withName("mobileFileReq").withValue("0")));
 		    		            
 	    		            } else {
 	    		            	data.add(new ReplaceableItem().withName(id).withAttributes(
@@ -134,7 +139,7 @@ public class UploadServlet extends HttpServlet {
 	    		            
 	    		            sdb.batchPutAttributes(new BatchPutAttributesRequest(myDomain, data));
 	    		            
-	    		            response.sendRedirect("./index.jsp");
+	    		            response.sendRedirect("./success.jsp?what=upload");
 	    		            
 	    		        }
    

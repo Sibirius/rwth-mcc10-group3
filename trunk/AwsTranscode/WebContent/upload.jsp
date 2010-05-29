@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>AWSTranscode - Upload</title>
  <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
  <script src='js/jquery-1.4.2.min.js' type="text/javascript"></script>
  <script src='js/jquery.MultiFile.js' type="text/javascript" language="javascript"></script>
