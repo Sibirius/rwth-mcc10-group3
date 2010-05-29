@@ -18,6 +18,7 @@
 	if(argument.equals("upload")) message = "Upload successfull";
 	if(argument.equals("request")) message = "File Request successfull";
 	if(argument.equals("reqExists")) message = "File Request still pending";
+	if(argument.equals("delete")) message = "File successful deleted";	
 %>
 
 <h2><%= message %></h2>
