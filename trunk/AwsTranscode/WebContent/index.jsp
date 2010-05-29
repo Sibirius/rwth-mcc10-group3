@@ -65,7 +65,7 @@ $(function() {
 		<p class="title"><%= title %></p>
 		<p><%= description %></p>
 		<p class="tags"><b>Tags:</b> <%= tags %></p>
-		<p class="links"><%= (streamVid.equals("") ? "<a href=\"#streamReq\">Stream req</a>" : "<a href=\"#stream\">Stream</a>") %>  | <%= (mobileVid.equals("") ? "<a href=\"#downReq\">Download req</a>" : "<a href=\"#stream\">Download</a>") %></p>
+		<p class="links"><%= (streamVid.equals("") ? "<a href=\"#streamReq\">Stream req</a>" : "<a href=\"./stream.jsp?fileURL="+ streamVid +"\">Stream</a>"  ) %>  | <%= (mobileVid.equals("") ? "<a href=\"#downreq\">Download req</a>" : "<a href=\"d1465bq2op7ksa.cloudfront.net/" + mobileVid + "\">Download req</a>") %></p>
 		</div>	    
 	    <%
 	}
