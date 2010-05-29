@@ -13,12 +13,11 @@
 <h1><a href="./index.jsp">AWS based picture and video uploading</a></h1>
 
 <%
-	String arg = request.getParameter("what");
-	String message = "";
-	if(arg.equals("upload")) message = "Upload successfull";
-	if(arg.equals("request")) message = "File Request successfull";
-	if(arg.equals("reqExists")) message = "File Request still pending";
-	
+    String message = "";
+	String argument = "" + request.getParameter("what");
+	if(argument.equals("upload")) message = "Upload successfull";
+	if(argument.equals("request")) message = "File Request successfull";
+	if(argument.equals("reqExists")) message = "File Request still pending";
 %>
 
 <h2><%= message %></h2>

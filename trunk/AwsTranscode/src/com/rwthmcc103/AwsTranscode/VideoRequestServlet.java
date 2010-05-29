@@ -34,9 +34,9 @@ public class VideoRequestServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		response.setContentType("text/plain");
-        //PrintWriter out = response.getWriter();	
+        PrintWriter out = response.getWriter();		
 		
-		PropertiesCredentials pC = new PropertiesCredentials(new File("/home/stephan/Desktop/AwsCredentials.properties"));
+		PropertiesCredentials pC = new PropertiesCredentials(new File("AwsCredentials.properties"));
         
 		AmazonSimpleDB sdb = new AmazonSimpleDBClient(pC);	    		            
         String myDomain = "mcc10group3media";
@@ -48,7 +48,7 @@ public class VideoRequestServlet extends HttpServlet {
         if(request.getParameter("type").equals("mobile") ) selection = "mobilefileReq";
         if(request.getParameter("fileName").matches("[a-zA-Z0-9-_.]*")) fileName = request.getParameter("fileName"); // any combination of upper/lower case letters, numbers underscore, dash and dot    
         
-        if(selection != "" && fileName != ""){ // TODO: what about Null?
+        if(selection != "" && fileName != ""){ // TODO: what about Null? -> cannot be null, defined as "" some lines before
         
 	        String selectExpression = "select " + selection + " from `" + myDomain + "` where FileName = '" + fileName + "'";
             SelectRequest selectRequest = new SelectRequest(selectExpression);
@@ -85,8 +85,14 @@ public class VideoRequestServlet extends HttpServlet {
     		        } else {
     		            response.sendRedirect("./success.jsp?what=reqExists");
     		        }    		          		        
-            	}
+            	} else {
+                	out.println("SDB: No such attribute!");
+                }
+            } else {
+            	out.println("SDB: No such entry!");
             }
+        } else {
+        	out.println("Wrong parameters!");
         }
 	}
 }

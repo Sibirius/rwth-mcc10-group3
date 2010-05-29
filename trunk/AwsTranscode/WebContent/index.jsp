@@ -32,7 +32,7 @@ $(function() {
 	<p class="uploadlink"><a href="./upload.jsp">Upload new files</a></p>
 	
 	<%
-	PropertiesCredentials pC = new PropertiesCredentials(new File("/home/stephan/Desktop/AwsCredentials.properties"));
+	PropertiesCredentials pC = new PropertiesCredentials(new File("AwsCredentials.properties"));
 	AmazonSimpleDB sdb = new AmazonSimpleDBClient(pC);
 	String myDomain = "mcc10group3media";	 
 	%>
@@ -69,7 +69,8 @@ $(function() {
 	    }
 	    %>
 		<div class="media">
-		<a href="#"><img src="http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/<%= aniThumb %>" alt="<%= itemName %>" /></a>
+		<a href="#" id="<%= itemName %>"><img src="http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/<%= thumb %>" alt="<%= title %>" /></a>
+		<script>$("#<%= itemName %>").mouseover(function(){$(this).find("img").attr("src","http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/<%= aniThumb %>");}).mouseout(function(){$(this).find("img").attr("src","http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/<%= thumb %>");});</script>
 		<p class="title"><%= title %></p>
 		<p><%= description %></p>
 		<p class="tags"><b>Tags:</b> <%= tags %></p>
