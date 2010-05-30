@@ -19,7 +19,6 @@ import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.services.simpledb.model.UpdateCondition;
 
 
 /**
@@ -47,18 +46,20 @@ public class VideoRequestServlet extends HttpServlet {
         String argumentType = "" + request.getParameter("type");        
         String argumentFileName = "" + request.getParameter("fileName"); 
         
-        if(argumentType.equals("stream") ) selection = "streamfileReq";
-        if(argumentType.equals("mobile") ) selection = "mobilefileReq";
+        if(argumentType.equals("stream") ) selection = "streamFileReq";
+        if(argumentType.equals("mobile") ) selection = "mobileFileReq";
         if(argumentFileName.matches("[a-zA-Z0-9-_.]*")) fileName = argumentFileName; // any combination of upper/lower case letters, numbers underscore, dash and dot    
         
         if(selection != "" && fileName != ""){ // TODO: what about Null? -> cannot be null, defined as "" some lines before
         
 	        String selectExpression = "select " + selection + " from `" + myDomain + "` where FileName = '" + fileName + "'";
-            SelectRequest selectRequest = new SelectRequest(selectExpression);
+	        SelectRequest selectRequest = new SelectRequest(selectExpression);
             List<Item> items = sdb.select(selectRequest).getItems();
                         
             if(items.size() == 1){
             	
+            	Item item = items.get(0);
+            	String itemName = item.getName();
 		        List<Attribute> attributes = items.get(0).getAttributes();
             	
 		        if(attributes.size() == 1){
@@ -77,11 +78,10 @@ public class VideoRequestServlet extends HttpServlet {
                         .withReplace(true);
     		            
     		            sdb.putAttributes(new PutAttributesRequest()
-                        .withDomainName(myDomain).withExpected(
-                        		new UpdateCondition()
-                        		.withName("FileName")
-                        		.withValue(fileName))
-                        .withAttributes(replaceableAttribute));	
+    		            .withDomainName(myDomain)
+    		            .withItemName(itemName)
+    		            .withAttributes(replaceableAttribute));
+
     		            
     		            response.sendRedirect("./success.jsp?what=request");
     		            

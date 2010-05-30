@@ -120,6 +120,7 @@ public class UploadServlet extends HttpServlet {
 	    		            	String animatedThumbFileName = uploadedFileBaseName+"_thumba.gif";
 	    		            	File animatedThumbFile = new File(TMP+animatedThumbFileName);
 		    		            s3.putObject(new PutObjectRequest(bucketName, animatedThumbFileName, animatedThumbFile));	
+		    		            s3.setObjectAcl(bucketName, animatedThumbFileName, CannedAccessControlList.PublicRead);
 		    		            
 		    		            data.add(new ReplaceableAttribute().withName("Type").withValue("Video"));
 		    		            data.add(new ReplaceableAttribute().withName("Title").withValue(title));
