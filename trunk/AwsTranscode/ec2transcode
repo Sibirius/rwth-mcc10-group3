@@ -1,0 +1,120 @@
+#!/bin/bash
+
+export PATH=$PATH:/var/lib/gems/1.8/bin
+export AWS_ACCESS_KEY_ID=AKIAJ2UWGFAIASZOMPSA
+export AWS_SECRET_ACCESS_KEY=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
+export AMAZON_ACCESS_KEY_ID=AKIAJ2UWGFAIASZOMPSA
+export AMAZON_SECRET_ACCESS_KEY=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
+
+qreq='mcc10group3request'
+qresp='mcc10group3response'
+bucketmedia='7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media'
+bucketstream='7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3stream'
+bucketmobile='7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3mobile'
+
+countermax=10
+
+#######---########
+
+script_start_time=$(date +%s)
+
+clisqs push $qresp --data "$(date) $(uname -n): started" 2> /dev/null
+
+counter=$countermax
+
+while [ $counter -gt 0 ]; do
+
+	#sqs abfragen
+	message=$(clisqs pop $qreq 2> /dev/null)
+	
+	if [ "$message" != "" ]; then
+
+		echo $message
+
+		start_time=$(date +%s)
+
+		action=$(echo $message | cut -d ':' -f1)
+		videofile=$(echo $message | cut -d ':' -f2)
+		
+		fileonserver=$(clis3 list "$bucketmedia/$videofile" 2> /dev/null)
+
+		if [ "$fileonserver" = "$bucketmedia/$videofile" ]; then
+		if [ "$action" = "streamFileReq" -o "$action" = "mobileFileReq" ]; then
+
+			tmpdir=$(mktemp -d)
+
+			#file von s3 runterladen
+			#clis3 get BUCKET/FULL/PATH/NAME /path/to/local/file
+			clis3 get "$bucketmedia/$videofile" "$tmpdir/$videofile" 2> /dev/null
+
+			#ffmpeg
+			if [ "$action" = "streamFileReq" ]; then
+
+				outtmpfile=${videofile%.*}_out.mp4
+				outfile=${videofile%.*}_stream.mp4
+
+				ffmpeg -i "$tmpdir/$videofile" -acodec libfaac -ab 128k -ac 2 -vcodec libx264 -vpre hq -crf 20 -threads 0 -s 720x576 "$tmpdir/$outtmpfile"
+				qt-faststart "$tmpdir/$outtmpfile" "$tmpdir/$outfile" 
+
+				#file nach s3 hochladen
+				#clis3 put BUCKET/FULL/PATH/NAME /path/to/local/file
+				clis3 put "$tmpdir/$outfile" "$bucketstream/$outfile" 2> /dev/null
+				clis3 grant "$bucketstream/$outfile" AllUsers READ
+
+				#sdb updaten
+				itemname=$(getItemName.rb "$videofile")
+				setStreamFileName.rb $itemname "$outfile"
+
+				rm "$tmpdir/$outtmpfile"
+				rm "$tmpdir/$outfile"
+
+			fi 
+
+			if [ "$action" = "mobileFileReq" ]; then
+
+				outfile=${videofile%.*}_mobile.mp4
+
+				#ffmpeg
+				ffmpeg -i "$tmpdir/$videofile" -acodec libfaac -ab 128k -ac 2 -vcodec libx264 -vpre normal -crf 25 -threads 0 -s 480x320 "$tmpdir/$outfile" 
+				
+				#file nach s3 hochladen
+				#clis3 put BUCKET/FULL/PATH/NAME /path/to/local/file	
+				clis3 put "$tmpdir/$outfile" "$bucketmobile/$outfile" 2> /dev/null
+				clis3 grant "$bucketmobile/$outfile" AllUsers READ
+
+				#sdb updaten
+				itemname=$(getItemName.rb "$videofile")
+				setMobileFileName.rb $itemname "$outfile"
+
+				rm "$tmpdir/$outfile"
+
+			fi
+
+			finish_time=$(date +%s)
+
+			#sqs senden
+			clisqs push $qresp --data "$(date) $(uname -n): $outfile [$(stat -c%s "$tmpdir/$videofile") bytes] transcoding complete within $((finish_time - start_time)) secs" 2> /dev/null
+			
+			rm "$tmpdir/$videofile"
+			rmdir "$tmpdir"			
+
+			counter=$countermax
+		fi
+		fi
+	else
+		# no new message
+		counter=$(echo $counter-1 | bc )
+		sleep 10
+	fi
+
+done
+
+script_finish_time=$(date +%s)
+
+clisqs push $qresp --data "$(date) $(uname -n): shutdown after $((script_finish_time - script_start_time)) secs" 2> /dev/null
+
+#shutdown -h now
+echo "shutdown"
+
+
+
