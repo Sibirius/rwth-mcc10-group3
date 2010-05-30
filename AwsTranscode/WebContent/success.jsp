@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>AWSTranscode - Upload Success</title>
+<title>AWSTranscode - Success</title>
  <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
 </head>
 <body>

@@ -38,7 +38,9 @@ public class DeleteFileServlet extends HttpServlet {
         String myDomain = "mcc10group3media";
 
         AmazonS3 s3 = new AmazonS3Client(pC);	
-        String bucketName = "7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media";        
+        String bucketName = "7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media";
+        String streamBucketName = "7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3stream";
+        String mobileBucketName = "7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3mobile";
         
         String fileId = "";      
         
@@ -48,7 +50,7 @@ public class DeleteFileServlet extends HttpServlet {
         
         if(fileId != ""){
 
-        	String selectExpression = "select FileName, ThumbnailName, AniThumbnailName, streamFileName, mobileFileName from `" + myDomain + "` where ItemName() = '" + fileId + "'";
+        	String selectExpression = "select FileName, ThumbnailName, aniThumbnailName, streamFileName, mobileFileName from `" + myDomain + "` where ItemName() = '" + fileId + "'";
         	out.println(selectExpression);
         	SelectRequest selectRequest = new SelectRequest(selectExpression);
             List<Item> items = sdb.select(selectRequest).getItems();
@@ -57,7 +59,14 @@ public class DeleteFileServlet extends HttpServlet {
         	    
         	    for (Attribute a : items.get(0).getAttributes()) {
         	    	if(a.getValue() != ""){
-            	    	s3.deleteObject(bucketName, a.getValue());
+        	    		if(a.getName().equals("streamFileName")){
+        	    			s3.deleteObject(streamBucketName, a.getValue());
+        	    		} else if(a.getName().equals("mobileFileName")){
+        	    			s3.deleteObject(mobileBucketName, a.getValue());
+        	    		} else {
+        	    			s3.deleteObject(bucketName, a.getValue());
+        	    		}
+            	    	
         	    	}   	   	
         	    }
         	    

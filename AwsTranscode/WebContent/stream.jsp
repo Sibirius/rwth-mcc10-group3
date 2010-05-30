@@ -15,8 +15,6 @@
 
 <p class="uploadlink"><a href="./index.jsp">Back to Gallery</a></p>
 
-<p>URL: <%= request.getParameter("fileURL") %></p>
-
 <div id='mediaspace' style="text-align: center;">This text will be replaced</div>
 
 <script type='text/javascript'>
@@ -24,8 +22,8 @@
   so.addParam('allowfullscreen','true');
   so.addParam('allowscriptaccess','always');
   so.addParam('wmode','opaque');
-  so.addVariable('file','bunny.flv');
-  so.addVariable('streamer','rtmp://edge01.fms.dutchview.nl/botr');
+  so.addVariable('file','<%= request.getParameter("fileURL") %>');
+  so.addVariable('streamer','rtmp://s1roepmtsb7c9k.cloudfront.net/cfx/st');
   so.write('mediaspace');
 </script>
 

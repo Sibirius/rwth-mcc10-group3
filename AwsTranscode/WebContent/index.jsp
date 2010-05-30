@@ -64,7 +64,7 @@ $(function() {
 	    	else if(a.getName().equals("aniThumbnailName")) aniThumb = a.getValue();
 	    	else if(a.getName().equals("streamFileName")) streamVid = a.getValue();
 	    	else if(a.getName().equals("streamFileReq")) streamReq = a.getValue();
-	    	else if(a.getName().equals("mobileFileName")) streamVid = a.getValue();	    	
+	    	else if(a.getName().equals("mobileFileName")) mobileVid = a.getValue();	    	
 	    	else if(a.getName().equals("mobileFileReq")) mobileReq = a.getValue();	    	
 	    }
 	    %>
@@ -74,7 +74,7 @@ $(function() {
 		<p class="title"><%= title %></p>
 		<p><%= description %></p>
 		<p class="tags"><b>Tags:</b> <%= tags %></p>
-		<p class="links"><a href="./DeleteFileServlet?fileID=<%= itemName %>">Delete</a><br /><%= streamVid.equals("") ? ( streamReq.equals("1") ? "Stream pending" : "<a href=\"./VideoRequestServlet?type=stream&fileName=" + fileName + "\">Request Stream</a>" ) : "<a href=\"./stream.jsp?fileURL="+ streamVid +"\">Stream</a>"  %>  <br /> <%= mobileVid.equals("") ? ( mobileReq.equals("1") ? "Download pending" : "<a href=\"./VideoRequestServlet?type=mobile&fileName=" + fileName + "\">Request Download</a>" ) : "<a href=\"d1465bq2op7ksa.cloudfront.net/" + mobileVid + "\">Download req</a>" %></p>
+		<p class="links"><a href="./DeleteFileServlet?fileID=<%= itemName %>">Delete</a><br /><%= streamVid.equals("") ? ( streamReq.equals("1") ? "Stream pending" : "<a href=\"./VideoRequestServlet?type=stream&fileName=" + fileName + "\">Request Stream</a>" ) : "<a href=\"./stream.jsp?fileURL="+ streamVid +"\">Stream</a>"  %>  <br /> <%= mobileVid.equals("") ? ( mobileReq.equals("1") ? "Download pending" : "<a href=\"./VideoRequestServlet?type=mobile&fileName=" + fileName + "\">Request Download</a>" ) : "<a href=\"http://d1gielk21ucles.cloudfront.net/" + mobileVid + "\">Download</a>" %></p>
 		</div>	    
 	    <%
 	}
@@ -112,6 +112,7 @@ $(function() {
 	    <%
 	}
 	%>	
+	<a href="./logging.jsp">Log</a>
 </div>
 </body>
 </html>
