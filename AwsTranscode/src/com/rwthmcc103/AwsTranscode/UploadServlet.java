@@ -46,7 +46,7 @@ public class UploadServlet extends HttpServlet {
     		try{
     		// Create a factory for disk-based file items
     		DiskFileItemFactory factory = new DiskFileItemFactory();
-    		factory.setSizeThreshold(10485760);
+    		factory.setSizeThreshold(104857600);
     		
     		// Create a new file upload handler
     		ServletFileUpload upload = new ServletFileUpload(factory);
@@ -110,9 +110,12 @@ public class UploadServlet extends HttpServlet {
 	    		            String myDomain = "mcc10group3media";	    		            
 
 	    		            s3.putObject(new PutObjectRequest(bucketName, uploadedFileName, uploadedFile));
-	    		            s3.setObjectAcl(bucketName, uploadedFileName, CannedAccessControlList.PublicRead);	    		            
+	    		            s3.setObjectAcl(bucketName, uploadedFileName, CannedAccessControlList.PublicRead);
+	    		            uploadedFile.delete();
+	    		            
 	    		            s3.putObject(new PutObjectRequest(bucketName, thumbFileName, thumbFile));
 	    		            s3.setObjectAcl(bucketName, thumbFileName, CannedAccessControlList.PublicRead);
+	    		            thumbFile.delete();
 
 	    		            List<ReplaceableAttribute> data = new ArrayList<ReplaceableAttribute>();
 	    		            
@@ -121,6 +124,7 @@ public class UploadServlet extends HttpServlet {
 	    		            	File animatedThumbFile = new File(TMP+animatedThumbFileName);
 		    		            s3.putObject(new PutObjectRequest(bucketName, animatedThumbFileName, animatedThumbFile));	
 		    		            s3.setObjectAcl(bucketName, animatedThumbFileName, CannedAccessControlList.PublicRead);
+		    		            animatedThumbFile.delete();
 		    		            
 		    		            data.add(new ReplaceableAttribute().withName("Type").withValue("Video"));
 		    		            data.add(new ReplaceableAttribute().withName("Title").withValue(title));
