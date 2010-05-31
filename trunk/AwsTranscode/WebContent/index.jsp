@@ -111,8 +111,9 @@ $(function() {
 		</div>	    
 	    <%
 	}
-	%>	
-	<a href="./logging.jsp">Log</a>
+	%>
+	<hr />	
+	<p><a href="./logging.jsp">Log</a></p>
 </div>
 </body>
 </html>
