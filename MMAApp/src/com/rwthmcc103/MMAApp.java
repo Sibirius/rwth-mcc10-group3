@@ -6,49 +6,37 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
-
-
-public class MMAApp extends Activity { 
-	
-    private Button thumbnailsButton;
-	
+public class MMAApp extends Activity { 	 
 	/** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main); 
         
         //TODO: call menu right away
-        
-        /*
-        this.thumbnailsButton = (Button)this.findViewById(R.id.thumbnails);
-        this.thumbnailsButton.setOnClickListener(new Button.OnClickListener() {         	
-        	public void onClick (View view){ 
-        		Intent myIntent = new Intent(view.getContext(), Thumbnails.class);
-                startActivityForResult(myIntent, 0); 
-        	}
-        }); 
-        */               
-    }
+    }    
     
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
-    }    
+    }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-      AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-      switch (item.getItemId()) {
-      case R.id.thumbnails:
-    	  Intent myIntent = new Intent(this, Thumbnails.class);
-          startActivityForResult(myIntent, 0);
-          return true;
-      default:
-        return super.onContextItemSelected(item);
-      }
+        switch (item.getItemId()) {
+    		case R.id.camera:
+    			break;
+    		case R.id.process:
+    			break;
+    		case R.id.search:
+    			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.SearchMM.class),0); 
+    			return true;
+        	case R.id.thumbnails:
+        		startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.Thumbnails.class),0);
+            	return true;
+    		case R.id.gallery:
+    			break;
+        }
+        return false;
     }
 }
