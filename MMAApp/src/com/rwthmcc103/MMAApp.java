@@ -40,12 +40,13 @@ public class MMAApp extends Activity {
         return true;
     }    
 
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
       AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
       switch (item.getItemId()) {
       case R.id.thumbnails:
-    	  // TODO: switch to view
-    	  return true;
+    	  Intent myIntent = new Intent(this, Thumbnails.class);
+          startActivityForResult(myIntent, 0);
+          return true;
       default:
         return super.onContextItemSelected(item);
       }
