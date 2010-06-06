@@ -11,12 +11,12 @@
 	   />
 	
 	<TextView
-        android:text="Name:"
+        android:text="Titel:"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         />
     <EditText
-        android:id="@+id/entryname"
+        android:id="@+id/entrytitel"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/editbox_background"
