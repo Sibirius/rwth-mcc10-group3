@@ -36,6 +36,7 @@ public class AwsIntegrator {
         
         List<ReplaceableAttribute> data = new ArrayList<ReplaceableAttribute>();
         data.add(new ReplaceableAttribute().withName("Type").withValue((mItem.getIsVideo()) ? "Video" : "Picture"));
+        data.add(new ReplaceableAttribute().withName("FileName").withValue(mItem.getFilename()));
         data.add(new ReplaceableAttribute().withName("Title").withValue(mItem.getTitle()));
         data.add(new ReplaceableAttribute().withName("Description").withValue(mItem.getDescription()));
 		data.add(new ReplaceableAttribute().withName("Tags").withValue(mItem.getTags()));
@@ -62,7 +63,8 @@ public class AwsIntegrator {
 			else mItem.setIsVideo(false);
 			
 		    for (Attribute a : item.getAttributes()) {
-		    	if(a.getName().equals("Title")) mItem.setTitle(a.getValue());
+		    	if(a.getName().equals("FileName")) mItem.setFilename(a.getValue());
+		    	else if(a.getName().equals("Title")) mItem.setTitle(a.getValue());
 		    	else if(a.getName().equals("Description")) mItem.setDescription(a.getValue());
 		    	else if(a.getName().equals("Tags")) mItem.setTags(a.getValue());
 		    	else if(a.getName().equals("FileName")) mItem.setFilename(a.getValue());	    	
