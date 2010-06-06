@@ -12,9 +12,10 @@ public class MMAApp extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);        
-    }    
-        
-    @Override
+    } 
+    
+    //open menu permanently
+    @Override 
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if(hasFocus) openOptionsMenu();
