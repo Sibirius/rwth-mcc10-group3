@@ -1,6 +1,9 @@
 package com.rwthmcc103;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.database.Cursor;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,14 +17,7 @@ public class ImageAdapter extends BaseAdapter {
         mContext = c;
     }
 
-    public int getCount() {
-        return mThumbIds.length;
-    }
-
-    public Object getItem(int position) {
-        return null;
-    }
-
+  
     public long getItemId(int position) {
         return 0;
     }
@@ -56,4 +52,29 @@ public class ImageAdapter extends BaseAdapter {
             R.drawable.sample_4, R.drawable.sample_5,
             R.drawable.sample_6, R.drawable.sample_7
     };
+    
+    int mGalleryItemBackground;
+	private Cursor mCursor;
+	private static final String TAG = "ImageAdapter";
+
+
+    public ImageAdapter(Cursor cursor, Context c) {
+        mContext = c;
+        mCursor = cursor;
+        // See res/values/attrs.xml for the  defined values here for styling
+        TypedArray a = mContext.obtainStyledAttributes(R.styleable.Gallery1);
+        mGalleryItemBackground = a.getResourceId(
+                R.styleable.Gallery1_android_galleryItemBackground, 0);
+        a.recycle();
+		Log.i(TAG, "ImageAdapter count = " + getCount());
+
+    }
+
+    public int getCount() {
+      return mCursor.getCount();
+    }
+
+    public Object getItem(int position) {
+        return position;
+    }
 }

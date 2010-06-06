@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, MMAApp!</string>
     <string name="app_name">Mobile Multimedia Android-App</string>
+    <color name="green">#00FF00</color>
 </resources>

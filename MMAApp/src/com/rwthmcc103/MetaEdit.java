@@ -6,6 +6,9 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,7 +38,7 @@ public class MetaEdit extends Activity{
 
 	    g.setOnItemClickListener(new OnItemClickListener() {
 	        public void onItemClick(AdapterView parent, View v, int position, long id) {
-	            //Toast.makeText(MetaEdit.this, "" + position, Toast.LENGTH_SHORT).show();
+	            //TODO: find filename by position
 	        	readDB("sample_0.jpg");
 	        }
 	    });
@@ -43,6 +46,7 @@ public class MetaEdit extends Activity{
 	    Button saveButton = (Button) findViewById(R.id.save);
         saveButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View v) { 
+        		//TODO: find filename by position
         		writeDB("sample_0.jpg");
         	}
         	
@@ -109,14 +113,37 @@ public class MetaEdit extends Activity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
     		case R.id.gps:
-    			break;
+    			setGPS("sample_0.jpg");
+    			return true;
     		case R.id.upload:
     			break;
     	}
         return false;
     }
 	
-    //gets an fileId and put entries of the db in the textedit boxes
+    private void setGPS(String name) {
+		//TODO:
+    	LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+    	Location loc = lm.getLastKnownLocation("gps");
+    	double altitude = loc.getAltitude();
+    	double latitude = loc.getLatitude();
+    	
+    	SQLiteDatabase db = null;
+     	try{
+     	     db = this.openOrCreateDatabase(MMAApp.MY_DB_NAME, MODE_PRIVATE, null);
+     	     db.execSQL("UPDATE "+MMAApp.TABLE_NAME+" " +
+     	     		"SET " +
+     	     		"gps='"+String.valueOf(altitude)+" , "+String.valueOf(latitude) +
+     	     		"WHERE name='"+name+"'");
+     	     
+     	} finally {
+    	    if (db != null)
+    	     	db.close();
+    	}    
+		
+	}
+
+	//gets an fileId and put entries of the db in the textedit boxes
     public void readDB(String name){
     	
     	SQLiteDatabase db = null;
