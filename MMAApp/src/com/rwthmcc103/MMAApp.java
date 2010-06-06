@@ -1,6 +1,9 @@
 package com.rwthmcc103;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -10,6 +13,8 @@ import android.view.MenuItem;
 
 
 public class MMAApp extends Activity {
+	
+	static final int DIALOG_PHOTO_OR_VIDEO_ID = 0;
 	
 	public static final String MY_DB_NAME = "mmaapp";
 	public static final String TABLE_NAME = "metatable";
@@ -33,13 +38,49 @@ public class MMAApp extends Activity {
         setContentView(R.layout.main);        
     } 
     
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        Dialog dialog = null;
+        switch(id) {
+        case DIALOG_PHOTO_OR_VIDEO_ID:
+        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        	builder.setMessage("Photo or Video?")
+        	       .setCancelable(false)
+        	       .setPositiveButton("Photo", new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	        	   //TODO: get captured image and save it
+        	    			Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);    			
+        	    			startActivityForResult(intent, 1);
+        	           }
+        	       })
+        	       .setNeutralButton("Video", new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	        	   //TODO: get captured video and save it        	        	   
+        	    			Intent intent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);    			
+        	    			startActivityForResult(intent, 1);
+        	           }
+        	       })        	       
+        	       .setNegativeButton("None", new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	                dialog.cancel();
+        	           }
+        	       });
+        	
+        	dialog = builder.create();
+        	
+        	break;
+        default:
+            dialog = null;
+        }
+        return dialog;
+    }
+    
     //open menu permanently
     @Override 
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if(hasFocus) openOptionsMenu();
     } 
-
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -52,10 +93,7 @@ public class MMAApp extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
     		case R.id.camera:
-    			//TODO: choose between image and video
-    			//android.provider.MediaStore.ACTION_VIDEO_CAPTURE
-    			Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);    			
-    			startActivityForResult(intent, 1);    			
+    			showDialog(this.DIALOG_PHOTO_OR_VIDEO_ID);    			    			
     			return true;
     		case R.id.process:
     			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.MetaEdit.class),0);
@@ -80,7 +118,7 @@ public class MMAApp extends Activity {
     		myDB = this.openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
     		myDB.execSQL(TABLE_CREATE);
     		
-    		//füllen
+    		//fï¿½llen
     		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
 					+ "VALUES ('sample_0.jpg', 'Sample 0', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
     		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
