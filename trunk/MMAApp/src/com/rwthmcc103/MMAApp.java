@@ -79,8 +79,24 @@ public class MMAApp extends Activity {
     	try {
     		myDB = this.openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
     		myDB.execSQL(TABLE_CREATE);
+    		
+    		//füllen
     		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
 					+ "VALUES ('sample_0.jpg', 'Sample 0', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
+    		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
+					+ "VALUES ('sample_1.jpg', 'Sample 1', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
+    		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
+					+ "VALUES ('sample_2.jpg', 'Sample 2', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
+    		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
+					+ "VALUES ('sample_3.jpg', 'Sample 3', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
+    		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
+					+ "VALUES ('sample_4.jpg', 'Sample 4', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
+    		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
+					+ "VALUES ('sample_5.jpg', 'Sample 5', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
+    		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
+					+ "VALUES ('sample_6.jpg', 'Sample 6', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
+    		
+    		
         } finally {
              if (myDB != null)
                   myDB.close();
