@@ -2,15 +2,34 @@ package com.rwthmcc103;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class MMAApp extends Activity { 	 
+
+public class MMAApp extends Activity {
+	
+	public static final String MY_DB_NAME = "mmaapp";
+	public static final String TABLE_NAME = "metatable";
+	public static final String TABLE_CREATE =
+                "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
+                "name" + " TEXT, " +
+                "titel" + " TEXT, " +
+                "description" + " TEXT, " +
+                "tags" + " TEXT, " +
+                "gps" + " TEXT, " +	
+                "isvideo" + " TEXT, " +
+                "ispicture" + " TEXT" +");";
+	
+    
+    
+    
 	/** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        onCreateDBAndDBTabled();
         setContentView(R.layout.main);        
     } 
     
@@ -52,5 +71,19 @@ public class MMAApp extends Activity {
     			return true;
         }
         return false;
+    }
+    
+    private void onCreateDBAndDBTabled(){
+    	
+    	SQLiteDatabase myDB = null;
+    	try {
+    		myDB = this.openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
+    		myDB.execSQL(TABLE_CREATE);
+    		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
+					+ "VALUES ('sample_0.jpg', 'Sample 0', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
+        } finally {
+             if (myDB != null)
+                  myDB.close();
+        }
     }
 }
