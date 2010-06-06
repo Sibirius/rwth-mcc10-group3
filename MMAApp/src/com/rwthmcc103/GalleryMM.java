@@ -18,7 +18,7 @@ public class GalleryMM extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-        setContentView(R.layout.gallery);
+        setContentView(R.layout.gallery); 
         
 	    Gallery g = (Gallery) findViewById(R.id.gallery_gallery);
 	    g.setAdapter(new ImageAdapter(this));
