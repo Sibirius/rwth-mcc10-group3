@@ -43,7 +43,8 @@ public class MMAApp extends Activity {
         		startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.Thumbnails.class),0);
             	return true;
     		case R.id.gallery:
-    			break;
+    			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.GalleryMM.class),0);
+    			return true;
         }
         return false;
     }

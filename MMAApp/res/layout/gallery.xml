@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+	<Gallery xmlns:android="http://schemas.android.com/apk/res/android" 
+	    android:id="@+id/gallery_gallery"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+		/>
+
+	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Title:" android:textStyle="bold"></TextView>	
+	<TextView android:id="@+id/gallery_title" android:layout_height="wrap_content" android:text="blabla" android:layout_width="wrap_content"></TextView>
+	
+	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Description:" android:textStyle="bold"></TextView>
+	<TextView android:id="@+id/gallery_description" android:layout_height="wrap_content" android:text="something something DARK SIDE" android:layout_width="wrap_content"></TextView>
+
+	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tags:" android:textStyle="bold"></TextView>
+	<TextView android:id="@+id/gallery_tags" android:layout_height="wrap_content" android:text="something something something COMPLETE" android:layout_width="wrap_content"></TextView>
+
+</LinearLayout>

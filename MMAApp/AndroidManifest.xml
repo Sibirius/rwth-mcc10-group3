@@ -11,6 +11,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".GalleryMM"></activity>
         <activity android:name=".Thumbnails"></activity>
 		<activity android:name=".SearchMM"></activity>
 		<activity android:name=".MetaEdit"></activity>
