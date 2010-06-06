@@ -12,8 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,9 +37,16 @@ public class MetaEdit extends Activity{
 	        public void onItemClick(AdapterView parent, View v, int position, long id) {
 	            //Toast.makeText(MetaEdit.this, "" + position, Toast.LENGTH_SHORT).show();
 	        	readDB("sample_0.jpg");
-	        	
 	        }
 	    });
+	    
+	    Button saveButton = (Button) findViewById(R.id.save);
+        saveButton.setOnClickListener(new OnClickListener() {
+        	public void onClick(View v) { 
+        		writeDB("sample_0.jpg");
+        	}
+        	
+        });
 	}
 	
 	public class ImageAdapter extends BaseAdapter {
@@ -107,7 +117,7 @@ public class MetaEdit extends Activity{
     }
 	
     //gets an fileId and put entries of the db in the textedit boxes
-    public void readDB(String fileId){
+    public void readDB(String name){
     	
     	SQLiteDatabase db = null;
     	try{
@@ -115,12 +125,12 @@ public class MetaEdit extends Activity{
     	     
     	   	 Cursor c = db.rawQuery("SELECT *" +    			  
 	                  " FROM " + MMAApp.TABLE_NAME 
-	                  + " WHERE name = '" + fileId + "';",
+	                  + " WHERE name = '" + name + "';",
 	                  null);
 	    	 
 	    	 if(c !=null){
 	    		 
-		    	 int titelColumn = c.getColumnIndex("name");
+		    	 int titelColumn = c.getColumnIndex("titel");
 		    	 int descriptionColumn = c.getColumnIndex("description");
 		         int tagsColumn = c.getColumnIndex("tags");
 		         
@@ -148,7 +158,27 @@ public class MetaEdit extends Activity{
     	    if (db != null)
     	     	db.close();
     	  }
-    	 
-    	 
+    }
+    
+    public void writeDB (String name){
+    	
+    	EditText titel = (EditText)findViewById(R.id.entrytitel);
+    	EditText description = (EditText)findViewById(R.id.entrydescription);
+    	EditText tags = (EditText)findViewById(R.id.entrytags);
+    	
+     	SQLiteDatabase db = null;
+     	try{
+     	     db = this.openOrCreateDatabase(MMAApp.MY_DB_NAME, MODE_PRIVATE, null);
+     	     db.execSQL("UPDATE "+MMAApp.TABLE_NAME+" " +
+     	     		"SET " +
+     	     		"titel='"+titel.getText().toString()+"', " +
+     	     		"description='"+description.getText().toString()+"', " +
+     	     		"tags='"+tags.getText().toString()+"'" +
+     	     		"WHERE name='"+name+"'");
+     	     
+     	} finally {
+    	    if (db != null)
+    	     	db.close();
+    	}    
     }
 }
