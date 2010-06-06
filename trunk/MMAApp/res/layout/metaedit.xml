@@ -11,7 +11,7 @@
 	   />
 	
 	<TextView
-        android:text="Titel:"
+        android:text="@string/title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         />
@@ -22,7 +22,7 @@
         android:background="@android:drawable/editbox_background"
         />
     <TextView
-        android:text="Description:"
+        android:text="@string/description"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         />
@@ -33,7 +33,7 @@
         android:background="@android:drawable/editbox_background"
         android:layout_weight="3"/>
     <TextView
-        android:text="Tags:"
+        android:text="@string/tags"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         />
@@ -43,11 +43,41 @@
         android:layout_height="wrap_content"
         android:background="@android:drawable/editbox_background"
         />
-     <Button
-        android:id="@+id/save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save"
-         />
-	
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:orientation="horizontal"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content">
+		
+		     <Button
+		        android:id="@+id/buttonSetCurrentLocation"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="Set Current Location"
+		         />
+		     <Button
+		        android:id="@+id/buttonSelectLocation"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="Select Location"
+		         />
+		</LinearLayout>
+		
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:orientation="horizontal"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content">
+		
+		     <Button
+		        android:id="@+id/save"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="Save"
+		         />
+		     <Button
+		        android:id="@+id/upload"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="Upload"
+		         />
+		</LinearLayout>	
 </LinearLayout>

@@ -45,7 +45,7 @@ public class MMAApp extends Activity {
         case DIALOG_PHOTO_OR_VIDEO_ID:
         	AlertDialog.Builder builder = new AlertDialog.Builder(this);
         	builder.setMessage("Photo or Video?")
-        	       .setCancelable(false)
+        	       .setCancelable(true)
         	       .setPositiveButton("Photo", new DialogInterface.OnClickListener() {
         	           public void onClick(DialogInterface dialog, int id) {
         	        	   //TODO: get captured image and save it
@@ -53,16 +53,11 @@ public class MMAApp extends Activity {
         	    			startActivityForResult(intent, 1);
         	           }
         	       })
-        	       .setNeutralButton("Video", new DialogInterface.OnClickListener() {
+        	       .setNegativeButton("Video", new DialogInterface.OnClickListener() {
         	           public void onClick(DialogInterface dialog, int id) {
         	        	   //TODO: get captured video and save it        	        	   
         	    			Intent intent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);    			
         	    			startActivityForResult(intent, 1);
-        	           }
-        	       })        	       
-        	       .setNegativeButton("None", new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-        	                dialog.cancel();
         	           }
         	       });
         	
@@ -93,7 +88,7 @@ public class MMAApp extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
     		case R.id.camera:
-    			showDialog(this.DIALOG_PHOTO_OR_VIDEO_ID);    			    			
+    			showDialog(DIALOG_PHOTO_OR_VIDEO_ID);    			    			
     			return true;
     		case R.id.process:
     			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.MetaEdit.class),0);
@@ -118,7 +113,7 @@ public class MMAApp extends Activity {
     		myDB = this.openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
     		myDB.execSQL(TABLE_CREATE);
     		
-    		//f�llen
+    		//fuellen
     		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
 					+ "VALUES ('sample_0.jpg', 'Sample 0', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
     		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
