@@ -25,10 +25,14 @@ public class GalleryMM extends Activity {
 
 	    g.setOnItemClickListener(new OnItemClickListener() {
 	        public void onItemClick(AdapterView parent, View v, int position, long id) {
-	            Toast.makeText(GalleryMM.this, "" + position, Toast.LENGTH_SHORT).show();
+	            //Toast.makeText(GalleryMM.this, "" + position, Toast.LENGTH_SHORT).show();
 	        }
 	    });        
     }
+    
+    public void onClick(View v) {
+    	getSystemService(LOCATION_SERVICE);
+      }    
     
 	public class ImageAdapter extends BaseAdapter {
 	    int mGalleryItemBackground;

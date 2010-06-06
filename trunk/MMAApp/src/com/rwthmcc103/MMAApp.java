@@ -27,9 +27,6 @@ public class MMAApp extends Activity {
                 "gps" + " TEXT, " +	
                 "isvideo" + " TEXT, " +
                 "ispicture" + " TEXT" +");";
-	
-    
-    
     
 	/** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
@@ -128,8 +125,6 @@ public class MMAApp extends Activity {
 					+ "VALUES ('sample_5.jpg', 'Sample 5', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
     		myDB.execSQL("INSERT INTO "+ TABLE_NAME +" (name, titel, description, tags, gps, isvideo, ispicture) "
 					+ "VALUES ('sample_6.jpg', 'Sample 6', 'Samples', 'Picture', '32352, 43534' ,'false', 'true');");
-    		
-    		
         } finally {
              if (myDB != null)
                   myDB.close();
