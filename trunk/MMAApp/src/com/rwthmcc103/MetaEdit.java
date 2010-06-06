@@ -2,8 +2,12 @@ package com.rwthmcc103;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -72,8 +76,29 @@ public class MetaEdit extends Activity{
 	        i.setScaleType(ImageView.ScaleType.FIT_XY);
 	        i.setBackgroundResource(mGalleryItemBackground);
 
-	        return i;
+	        return i; 
 	    }
 	}
+	
+	
+
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.metaedit_menu, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+    		case R.id.gps:
+    			break;
+    		case R.id.upload:
+    			break;
+    	}
+        return false;
+    }
 	
 }
