@@ -32,7 +32,11 @@ public class MMAApp extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
     		case R.id.camera:
-    			break;
+    			//TODO: choose between image and video
+    			//android.provider.MediaStore.ACTION_VIDEO_CAPTURE
+    			Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);    			
+    			startActivityForResult(intent, 1);    			
+    			return true;
     		case R.id.process:
     			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.MetaEdit.class),0);
     			return true;
