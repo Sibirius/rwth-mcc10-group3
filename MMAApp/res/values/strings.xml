@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, MMAApp!</string>
-    <string name="app_name">Mobile Multimedia Android-App</string>
-    <color name="green">#00FF00</color>
+    
+<string name="app_name">Mobile Multimedia Android-App</string>
+<color name="green">#00FF00</color>
+
+<string name="title">Title</string>
+<string name="description">Description</string>
+<string name="tags">Tags</string>
 </resources>
