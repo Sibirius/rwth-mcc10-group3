@@ -27,7 +27,8 @@ public class MMAApp extends Activity {
     		case R.id.camera:
     			break;
     		case R.id.process:
-    			break;
+    			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.MetaEdit.class),0);
+    			return true;
     		case R.id.search:
     			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.SearchMM.class),0); 
     			return true;
@@ -36,6 +37,7 @@ public class MMAApp extends Activity {
             	return true;
     		case R.id.gallery:
     			break;
+    			
         }
         return false;
     }

@@ -12,7 +12,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Thumbnails"></activity>
-
+		<activity android:name=".SearchMM"></activity>
+		<activity android:name=".MetaEdit"></activity>
     </application>
 
 
