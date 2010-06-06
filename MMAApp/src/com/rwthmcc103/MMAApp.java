@@ -11,17 +11,24 @@ public class MMAApp extends Activity {
 	/** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main); 
-        
-        //TODO: call menu right away
+        setContentView(R.layout.main);        
     }    
+        
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus) openOptionsMenu();
+    } 
+
     
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
     }
-
+    
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
     		case R.id.camera:
@@ -37,7 +44,6 @@ public class MMAApp extends Activity {
             	return true;
     		case R.id.gallery:
     			break;
-    			
         }
         return false;
     }
