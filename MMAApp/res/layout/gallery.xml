@@ -26,7 +26,8 @@
 	    android:layout_height="fill_parent" >
     
     	<Button android:id="@+id/viewLocation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Show Location"></Button>
-    	<!-- 
+ 
+ 		<!-- 
 	    <com.google.android.maps.MapView 
 	        android:id="@+id/mapView"
 	        android:layout_width="fill_parent"
@@ -35,6 +36,6 @@
 	        android:clickable="true"
 	        android:apiKey="ABQIAAAAGAP5T4BS8Gn8z_KNdk4MuxQs3QBYDBscCkXn5XVh-PO2erUf9BRLbMyRF04Gc0cJo5xmV5wt1Y7oPQ"        
 	        />
-	    -->	
-	</RelativeLayout>
+	 	-->
+	 </RelativeLayout>
 </LinearLayout>
