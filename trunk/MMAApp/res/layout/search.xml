@@ -9,6 +9,6 @@
 	<CheckBox android:id="@+id/check_title" android:layout_height="wrap_content" android:text="Title" android:layout_width="fill_parent" android:checked="true"></CheckBox>
 	<CheckBox android:id="@+id/check_description" android:layout_height="wrap_content" android:text="Description" android:layout_width="fill_parent" android:checked="true"></CheckBox>
 	<CheckBox android:id="@+id/check_tags" android:layout_height="wrap_content" android:text="Tags" android:layout_width="fill_parent" android:checked="true"></CheckBox>
-	<Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Search" android:id="@+id/search_button" android:layout_gravity="bottom"></Button>
+	<Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Search" android:id="@+id/search_button" android:layout_gravity="bottom" android:onClick="doSearch"></Button>
 
 </LinearLayout>
