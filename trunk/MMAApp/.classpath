@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.amazonaws.eclipse.sdk.AWS_JAVA_SDK"/>
+	<classpathentry kind="lib" path="/home/toasty/Programming/android/android-sdk-linux_86/add-ons/google_apis-8_r01/libs/maps.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
