@@ -134,7 +134,7 @@ public class MetaEdit extends Activity{
      	     db.execSQL("UPDATE "+MMAApp.TABLE_NAME+" " +
      	     		"SET " +
      	     		"gps='"+String.valueOf(altitude)+" , "+String.valueOf(latitude) +
-     	     		"WHERE name='"+name+"'");
+     	     		"WHERE name='"+name+"';");
      	     
      	} finally {
     	    if (db != null)
@@ -155,7 +155,7 @@ public class MetaEdit extends Activity{
 	                  + " WHERE name = '" + name + "';",
 	                  null);
 	    	 
-	    	 if(c !=null){
+	    	 if(c != null){
 	    		 
 		    	 int titelColumn = c.getColumnIndex("titel");
 		    	 int descriptionColumn = c.getColumnIndex("description");

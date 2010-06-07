@@ -19,7 +19,7 @@ public class Thumbnails extends Activity {
         gridview.setAdapter(new ImageAdapter(this));
 
         gridview.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+            public void onItemClick(AdapterView parent, View v, int position, long id) {
                 //Toast.makeText(Thumbnails.this, "" + position, Toast.LENGTH_SHORT).show();
             }
         });
