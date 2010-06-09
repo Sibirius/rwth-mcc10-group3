@@ -2,6 +2,7 @@ package com.rwthmcc103;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -60,7 +61,9 @@ public class MetaEdit extends Activity{
 
 	// TODO open map view to select location
 	public void doSelectLocation(View v) {
-		
+    	Intent intent = new Intent(this.getApplicationContext(), com.rwthmcc103.MMMapView.class);
+    	//TODO: feed desired location into intent
+    	this.startActivityForResult(intent, 1);
 	}
 
 	// TODO: saves the data for the currently displayed item
