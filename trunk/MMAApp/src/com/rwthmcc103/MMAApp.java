@@ -3,13 +3,16 @@ package com.rwthmcc103;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 
 
 public class MMAApp extends Activity {
@@ -27,15 +30,33 @@ public class MMAApp extends Activity {
                 "gps" + " TEXT, " +	
                 "isvideo" + " TEXT, " +
                 "ispicture" + " TEXT" +");";
+	
+	private boolean menuFlag = false;
     
 	/** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onCreateDBAndDBTabled();
-        setContentView(R.layout.main);        
-    } 
+        setContentView(R.layout.main);
+    }
     
-    @Override
+	@Override
+	public void onPanelClosed(int featureId, Menu menu) {
+		super.onPanelClosed(featureId, menu);
+		
+		if (menu != null && !menuFlag) {
+			terminate();			
+		} else {
+			menuFlag = false;
+		}
+	}
+
+	public void terminate() {
+    	super.onDestroy();
+    	this.finish();
+    }
+
+	@Override
     protected Dialog onCreateDialog(int id) {
         Dialog dialog = null;
         switch(id) {
@@ -73,16 +94,19 @@ public class MMAApp extends Activity {
         super.onWindowFocusChanged(hasFocus);
         if(hasFocus) openOptionsMenu();
     } 
-    
+        
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
+        
         return true;
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	menuFlag = true;
+    	
         switch (item.getItemId()) {
     		case R.id.camera:
     			showDialog(DIALOG_PHOTO_OR_VIDEO_ID);    			    			
