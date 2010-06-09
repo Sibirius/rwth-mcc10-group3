@@ -13,16 +13,16 @@
 	    android:layout_height="wrap_content"
 		/>
 		
-	<TextView android:id="@+id/gallery_title_t" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/title" android:textStyle="bold"></TextView>	
+	<TextView android:id="@+id/gallery_title_t" android:paddingTop="4px" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/title" android:textStyle="bold"></TextView>	
 	<TextView android:id="@+id/gallery_title" android:layout_height="wrap_content" android:text="blabla" android:layout_width="wrap_content"></TextView>
 	
-	<TextView android:id="@+id/gallery_description_t" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/description" android:textStyle="bold"></TextView>
+	<TextView android:id="@+id/gallery_description_t" android:paddingTop="4px" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/description" android:textStyle="bold"></TextView>
 	<TextView android:id="@+id/gallery_description" android:layout_height="wrap_content" android:text="something something DARK SIDE" android:layout_width="wrap_content"></TextView>
 
-	<TextView android:id="@+id/gallery_tags_t" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tags" android:textStyle="bold"></TextView>
+	<TextView android:id="@+id/gallery_tags_t" android:paddingTop="4px" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tags" android:textStyle="bold"></TextView>
 	<TextView android:id="@+id/gallery_tags" android:layout_height="wrap_content" android:text="something something something COMPLETE" android:layout_width="wrap_content"></TextView>
 
-	<Button android:id="@+id/viewLocation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Show Location"></Button>
+	<Button android:id="@+id/viewLocation" android:onClick="doViewLocation" android:paddingTop="20px" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="Show Location"></Button>
 
 	<!-- 
     <com.google.android.maps.MapView 

@@ -57,12 +57,14 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="Set Current Location"
+		        android:onClick="doSetCurrentLocation"
 		         />
 		     <Button
 		        android:id="@+id/buttonSelectLocation"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="Select Location"
+		        android:onClick="doSelectLocation"
 		         />
 		</LinearLayout>
 		
@@ -72,16 +74,18 @@
 		    android:layout_height="wrap_content">
 		
 		     <Button
-		        android:id="@+id/save"
+		        android:id="@+id/buttonSave"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="Save"
+		        android:onClick="doWriteItemData"
 		         />
 		     <Button
-		        android:id="@+id/upload"
+		        android:id="@+id/buttonUpload"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="Upload"
+		        android:onClick="doUpload"
 		         />
 		</LinearLayout>	
 </LinearLayout>

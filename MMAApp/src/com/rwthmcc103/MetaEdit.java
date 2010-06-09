@@ -5,26 +5,21 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 public class MetaEdit extends Activity{
 
@@ -38,83 +33,47 @@ public class MetaEdit extends Activity{
 
 	    showItemData(0);
 	    
-	    g.setOnItemClickListener(new OnItemClickListener() {
-	        public void onItemClick(AdapterView parent, View v, int position, long id) {
-	        	showItemData(0);
+	    g.setOnItemSelectedListener(new OnItemSelectedListener() {
+	    	@Override
+	        public void onItemSelected(AdapterView parent, View v, int position, long id) {
+	        	showItemData(position);
 	        }
-	    });
-	    
-	    Button saveButton = (Button) findViewById(R.id.save);
-        saveButton.setOnClickListener(new OnClickListener() {
-        	public void onClick(View v) { 
-        		writeItemData();
-        	}
-        	
-        });
+
+			@Override
+			public void onNothingSelected(AdapterView parent) {
+				showItemData(-1);
+			}
+	    });	    
 	}
 	
+	//TODO implement
+	// -1 position means empty
 	private void showItemData(int position) {
         //TODO: find filename by position
-    	readDB("sample_0.jpg");		
+    	readDB("sample_0.jpg");
 	}
 	
-	// TODO: saves the data for the currently displayed item 
-	private void writeItemData() {
+	// TODO
+	public void doSetCurrentLocation(View v) {
+		
+	}
+
+	// TODO open map view to select location
+	public void doSelectLocation(View v) {
+		
+	}
+
+	// TODO: saves the data for the currently displayed item
+	// TODO: test if anything there
+	public void doWriteItemData(View v) {
     	//TODO: find filename by position
     	writeDB("sample_0.jpg");
 	}
-
-
 	
-	public class ImageAdapter extends BaseAdapter {
-	    int mGalleryItemBackground;
-	    private Context mContext;
-
-	    private Integer[] mImageIds = {
-	            R.drawable.sample_1,
-	            R.drawable.sample_2,
-	            R.drawable.sample_3,
-	            R.drawable.sample_4,
-	            R.drawable.sample_5,
-	            R.drawable.sample_6,
-	            R.drawable.sample_7
-	    };
-
-	    public ImageAdapter(Context c) {
-	        mContext = c;
-	        TypedArray a = obtainStyledAttributes(R.styleable.Edit);
-	        mGalleryItemBackground = a.getResourceId(
-	                R.styleable.Edit_android_galleryItemBackground, 0);
-	        a.recycle();
-	    }
-
-	    public int getCount() {
-	        return mImageIds.length;
-	    }
-
-	    public Object getItem(int position) {
-	        return position;
-	    }
-
-	    public long getItemId(int position) {
-	        return position;
-	    }
-
-	    public View getView(int position, View convertView, ViewGroup parent) {
-	        ImageView i = new ImageView(mContext);
-
-	        i.setImageResource(mImageIds[position]);
-	        i.setLayoutParams(new Gallery.LayoutParams(150, 100));
-	        i.setScaleType(ImageView.ScaleType.FIT_XY);
-	        i.setBackgroundResource(mGalleryItemBackground);
-
-	        return i; 
-	    }
+	public void doUpload(View v) {
+		
 	}
-	
-	
 
-    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -221,4 +180,52 @@ public class MetaEdit extends Activity{
     	     	db.close();
     	}    
     }
+    
+    
+	
+	public class ImageAdapter extends BaseAdapter {
+	    int mGalleryItemBackground;
+	    private Context mContext;
+
+	    private Integer[] mImageIds = {
+	            R.drawable.sample_1,
+	            R.drawable.sample_2,
+	            R.drawable.sample_3,
+	            R.drawable.sample_4,
+	            R.drawable.sample_5,
+	            R.drawable.sample_6,
+	            R.drawable.sample_7
+	    };
+
+	    public ImageAdapter(Context c) {
+	        mContext = c;
+	        TypedArray a = obtainStyledAttributes(R.styleable.Edit);
+	        mGalleryItemBackground = a.getResourceId(
+	                R.styleable.Edit_android_galleryItemBackground, 0);
+	        a.recycle();
+	    }
+
+	    public int getCount() {
+	        return mImageIds.length;
+	    }
+
+	    public Object getItem(int position) {
+	        return position;
+	    }
+
+	    public long getItemId(int position) {
+	        return position;
+	    }
+
+	    public View getView(int position, View convertView, ViewGroup parent) {
+	        ImageView i = new ImageView(mContext);
+
+	        i.setImageResource(mImageIds[position]);
+	        i.setLayoutParams(new Gallery.LayoutParams(150, 100));
+	        i.setScaleType(ImageView.ScaleType.FIT_XY);
+	        i.setBackgroundResource(mGalleryItemBackground);
+
+	        return i; 
+	    }
+	}	   
 }
