@@ -14,6 +14,7 @@ public class SearchMM extends Activity {
     }
     
     public void doSearch(View v) {
+    	//TODO: actually search
     	startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.Thumbnails.class),0);
     }
 }

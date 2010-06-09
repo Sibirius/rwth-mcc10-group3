@@ -31,7 +31,7 @@ public class MMAApp extends Activity {
                 "isvideo" + " TEXT, " +
                 "ispicture" + " TEXT" +");";
 	
-	private boolean menuFlag = false;
+	//private boolean menuFlag = false;
     
 	/** Called when the activity is first created. */
     public void onCreate(Bundle savedInstanceState) {
@@ -44,11 +44,13 @@ public class MMAApp extends Activity {
 	public void onPanelClosed(int featureId, Menu menu) {
 		super.onPanelClosed(featureId, menu);
 		
+		/*
 		if (menu != null && !menuFlag) {
 			terminate();			
 		} else {
 			menuFlag = false;
 		}
+		*/
 	}
 
 	public void terminate() {
@@ -105,7 +107,7 @@ public class MMAApp extends Activity {
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	menuFlag = true;
+    	//menuFlag = true;
     	
         switch (item.getItemId()) {
     		case R.id.camera:

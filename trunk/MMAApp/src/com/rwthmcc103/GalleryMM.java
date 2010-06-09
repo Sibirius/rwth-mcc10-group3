@@ -11,7 +11,8 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 //public class GalleryMM extends MapActivity {
 	public class GalleryMM extends Activity {
@@ -31,17 +32,30 @@ import android.widget.AdapterView.OnItemClickListener;
         
 	    Gallery g = (Gallery) findViewById(R.id.gallery_gallery);
 	    g.setAdapter(new ImageAdapter(this));
-
-	    g.setOnItemClickListener(new OnItemClickListener() {
-	        public void onItemClick(AdapterView parent, View v, int position, long id) {
-	            //Toast.makeText(GalleryMM.this, "" + position, Toast.LENGTH_SHORT).show();
+	    
+	    //g.setOnItemClickListener(new OnItemClickListener() {
+	    g.setOnItemSelectedListener(new OnItemSelectedListener() {
+	        public void onItemSelected(AdapterView parent, View v, int position, long id) {
+	        	showItemInformation(position);
 	        }
+
+			@Override
+			public void onNothingSelected(AdapterView parent) {
+				showItemInformation(-1);
+			}
 	    });
     }
     
-    public void onClick(View v) {
-    	getSystemService(LOCATION_SERVICE);
-      }    
+    // TODO set information of item
+    // -1 stands for empty
+    private void showItemInformation(int position) {
+    	Toast.makeText(GalleryMM.this, "" + position, Toast.LENGTH_SHORT).show();
+    }
+    
+    // TODO: open a map screen and show the item location
+    public void doViewLocation(View v) {
+    	
+    }
     
 	public class ImageAdapter extends BaseAdapter {
 	    int mGalleryItemBackground;
