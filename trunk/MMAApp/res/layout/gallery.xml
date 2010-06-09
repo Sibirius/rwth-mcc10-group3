@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+	>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -20,20 +25,21 @@
 	<TextView android:id="@+id/gallery_tags_t" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tags" android:textStyle="bold"></TextView>
 	<TextView android:id="@+id/gallery_tags" android:layout_height="wrap_content" android:text="something something something COMPLETE" android:layout_width="wrap_content"></TextView>
 
+	<!-- <Button android:id="@+id/viewLocation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Show Location"></Button> -->
+
 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:orientation="vertical"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent" >
-    
-    	<Button android:id="@+id/viewLocation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Show Location"></Button>
- 
+        			 
 	    <com.google.android.maps.MapView 
 	        android:id="@+id/mapView"
 	        android:layout_width="fill_parent"
 	        android:layout_height="fill_parent"
 	        android:enabled="true"
 	        android:clickable="true"
-	        android:apiKey="ABQIAAAAGAP5T4BS8Gn8z_KNdk4MuxQs3QBYDBscCkXn5XVh-PO2erUf9BRLbMyRF04Gc0cJo5xmV5wt1Y7oPQ"        
+	        android:apiKey="@string/mapID"        
 	        />
 	 </RelativeLayout>
 </LinearLayout>
+</ScrollView>
