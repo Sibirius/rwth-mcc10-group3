@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-	>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-    
+     
 	<Gallery xmlns:android="http://schemas.android.com/apk/res/android" 
 	    android:id="@+id/gallery_gallery"
 	    android:layout_width="fill_parent"
@@ -27,19 +22,13 @@
 
 	<!-- <Button android:id="@+id/viewLocation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Show Location"></Button> -->
 
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:orientation="vertical"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent" >
-        			 
-	    <com.google.android.maps.MapView 
-	        android:id="@+id/mapView"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:enabled="true"
-	        android:clickable="true"
-	        android:apiKey="@string/mapID"        
-	        />
-	 </RelativeLayout>
+    <com.google.android.maps.MapView 
+        android:id="@+id/mapView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:enabled="true"
+        android:clickable="true"
+        android:apiKey="@string/mapID"        
+        />
+        
 </LinearLayout>
-</ScrollView>
