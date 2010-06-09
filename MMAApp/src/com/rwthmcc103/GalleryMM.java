@@ -1,5 +1,7 @@
 package com.rwthmcc103;
 
+import com.google.android.maps.MapActivity;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,9 +15,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class GalleryMM extends Activity {
+public class GalleryMM extends MapActivity {
     /** Called when the activity is first created. */
-    @Override
+	@Override
+	protected boolean isRouteDisplayed() {
+	    return false;
+	}
+	
+	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.gallery); 
