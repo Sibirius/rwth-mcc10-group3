@@ -14,6 +14,15 @@ public class MediaItem {
 	private String lat;
 	private String lon;
 	
+	public MediaItem() {		
+	}
+	
+	public MediaItem(String title, String description, String tags) {
+		this.title = title;
+		this.description = description;
+		this.tags = tags;
+	}
+	
 	public File getFile() {
 		return file;
 	}

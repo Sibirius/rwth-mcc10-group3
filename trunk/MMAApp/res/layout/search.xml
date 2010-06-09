@@ -15,7 +15,7 @@
 	    android:orientation="vertical"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:paddingTop="20px" android:paddingBottom="20px">
+	    android:layout_marginTop="20px" android:paddingBottom="20px">
 		<CheckBox android:id="@+id/check_pics" android:layout_height="wrap_content" android:text="Videos" android:layout_width="fill_parent" android:checked="true"></CheckBox>
 		<CheckBox android:id="@+id/check_vids" android:layout_height="wrap_content" android:text="Pictures" android:layout_width="fill_parent" android:checked="true"></CheckBox>
 	</LinearLayout>
