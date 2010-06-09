@@ -1,4 +1,5 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"><item android:title="Camera" android:id="@+id/camera"></item>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:title="Camera" android:id="@+id/camera"></item>
 <item android:title="Process &amp; Upload" android:id="@+id/process"></item>
 <item android:title="Search" android:id="@+id/search"></item>
 <item android:title="Thumbnails" android:id="@+id/thumbnails"></item>

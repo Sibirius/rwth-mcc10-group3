@@ -1,6 +1,7 @@
 package com.rwthmcc103;
 
-import com.google.android.maps.MapActivity;
+//import com.google.android.maps.MapActivity;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -12,11 +13,15 @@ import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class GalleryMM extends MapActivity {
+//public class GalleryMM extends MapActivity {
+	public class GalleryMM extends Activity {
+	
+	/*
     @Override
 	protected boolean isRouteDisplayed() {
 		return false;
 	}
+	*/
 
 	/** Called when the activity is first created. */
     @Override
@@ -31,7 +36,7 @@ public class GalleryMM extends MapActivity {
 	        public void onItemClick(AdapterView parent, View v, int position, long id) {
 	            //Toast.makeText(GalleryMM.this, "" + position, Toast.LENGTH_SHORT).show();
 	        }
-	    });        
+	    });
     }
     
     public void onClick(View v) {

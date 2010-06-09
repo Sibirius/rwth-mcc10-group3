@@ -36,22 +36,35 @@ public class MetaEdit extends Activity{
 	    Gallery g = (Gallery) findViewById(R.id.gallery);
 	    g.setAdapter(new ImageAdapter(this));
 
+	    showItemData(0);
+	    
 	    g.setOnItemClickListener(new OnItemClickListener() {
 	        public void onItemClick(AdapterView parent, View v, int position, long id) {
-	            //TODO: find filename by position
-	        	readDB("sample_0.jpg");
+	        	showItemData(0);
 	        }
 	    });
 	    
 	    Button saveButton = (Button) findViewById(R.id.save);
         saveButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View v) { 
-        		//TODO: find filename by position
-        		writeDB("sample_0.jpg");
+        		writeItemData();
         	}
         	
         });
 	}
+	
+	private void showItemData(int position) {
+        //TODO: find filename by position
+    	readDB("sample_0.jpg");		
+	}
+	
+	// TODO: saves the data for the currently displayed item 
+	private void writeItemData() {
+    	//TODO: find filename by position
+    	writeDB("sample_0.jpg");
+	}
+
+
 	
 	public class ImageAdapter extends BaseAdapter {
 	    int mGalleryItemBackground;
