@@ -31,6 +31,7 @@
         />
     <EditText
         android:id="@+id/entrydescription"
+        android:minLines="3"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/editbox_background"
