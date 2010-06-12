@@ -1,12 +1,10 @@
 package com.rwthmcc103;
 
-import java.io.File;
-
 public class MediaItem {
 	
-	private File file;
 	private String id;
-	private String filename;
+	private String fileURI;
+	private String thumbnailURI;
 	private Boolean isVideo;
 	private String title;
 	private String description;
@@ -23,14 +21,6 @@ public class MediaItem {
 		this.tags = tags;
 	}
 	
-	public File getFile() {
-		return file;
-	}
-	
-	public void setFile(File file) {
-		this.file = file;
-	}
-	
 	public String getId() {
 		return id;
 	}
@@ -39,13 +29,22 @@ public class MediaItem {
 		this.id = id;
 	}
 	
-	public String getFilename() {
-		return filename;
+	public String getFileURI() {
+		return fileURI;
 	}
 	
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public void setFileURI(String fileURI) {
+		this.fileURI = fileURI;
 	}
+
+	public String getThumbnailURI() {
+		return thumbnailURI;
+	}
+	
+	public void setThumbnailURI(String thumbnailURI) {
+		this.thumbnailURI = thumbnailURI;
+	}
+	
 	public Boolean getIsVideo() {
 		return isVideo;
 	}
