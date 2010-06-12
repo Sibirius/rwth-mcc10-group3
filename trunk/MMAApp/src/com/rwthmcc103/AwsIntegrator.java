@@ -1,5 +1,6 @@
 package com.rwthmcc103;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,13 +31,16 @@ public class AwsIntegrator {
 		sdb = new AmazonSimpleDBClient(pC);
 	}	
 	
-	public void uploadFile(MediaItem mItem){
-		s3.putObject(new PutObjectRequest(bucketName, mItem.getFilename(), mItem.getFile()));
-        s3.setObjectAcl(bucketName, mItem.getFilename(), CannedAccessControlList.PublicRead);
+	public void uploadFile(MediaItem mItem, File mediaFile, File thumbnailFile){
+		s3.putObject(new PutObjectRequest(bucketName, mItem.getFileURI(), mediaFile));
+        s3.setObjectAcl(bucketName, mItem.getFileURI(), CannedAccessControlList.PublicRead);
+		s3.putObject(new PutObjectRequest(bucketName, mItem.getThumbnailURI(), thumbnailFile));
+        s3.setObjectAcl(bucketName, mItem.getThumbnailURI(), CannedAccessControlList.PublicRead);
         
         List<ReplaceableAttribute> data = new ArrayList<ReplaceableAttribute>();
         data.add(new ReplaceableAttribute().withName("Type").withValue((mItem.getIsVideo()) ? "Video" : "Picture"));
-        data.add(new ReplaceableAttribute().withName("FileName").withValue(mItem.getFilename()));
+        data.add(new ReplaceableAttribute().withName("FileName").withValue(mItem.getFileURI()));
+        data.add(new ReplaceableAttribute().withName("ThumbnailName").withValue(mItem.getThumbnailURI()));        
         data.add(new ReplaceableAttribute().withName("Title").withValue(mItem.getTitle()));
         data.add(new ReplaceableAttribute().withName("Description").withValue(mItem.getDescription()));
 		data.add(new ReplaceableAttribute().withName("Tags").withValue(mItem.getTags()));
@@ -45,14 +49,23 @@ public class AwsIntegrator {
 		
 		sdb.putAttributes(new PutAttributesRequest(myDomain, mItem.getId(), data));			
 	}
-	
-	//TODO: Limit the number of items
-	public List<MediaItem> getAllFiles(String type){
+
+	public List<MediaItem> getFilesByTag(String type, String tags){
 		
 		List<MediaItem> mItemList = new ArrayList<MediaItem>();
+		String[] tagNames = tags.split(" ");
+		
+		String typeQuery = "Type = 'picture' or Type = 'video'";
+		if (!type.equals("all")) typeQuery="Type = '" + type + "'"; 
+		
+		String tagQuery = "";
+		for(int i = 0; i<tagNames.length; i++){
+			if(i != 0) tagQuery += " or ";
+			tagQuery += "Tag = '" + tagNames[i] + "'";
+		}
 		
 		MediaItem mItem;
-		String selectExpression = "select * from `" + myDomain + "` where Type = '"+type+"'";
+		String selectExpression = "select * from `" + myDomain + "` where (" + typeQuery + ") and ("+tagQuery+")";
 		SelectRequest selectRequest = new SelectRequest(selectExpression);
 		for (Item item : sdb.select(selectRequest).getItems()) {
 		    
@@ -63,11 +76,11 @@ public class AwsIntegrator {
 			else mItem.setIsVideo(false);
 			
 		    for (Attribute a : item.getAttributes()) {
-		    	if(a.getName().equals("FileName")) mItem.setFilename(a.getValue());
+		    	if(a.getName().equals("FileName")) mItem.setFileURI(a.getValue());
 		    	else if(a.getName().equals("Title")) mItem.setTitle(a.getValue());
 		    	else if(a.getName().equals("Description")) mItem.setDescription(a.getValue());
 		    	else if(a.getName().equals("Tags")) mItem.setTags(a.getValue());
-		    	else if(a.getName().equals("FileName")) mItem.setFilename(a.getValue());	    	
+		    	else if(a.getName().equals("FileName")) mItem.setFileURI(a.getValue());	    	
 		    	else if(a.getName().equals("Latitude")) mItem.setLat(a.getValue());
 		    	else if(a.getName().equals("Longitude")) mItem.setLon(a.getValue());
 		    }
@@ -77,6 +90,12 @@ public class AwsIntegrator {
 		}	
 		
 		return mItemList;
+	}	
+	
+	public List<MediaItem> getFilesByLocation(String type, String lon, String lat, String lonrg, String latrg){
+
+		return new ArrayList<MediaItem>();
+		
 	}
 	
 }
