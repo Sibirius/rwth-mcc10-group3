@@ -138,10 +138,7 @@ public class MMAApp extends Activity {
     		case R.id.search:
     			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.SearchMM.class),0); 
     			return true;
-        	case R.id.thumbnails:
-        		startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.Thumbnails.class),0);
-            	return true;
-    		case R.id.gallery:
+        	case R.id.gallery:
     			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.GalleryMM.class),0);
     			return true;
         }

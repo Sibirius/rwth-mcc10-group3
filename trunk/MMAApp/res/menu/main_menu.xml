@@ -2,6 +2,5 @@
 <item android:title="Camera" android:id="@+id/camera"></item>
 <item android:title="Process &amp; Upload" android:id="@+id/process"></item>
 <item android:title="Search" android:id="@+id/search"></item>
-<item android:title="Thumbnails" android:id="@+id/thumbnails"></item>
 <item android:title="Gallery" android:id="@+id/gallery"></item>
 </menu>

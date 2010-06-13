@@ -1,9 +1,9 @@
 package com.rwthmcc103;
 
+import java.util.List;
+
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.database.Cursor;
-import android.util.Log;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -34,7 +34,7 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageResource(mThumbIds[position]);
+        imageView.setImageURI(getItemUri(position));
         return imageView;
     }
 
@@ -53,8 +53,24 @@ public class ImageAdapter extends BaseAdapter {
             R.drawable.sample_6, R.drawable.sample_7
     };
    
+    public Uri getItemUri(int position){
+    	List<MediaItem> currentList = SearchMM.list;
+    	if(currentList!=null){
+    		MediaItem currentItem = currentList.get(position);
+    		Uri currentUri;
+    		currentUri = Uri.parse(currentItem.getThumbnailURI());
+    		return currentUri;
+    	}	 	
+		return null;
+    	
+    }
     public int getCount() {
-        return mThumbIds.length;
+    	
+    	if(SearchMM.list!=null){
+    		return  SearchMM.list.size();
+    	}
+    	
+        return 0;
     }
 
     public Object getItem(int position) {
