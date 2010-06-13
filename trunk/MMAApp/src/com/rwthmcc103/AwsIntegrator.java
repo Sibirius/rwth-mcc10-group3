@@ -4,7 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amazonaws.auth.PropertiesCredentials;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -21,13 +22,13 @@ public class AwsIntegrator {
 	
 	private AmazonS3 s3;
 	private AmazonSimpleDB sdb;
-	private PropertiesCredentials pC;
 	private String bucketName = "7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media";
 	private String myDomain = "mcc10group3media";
 
-	public AwsIntegrator(PropertiesCredentials pC){
-		s3 = new AmazonS3Client(pC);
-		sdb = new AmazonSimpleDBClient(pC);
+	public AwsIntegrator(){
+		AWSCredentials credentials = new BasicAWSCredentials("accessKey", "secretKey");
+		s3 = new AmazonS3Client(credentials);
+		sdb = new AmazonSimpleDBClient(credentials);
 	}	
 	
 	public void uploadFile(MediaItem mItem, File mediaFile, File thumbnailFile){
