@@ -5,7 +5,11 @@ package com.rwthmcc103;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,9 +54,7 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
         seekLat = (SeekBar)findViewById(R.id.seek_lat); 
         seekLong.setOnSeekBarChangeListener(this);
         seekLat.setOnSeekBarChangeListener(this);
-        
-    
-        
+               
     }
     
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
@@ -102,6 +104,8 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
     
     OnClickListener doSearchBtnOnClick = new OnClickListener() {		
 		public void onClick(View view) {
+				getResults();
+				//list = AwsIntegrator.getSampleImages(); 
 				Intent intent = new Intent(SearchMM.this,com.rwthmcc103.Thumbnails.class);
 		    	//intent.putExtra("RESULT", getResults());
 		    	startActivityForResult(intent,0);
@@ -127,7 +131,7 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
         SeekBar lat_range = (SeekBar)findViewById(R.id.seek_lat);
         int progress_long = long_range.getProgress();
         int progress_lat = lat_range.getProgress();
-           
+        
         AwsIntegrator aws = new AwsIntegrator();
         
         //TODO: At GPS Position
@@ -135,7 +139,7 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
 			if(((vidsChecked == true) && (picsChecked == true)) || (vidsChecked == false) && (picsChecked == false)){
 				list = aws.getFilesByTag("all", searchString);
 			}
-			if((vidsChecked == true) && (picsChecked == false)){
+			else if((vidsChecked == true) && (picsChecked == false)){
 				list = aws.getFilesByTag("video", searchString);
 			}else{
 				list = aws.getFilesByTag("picture", searchString);
@@ -144,7 +148,7 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
 			if(((vidsChecked == true) && (picsChecked == true)) || (vidsChecked == false) && (picsChecked == false)){
 				list = aws.getFilesByLocation("all", Long.parseLong(searchString), Long.parseLong(searchString), Long.parseLong(String.valueOf(progress_long)), Long.parseLong(String.valueOf(progress_lat)));
 			}
-			if((vidsChecked == true) && (picsChecked == false)){
+			else if((vidsChecked == true) && (picsChecked == false)){
 				list = aws.getFilesByLocation("video", Long.parseLong("long"), Long.parseLong("lat"), Long.parseLong(String.valueOf(progress_long)), Long.parseLong(String.valueOf(progress_lat)));
 			}else{
 				list = aws.getFilesByLocation("picture", Long.parseLong("long"), Long.parseLong("lat"), Long.parseLong(String.valueOf(progress_long))  , Long.parseLong(String.valueOf(progress_lat)));

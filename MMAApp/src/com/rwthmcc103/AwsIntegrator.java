@@ -26,10 +26,14 @@ public class AwsIntegrator {
 	private String myDomain = "mcc10group3media";
 
 	public AwsIntegrator(){
-		AWSCredentials credentials = new BasicAWSCredentials("accessKey", "secretKey");
+		AWSCredentials credentials = new BasicAWSCredentials("*", "*");
 		s3 = new AmazonS3Client(credentials);
 		sdb = new AmazonSimpleDBClient(credentials);
 	}	
+	
+	public AmazonSimpleDB getSDB(){
+		return sdb;
+	}
 	
 	public void uploadFile(MediaItem mItem, File mediaFile, File thumbnailFile){
 		s3.putObject(new PutObjectRequest(bucketName, mItem.getFilename(), mediaFile));
@@ -106,7 +110,7 @@ public class AwsIntegrator {
 		
 	}	
 	
-	public List<MediaItem> getSampleImages(){
+	public static List<MediaItem> getSampleImages(){
 		MediaItem m;
 		List<MediaItem> ml= new ArrayList<MediaItem>();
 		
@@ -116,8 +120,8 @@ public class AwsIntegrator {
 		m.setTitle("Sample 0");
 		m.setDescription("Image Sample Nr 0");
 		m.setTags("eins zwei drei");
-		m.setFileURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_0.jpg");
-		m.setThumbnailURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_0_thumb.jpg");
+		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_0.jpg");
+		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_0_thumb.jpg");
 		m.setLat("50.77772108971944");
 		m.setLon("6.077810525894165");
 		ml.add(m);
@@ -128,8 +132,8 @@ public class AwsIntegrator {
 		m.setTitle("Sample 1");
 		m.setDescription("Image Sample Nr 1");
 		m.setTags("eins zwei drei");
-		m.setFileURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_1.jpg");
-		m.setThumbnailURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_1_thumb.jpg");
+		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_1.jpg");
+		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_1_thumb.jpg");
 		m.setLat("50.77772108971944");
 		m.setLon("6.077810525894165");
 		ml.add(m);
@@ -140,8 +144,8 @@ public class AwsIntegrator {
 		m.setTitle("Sample 2");
 		m.setDescription("Image Sample Nr 2");
 		m.setTags("eins zwei drei");
-		m.setFileURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_2.jpg");
-		m.setThumbnailURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_2_thumb.jpg");
+		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_2.jpg");
+		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_2_thumb.jpg");
 		m.setLat("50.77772108971944");
 		m.setLon("6.077810525894165");
 		ml.add(m);
@@ -152,8 +156,8 @@ public class AwsIntegrator {
 		m.setTitle("Sample 3");
 		m.setDescription("Image Sample Nr 3");
 		m.setTags("eins zwei drei");
-		m.setFileURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_3.jpg");
-		m.setThumbnailURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_3_thumb.jpg");
+		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_3.jpg");
+		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_3_thumb.jpg");
 		m.setLat("50.77772108971944");
 		m.setLon("6.077810525894165");
 		ml.add(m);
@@ -164,8 +168,8 @@ public class AwsIntegrator {
 		m.setTitle("Sample 4");
 		m.setDescription("Image Sample Nr 4");
 		m.setTags("eins zwei drei");
-		m.setFileURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_4.jpg");
-		m.setThumbnailURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_4_thumb.jpg");
+		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_4.jpg");
+		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_4_thumb.jpg");
 		m.setLat("50.77772108971944");
 		m.setLon("6.077810525894165");
 		ml.add(m);
@@ -176,8 +180,8 @@ public class AwsIntegrator {
 		m.setTitle("Sample 5");
 		m.setDescription("Image Sample Nr 5");
 		m.setTags("eins zwei drei");
-		m.setFileURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_5.jpg");
-		m.setThumbnailURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_5_thumb.jpg");
+		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_5.jpg");
+		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_5_thumb.jpg");
 		m.setLat("50.77772108971944");
 		m.setLon("6.077810525894165");
 		ml.add(m);
@@ -188,8 +192,8 @@ public class AwsIntegrator {
 		m.setTitle("Sample 6");
 		m.setDescription("Image Sample Nr 6");
 		m.setTags("eins zwei drei");
-		m.setFileURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_6.jpg");
-		m.setThumbnailURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_6_thumb.jpg");
+		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_6.jpg");
+		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_6_thumb.jpg");
 		m.setLat("50.77772108971944");
 		m.setLon("6.077810525894165");
 		ml.add(m);	
@@ -200,8 +204,8 @@ public class AwsIntegrator {
 		m.setTitle("Sample 7");
 		m.setDescription("Image Sample Nr 7");
 		m.setTags("eins zwei drei");
-		m.setFileURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_7.jpg");
-		m.setThumbnailURI("https://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_7_thumb.jpg");
+		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_7.jpg");
+		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_7_thumb.jpg");
 		m.setLat("50.77772108971944");
 		m.setLon("6.077810525894165");
 		ml.add(m);		
