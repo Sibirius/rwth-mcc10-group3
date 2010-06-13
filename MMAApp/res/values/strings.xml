@@ -8,6 +8,9 @@
 <string name="description">Description</string>
 <string name="tags">Tags</string>
 <string name="search_by_text">Search by</string>
+<string name="search_long_text">Longituderegion + 50</string>
+<string name="search_lat_text">Latituderegion + 50</string>
+
 
 <string name="search_by">Search by:</string>
     <string-array name="search_array">
