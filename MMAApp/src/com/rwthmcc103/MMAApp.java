@@ -1,12 +1,17 @@
 package com.rwthmcc103;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -66,7 +71,11 @@ public class MMAApp extends Activity {
         	       .setPositiveButton("Photo", new DialogInterface.OnClickListener() {
         	           public void onClick(DialogInterface dialog, int id) {
         	        	   //TODO: get captured image and save it
-        	    			Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);    			
+        	    			Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");   
+        	    			File exPath = Environment.getExternalStorageDirectory();
+        	    			Uri uri = Uri.fromFile(exPath);
+        	    			intent.putExtra(MediaStore.EXTRA_OUTPUT,uri);
+        	    			
         	    			startActivityForResult(intent, 1);
         	           }
         	       })

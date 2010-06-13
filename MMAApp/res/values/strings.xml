@@ -7,6 +7,12 @@
 <string name="title">Title</string>
 <string name="description">Description</string>
 <string name="tags">Tags</string>
+<string name="search_by_text">Search by</string>
 
+<string name="search_by">Search by:</string>
+    <string-array name="search_array">
+        <item>Tags</item>
+        <item>Location</item>
+    </string-array>
 <string name="mapID">0NUDoYjhN71E5Q8KuKd8mdlNSFW61UL2ezbZ4_A</string>
 </resources>
