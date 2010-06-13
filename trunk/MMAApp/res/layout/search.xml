@@ -7,20 +7,57 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
     
-	<EditText android:id="@+id/edit_input" android:layout_height="wrap_content" android:gravity="fill_horizontal|center" android:inputType="text|textNoSuggestions" android:layout_width="fill_parent"></EditText>
-	<CheckBox android:id="@+id/check_title" android:layout_height="wrap_content" android:text="Title" android:layout_width="fill_parent" android:checked="true"></CheckBox>
-	<CheckBox android:id="@+id/check_description" android:layout_height="wrap_content" android:text="Description" android:layout_width="fill_parent" android:checked="true"></CheckBox>
-	<CheckBox android:id="@+id/check_tags" android:layout_height="wrap_content" android:text="Tags" android:layout_width="fill_parent" android:checked="true"></CheckBox>
+    <TextView
+        android:text="@string/search_by_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:typeface="normal" android:editable="false" android:longClickable="false" android:textSize="10pt"/>
+    <Spinner
+        android:id="@+id/spinner_search"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:prompt="@string/search_by"
+    />
+    
+    
+    
+	<EditText 	android:id="@+id/edit_input" 
+				android:layout_height="wrap_content" 
+				android:gravity="fill_horizontal|center" 
+				android:inputType="text|textNoSuggestions" 
+				android:layout_width="fill_parent">
+	</EditText>
+	
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
 	    android:orientation="vertical"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_marginTop="20px" android:paddingBottom="20px">
-		<CheckBox android:id="@+id/check_pics" android:layout_height="wrap_content" android:text="Videos" android:layout_width="fill_parent" android:checked="true"></CheckBox>
-		<CheckBox android:id="@+id/check_vids" android:layout_height="wrap_content" android:text="Pictures" android:layout_width="fill_parent" android:checked="true"></CheckBox>
+	    android:layout_marginTop="20px" 
+	    android:paddingBottom="20px">
+	    
+		<CheckBox 	android:id="@+id/check_pics" 
+					android:layout_height="wrap_content" 
+					android:text="Videos" 
+					android:layout_width="fill_parent" 
+					android:checked="true">
+		</CheckBox>
+		
+		<CheckBox 	android:id="@+id/check_vids" 
+					android:layout_height="wrap_content" 
+					android:text="Pictures" 
+					android:layout_width="fill_parent" 
+					android:checked="true">
+		</CheckBox>
+		
 	</LinearLayout>
 
-	<Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:text="Search" android:id="@+id/search_button" android:layout_gravity="bottom" android:onClick="doSearch"></Button>
+	<Button android:layout_height="wrap_content" 
+			android:layout_width="fill_parent" 
+			android:text="Search" 
+			android:id="@+id/search_button" 
+			android:layout_gravity="bottom">
+	</Button>
+
 
 </LinearLayout>
 </ScrollView>
