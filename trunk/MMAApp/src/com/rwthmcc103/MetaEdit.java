@@ -62,7 +62,16 @@ public class MetaEdit extends Activity{
 	// TODO open map view to select location
 	public void doSelectLocation(View v) {
     	Intent intent = new Intent(this.getApplicationContext(), com.rwthmcc103.MMMapView.class);
-    	//TODO: feed desired location into intent
+    	
+    	LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);    		
+    	Location loc = lm.getLastKnownLocation("gps");
+    	double lon = loc.getLongitude();
+    	double lat = loc.getLatitude();
+    	
+    	intent.putExtra("edit", true);
+    	intent.putExtra("lon", lon);
+    	intent.putExtra("lat", lat);
+
     	this.startActivityForResult(intent, 1);
 	}
 
@@ -77,6 +86,13 @@ public class MetaEdit extends Activity{
 		
 	}
 
+    @Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
+    	// TODO: get maps lat lon & save
+    	
+    	super.onActivityResult(requestCode, resultCode, data);
+	}
+	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

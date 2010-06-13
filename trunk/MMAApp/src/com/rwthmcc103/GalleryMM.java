@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,34 +40,67 @@ import android.widget.AdapterView.OnItemSelectedListener;
 	    });
     }
     
+    private MediaItem currentMediaItem = getMediaItem(-1);
+    
     // TODO set information of item
     // -1 stands for empty
     private void showItemInformation(int position) {
-    	MediaItem current = getMediaItem(position);
+    	currentMediaItem = getMediaItem(position);
     	
     	TextView entryTitel = (TextView) findViewById(R.id.gallery_title);
     	TextView entryDescription = (TextView) findViewById(R.id.gallery_description);
     	TextView entryTags = (TextView) findViewById(R.id.gallery_tags);
     	
-        entryTitel.setText(current.getTitle());
-        entryDescription.setText(current.getDescription());
-        entryTags.setText(current.getTags());        
+        entryTitel.setText(currentMediaItem.getTitle());
+        entryDescription.setText(currentMediaItem.getDescription());
+        entryTags.setText(currentMediaItem.getTags());       
     	
     	//Toast.makeText(GalleryMM.this, "" + position, Toast.LENGTH_SHORT).show();
     }
     
     private MediaItem getMediaItem(int position) {
     	// TODO get information
-    	return new MediaItem("something", Integer.toString(position), "tag");
+    	if (position == -1) {
+    		return new MediaItem("", "-1", ""); // TODO: proper empty item
+    	} else {
+    		return new MediaItem("something", Integer.toString(position), "tag");	
+    	}    	    	
+    }
+
+    private boolean correctLatLon(String s) {
+    	return false; //TODO
     }
     
-    // TODO: open a map screen and show the item location
+    // open a map screen and show the item location
     public void doViewLocation(View v) {
     	Intent intent = new Intent(this.getApplicationContext(), com.rwthmcc103.MMMapView.class);
-    	//TODO: feed desired location into intent
+    	
+    	if (!correctLatLon(currentMediaItem.getLat()) || !correctLatLon(currentMediaItem.getLon())) { // dummy data if none in the item
+    		
+    		// DOES NOT WORK FOR SOME REASON, CENTER ON AACHEN INSTEAD BEEEP
+    		// set current location
+        	LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);    		
+        	Location loc = lm.getLastKnownLocation("gps");
+        	double lon = loc.getLongitude();
+        	double lat = loc.getLatitude();
+
+        	currentMediaItem.setLat(Double.toString(lat));
+        	currentMediaItem.setLon(Double.toString(lon));
+
+    		/*
+        	currentMediaItem.setLat("50.77772108971944");
+        	currentMediaItem.setLon("6.077810525894165");    		    		
+        	*/
+    	}    	
+    	
+    	//feed desired location into intent
+    	intent.putExtra("edit", false);
+    	intent.putExtra("lon", currentMediaItem.getLon());
+    	intent.putExtra("lat", currentMediaItem.getLat());
+    	
     	this.startActivityForResult(intent, 0);    	
     }
-    
+        
 	public class ImageAdapter extends BaseAdapter {
 	    int mGalleryItemBackground;
 	    private Context mContext;
