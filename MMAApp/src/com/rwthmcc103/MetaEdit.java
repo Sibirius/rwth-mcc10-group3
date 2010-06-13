@@ -35,12 +35,12 @@ public class MetaEdit extends Activity{
 	    showItemData(0);
 	    
 	    g.setOnItemSelectedListener(new OnItemSelectedListener() {
-	    	@Override
+	    	//@Override
 	        public void onItemSelected(AdapterView parent, View v, int position, long id) {
 	        	showItemData(position);
 	        }
 
-			@Override
+			//@Override
 			public void onNothingSelected(AdapterView parent) {
 				showItemData(-1);
 			}

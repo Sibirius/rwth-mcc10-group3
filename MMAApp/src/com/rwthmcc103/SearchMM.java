@@ -41,7 +41,7 @@ public class SearchMM extends Activity {
 	    	
 	        }
 
-		@Override
+		//@Override
 		public void onNothingSelected(AdapterView<?> arg0) {
 			// TODO Auto-generated method stub
 			
