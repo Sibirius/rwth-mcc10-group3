@@ -127,25 +127,27 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
         SeekBar lat_range = (SeekBar)findViewById(R.id.seek_lat);
         int progress_long = long_range.getProgress();
         int progress_lat = lat_range.getProgress();
-                
+           
+        AwsIntegrator aws = new AwsIntegrator();
+        
         //TODO: At GPS Position
 		if(selectedItem == 0){ //Tags
 			if(((vidsChecked == true) && (picsChecked == true)) || (vidsChecked == false) && (picsChecked == false)){
-				list = AwsIntegrator.getFilesByTag("all", searchString);
+				list = aws.getFilesByTag("all", searchString);
 			}
 			if((vidsChecked == true) && (picsChecked == false)){
-				list = AwsIntegrator.getFilesByTag("video", searchString);
+				list = aws.getFilesByTag("video", searchString);
 			}else{
-				list = AwsIntegrator.getFilesByTag("picture", searchString);
+				list = aws.getFilesByTag("picture", searchString);
 			}
 		}else{ //Localization
 			if(((vidsChecked == true) && (picsChecked == true)) || (vidsChecked == false) && (picsChecked == false)){
-				list = AwsIntegrator.getFilesByLocation("all", searchString, searchString, String.valueOf(progress_long), String.valueOf(progress_lat));
+				list = aws.getFilesByLocation("all", Long.parseLong(searchString), Long.parseLong(searchString), Long.parseLong(String.valueOf(progress_long)), Long.parseLong(String.valueOf(progress_lat)));
 			}
 			if((vidsChecked == true) && (picsChecked == false)){
-				list = AwsIntegrator.getFilesByLocation("video", "long", "lat", String.valueOf(progress_long), String.valueOf(progress_lat));
+				list = aws.getFilesByLocation("video", Long.parseLong("long"), Long.parseLong("lat"), Long.parseLong(String.valueOf(progress_long)), Long.parseLong(String.valueOf(progress_lat)));
 			}else{
-				list = AwsIntegrator.getFilesByLocation("picture", "long", "lat", String.valueOf(progress_long)  , String.valueOf(progress_lat));
+				list = aws.getFilesByLocation("picture", Long.parseLong("long"), Long.parseLong("lat"), Long.parseLong(String.valueOf(progress_long))  , Long.parseLong(String.valueOf(progress_lat)));
 			}
 		}
 		
