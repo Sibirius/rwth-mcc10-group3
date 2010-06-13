@@ -75,10 +75,10 @@ public class MMAApp extends Activity {
         	       .setPositiveButton("Photo", new DialogInterface.OnClickListener() {
         	           public void onClick(DialogInterface dialog, int id) {
         	        	   //TODO: get captured image and save it
-        	    			Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");   
+        	    			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);   
         	    			File exPath = Environment.getExternalStorageDirectory();
         	    			Uri uri = Uri.fromFile(exPath);
-        	    			intent.putExtra(MediaStore.EXTRA_OUTPUT,uri);
+        	    			intent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File("/sdcard/DCIM/Camera")));
         	    			
         	    			startActivityForResult(intent, ACTIVITY_PHOTO_OR_VIDEO_ID);
         	    			

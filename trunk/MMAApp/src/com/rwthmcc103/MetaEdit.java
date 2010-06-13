@@ -21,43 +21,55 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsSpinner;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class MetaEdit extends Activity{
+public class MetaEdit extends Activity implements OnItemClickListener{
 
+	private Cursor mCursor;
+	private AbsSpinner mGallery;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.metaedit);
-
-	    Gallery g = (Gallery) findViewById(R.id.gallery);
-	    g.setAdapter(new ImageAdapter(this));
-
-	    showItemData(0);
+	    mGallery = (Gallery)findViewById(R.id.gallery);
 	    
-	    g.setOnItemSelectedListener(new OnItemSelectedListener() {
-	    	//@Override
-	        public void onItemSelected(AdapterView parent, View v, int position, long id) {
-	        	showItemData(position);
-	        }
-
-			//@Override
-			public void onNothingSelected(AdapterView parent) {
-				showItemData(-1);
-			}
-	    });
+	    displayGallery();
+	}
+	
+	private void displayGallery() {
+		Uri uri = MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI; // Where images are store
+		String[] projection = {
+				MediaStore.Images.ImageColumns._ID,  // The columns we want
+				MediaStore.Images.Thumbnails.IMAGE_ID,  
+				MediaStore.Images.Thumbnails.KIND };
+		String selection = MediaStore.Images.Thumbnails.KIND + "="  + // Select only mini's
+		MediaStore.Images.Thumbnails.MINI_KIND;
+		mCursor = this.managedQuery(uri, projection, selection, null, null);	
+		if (mCursor != null) { 
+			mCursor.moveToFirst();
+			ImageAdapter adapter = new ImageAdapter(mCursor, this);
+			mGallery.setAdapter(adapter);
+			mGallery.setOnItemClickListener(this);
+		}
 	}
 	
 	//TODO implement
@@ -257,33 +269,38 @@ public class MetaEdit extends Activity{
     	     	db.close();
     	}    
     }
-    
-    
 	
+    public void onItemClick(AdapterView<?> arg0, View arg1, int position, long rowId) {
+		mCursor.moveToPosition(position);
+		long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.IMAGE_ID));
+		//create the Uri for the Image 
+		Uri uri = Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, id+"");
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setData(uri);
+		startActivity(intent);
+	} 
+    
 	public class ImageAdapter extends BaseAdapter {
-	    int mGalleryItemBackground;
-	    private Context mContext;
+	
+		int mGalleryItemBackground;
+		private Context mContext;
+		private Cursor mCursor;
+		private static final String TAG = "ImageAdapter";
 
-	    private Integer[] mImageIds = {
-	            R.drawable.sample_1,
-	            R.drawable.sample_2,
-	            R.drawable.sample_3,
-	            R.drawable.sample_4,
-	            R.drawable.sample_5,
-	            R.drawable.sample_6,
-	            R.drawable.sample_7
-	    };
 
-	    public ImageAdapter(Context c) {
+	    public ImageAdapter(Cursor cursor, Context c) {
 	        mContext = c;
-	        TypedArray a = obtainStyledAttributes(R.styleable.Edit);
+	        mCursor = cursor;
+	        // See res/values/attrs.xml for the  defined values here for styling
+	        TypedArray a = mContext.obtainStyledAttributes(R.styleable.Edit);
 	        mGalleryItemBackground = a.getResourceId(
 	                R.styleable.Edit_android_galleryItemBackground, 0);
 	        a.recycle();
+
 	    }
 
 	    public int getCount() {
-	        return mImageIds.length;
+	      return mCursor.getCount();
 	    }
 
 	    public Object getItem(int position) {
@@ -294,15 +311,25 @@ public class MetaEdit extends Activity{
 	        return position;
 	    }
 
+	    /**
+	     * Called repeatedly to render the View of each item in the gallery.
+	     */
 	    public View getView(int position, View convertView, ViewGroup parent) {
-	        ImageView i = new ImageView(mContext);
-
-	        i.setImageResource(mImageIds[position]);
-	        i.setLayoutParams(new Gallery.LayoutParams(150, 100));
-	        i.setScaleType(ImageView.ScaleType.FIT_XY);
-	        i.setBackgroundResource(mGalleryItemBackground);
-
-	        return i; 
+			ImageView i = new ImageView(mContext);
+	    	mCursor.requery();
+	    	  	
+	    	 if (convertView == null) {
+	    		mCursor.moveToPosition(position);
+	    		int id = mCursor.getInt(mCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID));
+	    		Uri uri = Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, ""+id);
+	 //   		Uri uri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, ""+id);
+    			i.setImageURI(uri);
+    			i.setScaleType(ImageView.ScaleType.FIT_XY);
+    			i.setLayoutParams(new Gallery.LayoutParams(136, 136));
+    			i.setBackgroundResource(mGalleryItemBackground);
+	    	}
+	    	return i;
 	    }
-	}	   
-}
+	  }
+	
+	}
