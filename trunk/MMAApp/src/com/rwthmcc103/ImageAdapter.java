@@ -1,9 +1,19 @@
 package com.rwthmcc103;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -33,8 +43,22 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-
-        imageView.setImageURI(getItemUri(position));
+        
+        try {
+                /* Open a new URL and get the InputStream to load data from it. */
+                URL aURL = new URL(getItemUri(position));
+                URLConnection conn = aURL.openConnection();
+                conn.connect();
+                InputStream is = conn.getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(is);
+                Bitmap bm = BitmapFactory.decodeStream(bis);
+                bis.close();
+                is.close();
+                imageView.setImageBitmap(bm);
+        } catch (IOException e) {
+                imageView.setImageResource(R.drawable.sample_1);
+                Log.e("DEBUG: ", "Remtoe Image Exception", e);
+        }
         return imageView;
     }
 
@@ -52,14 +76,12 @@ public class ImageAdapter extends BaseAdapter {
             R.drawable.sample_4, R.drawable.sample_5,
             R.drawable.sample_6, R.drawable.sample_7
     };
-   
-    public Uri getItemUri(int position){
+    
+    public String getItemUri(int position){
     	List<MediaItem> currentList = SearchMM.list;
     	if(currentList!=null){
     		MediaItem currentItem = currentList.get(position);
-    		Uri currentUri;
-    		currentUri = Uri.parse(currentItem.getThumbnailURI());
-    		return currentUri;
+    		return currentItem.getThumbnailURI();
     	}	 	
 		return null;
     	
