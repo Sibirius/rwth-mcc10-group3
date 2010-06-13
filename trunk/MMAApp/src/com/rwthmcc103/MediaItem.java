@@ -3,6 +3,8 @@ package com.rwthmcc103;
 public class MediaItem {
 	
 	private String id;
+	private String filename;
+	private String thumbnailname;
 	private String fileURI;
 	private String thumbnailURI;
 	private Boolean isVideo;
@@ -12,7 +14,13 @@ public class MediaItem {
 	private String lat;
 	private String lon;
 	
-	public MediaItem() {		
+	public MediaItem(){}
+	
+	public String toString(){
+		return "ID: " + id + ", filename: " + filename +  ", thumbnailname: " + thumbnailname + ", title: " + title
+			   + ", description: " + description + ", tags: " + tags
+			   + ", fileURI: " + fileURI + ", thumbnailURI: " + thumbnailURI + ", isVideo: " + isVideo
+			   + ", lat: " + lat + ", lon: " + lon;   
 	}
 	
 	public MediaItem(String title, String description, String tags) {
@@ -28,6 +36,22 @@ public class MediaItem {
 	public void setId(String id) {
 		this.id = id;
 	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public String getThumbnailname() {
+		return thumbnailname;
+	}
+
+	public void setThumbnailname(String thumbnailname) {
+		this.thumbnailname = thumbnailname;
+	}	
 	
 	public String getFileURI() {
 		return fileURI;
@@ -93,5 +117,4 @@ public class MediaItem {
 		this.lon = lon;
 	}
 
-	
 }
