@@ -24,6 +24,8 @@ public class MMAApp extends Activity {
 	
 	public static final String MY_DB_NAME = "mmaapp";
 	public static final String TABLE_NAME = "metatable";
+	public static final String TABLE_DELETE =
+				"DROP TABLE IF EXISTS " + TABLE_NAME + ";";
 	public static final String TABLE_CREATE =
                 "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
                 "name" + " TEXT, " +
@@ -151,6 +153,7 @@ public class MMAApp extends Activity {
     	SQLiteDatabase myDB = null;
     	try {
     		myDB = this.openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
+    		myDB.execSQL(TABLE_DELETE);
     		myDB.execSQL(TABLE_CREATE);
     		
     		//fuellen
