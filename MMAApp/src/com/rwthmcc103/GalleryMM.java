@@ -68,7 +68,13 @@ import android.widget.AdapterView.OnItemSelectedListener;
     }
 
     private boolean correctLatLon(String s) {
-    	return false; //TODO
+    	try {
+    		Double.valueOf(s);    	
+    	} catch(NumberFormatException e) {
+    		return false;    
+    	}
+    	
+    	return true;
     }
     
     // open a map screen and show the item location
@@ -77,9 +83,13 @@ import android.widget.AdapterView.OnItemSelectedListener;
     	
     	if (!correctLatLon(currentMediaItem.getLat()) || !correctLatLon(currentMediaItem.getLon())) { // dummy data if none in the item
     		
-    		// DOES NOT WORK FOR SOME REASON, CENTER ON AACHEN INSTEAD BEEEP
+    		// works in emulator after 
+    		// telnet localhost 5554
+    		/// geo fix xx.xxx yy.yyy
+    		
     		// set current location
-        	LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);    		
+        	LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        	        	        	
         	Location loc = lm.getLastKnownLocation("gps");
         	double lon = loc.getLongitude();
         	double lat = loc.getLatitude();

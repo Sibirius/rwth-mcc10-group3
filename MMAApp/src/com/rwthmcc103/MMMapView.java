@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.MotionEvent;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -15,6 +16,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
+import com.google.android.maps.Projection;
 
 public class MMMapView extends MapActivity {
 	@Override
@@ -57,8 +59,7 @@ public class MMMapView extends MapActivity {
     }      
             
     @Override
-	public void onBackPressed() {
-    	    	
+	public void onBackPressed() {    	    	
     	if (extras.getBoolean("edit")) {
     		Intent result = new Intent();
     		result.putExtra("lat", Double.toString(thePoint.getLatitudeE6()/1000000.0));
@@ -84,8 +85,8 @@ public class MMMapView extends MapActivity {
 	              itemizedOverlay.addOverlay(overlayitem);              
 	        }
     	}
-  }    
-       
+	}
+	
 	public class MMItemizedOverlay extends ItemizedOverlay {
     	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
     	

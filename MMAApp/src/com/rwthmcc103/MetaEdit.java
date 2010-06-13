@@ -44,7 +44,7 @@ public class MetaEdit extends Activity{
 			public void onNothingSelected(AdapterView parent) {
 				showItemData(-1);
 			}
-	    });	    
+	    });
 	}
 	
 	//TODO implement
@@ -69,8 +69,8 @@ public class MetaEdit extends Activity{
     	double lat = loc.getLatitude();
     	
     	intent.putExtra("edit", true);
-    	intent.putExtra("lon", lon);
-    	intent.putExtra("lat", lat);
+    	intent.putExtra("lon", Double.toString(lon));
+    	intent.putExtra("lat", Double.toString(lat));
 
     	this.startActivityForResult(intent, 1);
 	}
