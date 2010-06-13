@@ -20,10 +20,10 @@ import com.amazonaws.services.simpledb.model.SelectRequest;
 public class AwsIntegrator {
 	
 	private AmazonS3 s3;
-	private AmazonSimpleDB sdb;
+	private static AmazonSimpleDB sdb;
 	private PropertiesCredentials pC;
 	private String bucketName = "7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media";
-	private String myDomain = "mcc10group3media";
+	private static String myDomain = "mcc10group3media";
 
 	public AwsIntegrator(PropertiesCredentials pC){
 		this.pC = pC; 
@@ -50,7 +50,7 @@ public class AwsIntegrator {
 		sdb.putAttributes(new PutAttributesRequest(myDomain, mItem.getId(), data));			
 	}
 
-	public List<MediaItem> getFilesByTag(String type, String tags){
+	public static List<MediaItem> getFilesByTag(String type, String tags){
 		
 		List<MediaItem> mItemList = new ArrayList<MediaItem>();
 		String[] tagNames = tags.split(" ");
@@ -198,7 +198,7 @@ public class AwsIntegrator {
 		
 	}
 	
-	public List<MediaItem> getFilesByLocation(String type, String lon, String lat, String lonrg, String latrg){
+	public static List<MediaItem> getFilesByLocation(String type, String lon, String lat, String lonrg, String latrg){
 
 		return new ArrayList<MediaItem>();
 		
