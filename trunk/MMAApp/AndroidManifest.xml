@@ -17,6 +17,8 @@
 		<activity android:name=".SearchMM"></activity>
 		<activity android:name=".MetaEdit"></activity>
 		<activity android:name=".MMMapView"></activity>
+		<activity android:name=".VideoPlayer"></activity>
+		<activity android:name=".ViewImage"></activity>
     </application>
         
 <uses-permission android:name="android.permission.INTERNET" />
