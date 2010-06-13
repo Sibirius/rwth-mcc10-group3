@@ -31,7 +31,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 	        	showItemInformation(position);
 	        }
 
-			@Override
+			//@Override
 			public void onNothingSelected(AdapterView parent) {
 				showItemInformation(-1);
 			}

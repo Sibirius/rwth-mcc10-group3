@@ -20,6 +20,7 @@ import android.view.MenuItem;
 public class MMAApp extends Activity {
 	
 	static final int DIALOG_PHOTO_OR_VIDEO_ID = 0;
+	static final int ACTIVITY_PHOTO_OR_VIDEO_ID = 1;
 	
 	public static final String MY_DB_NAME = "mmaapp";
 	public static final String TABLE_NAME = "metatable";
@@ -76,14 +77,15 @@ public class MMAApp extends Activity {
         	    			Uri uri = Uri.fromFile(exPath);
         	    			intent.putExtra(MediaStore.EXTRA_OUTPUT,uri);
         	    			
-        	    			startActivityForResult(intent, 1);
+        	    			startActivityForResult(intent, ACTIVITY_PHOTO_OR_VIDEO_ID);
+        	    			
         	           }
         	       })
         	       .setNegativeButton("Video", new DialogInterface.OnClickListener() {
         	           public void onClick(DialogInterface dialog, int id) {
         	        	   //TODO: get captured video and save it        	        	   
         	    			Intent intent = new Intent(android.provider.MediaStore.ACTION_VIDEO_CAPTURE);    			
-        	    			startActivityForResult(intent, 1);
+        	    			startActivityForResult(intent, ACTIVITY_PHOTO_OR_VIDEO_ID);
         	           }
         	       });
         	
@@ -96,6 +98,15 @@ public class MMAApp extends Activity {
         return dialog;
     }
     
+	@Override 
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
+		switch(requestCode){ 
+			case ACTIVITY_PHOTO_OR_VIDEO_ID:
+				startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.MetaEdit.class),0);
+				break; 
+		}
+	}
+	
     //open menu permanently
     @Override 
     public void onWindowFocusChanged(boolean hasFocus) {
