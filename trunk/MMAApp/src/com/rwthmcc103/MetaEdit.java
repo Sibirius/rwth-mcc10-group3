@@ -1,5 +1,18 @@
 package com.rwthmcc103;
 
+import java.io.File;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.james.mime4j.message.TextBody;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -53,10 +66,18 @@ public class MetaEdit extends Activity{
         //TODO: find filename by position
     	readDB("sample_0.jpg");
 	}
-	
-	// TODO
-	public void doSetCurrentLocation(View v) {
 		
+	public void doSetCurrentLocation(View v) {
+    	LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);    		
+    	Location loc = lm.getLastKnownLocation("gps");
+    	double lon = loc.getLongitude();
+    	double lat = loc.getLatitude();
+    	
+    	setLocation(lon,lat);
+	}
+	
+	public void setLocation(double lon, double lat) {
+		// TODO
 	}
 
 	// TODO open map view to select location
@@ -83,12 +104,49 @@ public class MetaEdit extends Activity{
 	}
 	
 	public void doUpload(View v) {
+		MediaItem m = new MediaItem();
 		
+        TextView entryTitel = (TextView) findViewById(R.id.entrytitel);        
+        TextView entryDescription = (TextView) findViewById(R.id.entrydescription);                
+        TextView entryTags = (TextView) findViewById(R.id.entrytags);
+        
+        m.setTitle(entryTitel.getText().toString());
+        m.setDescription(entryDescription.getText().toString());
+        m.setTags(entryTags.getText().toString());
+        
+        
+        File file = new File("path/to/your/file.txt"); //TODO set this to the right file path
+        
+        try {
+             HttpClient client = new DefaultHttpClient();  
+             String postURL = "http://ec2-79-125-28-225.eu-west-1.compute.amazonaws.com/AwsTranscode/UploadServlet"; //TODO set right url to upload
+             HttpPost post = new HttpPost(postURL);
+                 
+             FileBody bin = new FileBody(file);             
+             
+             MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);  
+             
+             reqEntity.addPart("title", new StringBody(m.getTitle()));
+             reqEntity.addPart("description", new StringBody(m.getDescription()));
+             reqEntity.addPart("tags", new StringBody(m.getTags()));
+             reqEntity.addPart("file", bin);                          
+             
+             post.setEntity(reqEntity);  
+             HttpResponse response = client.execute(post);  
+             HttpEntity resEntity = response.getEntity();  
+             if (resEntity != null) {    
+                       //Log.i("RESPONSE",EntityUtils.toString(resEntity));
+                 }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }        
 	}
 
     @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
-    	// TODO: get maps lat lon & save
+    	// get maps lat lon & save
+    	Bundle result = data.getExtras();    	
+    	setLocation(Double.valueOf(result.getString("lon")),Double.valueOf(result.getString("lat")));
     	
     	super.onActivityResult(requestCode, resultCode, data);
 	}
