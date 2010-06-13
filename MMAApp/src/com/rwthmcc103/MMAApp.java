@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
 public class MMAApp extends Activity {
@@ -34,7 +35,7 @@ public class MMAApp extends Activity {
                 "tags" + " TEXT, " +
                 "gps" + " TEXT, " +	
                 "isvideo" + " TEXT, " +
-                "ispicture" + " TEXT" +");";
+                "ispicture" + " TEXT" +");";    	   
 	
 	//private boolean menuFlag = false;
     
@@ -42,7 +43,7 @@ public class MMAApp extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onCreateDBAndDBTabled();
-        setContentView(R.layout.main);
+        setContentView(R.layout.main);        
     }
     
 	@Override
