@@ -126,12 +126,15 @@ public class MetaEdit extends Activity implements OnItemClickListener{
         m.setDescription(entryDescription.getText().toString());
         m.setTags(entryTags.getText().toString());
         
+        long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.IMAGE_ID));
+		//create the Uri for the Image 
+		Uri uri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id+"");
         
-        File file = new File("path/to/your/file.txt"); //TODO set this to the right file path
+        File file = new File(uri.getPath()); //TODO set this to the right file path
         
         try {
              HttpClient client = new DefaultHttpClient();  
-             String postURL = "http://ec2-79-125-28-225.eu-west-1.compute.amazonaws.com/AwsTranscode/UploadServlet"; //TODO set right url to upload
+             String postURL = "http://ec2-79-125-83-100.eu-west-1.compute.amazonaws.com/AwsTranscode/UploadServlet";
              HttpPost post = new HttpPost(postURL);
                  
              FileBody bin = new FileBody(file);             
