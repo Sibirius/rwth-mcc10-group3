@@ -35,11 +35,8 @@ public class GalleryMM extends Activity {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.gallery); 
         
-        //AwsIntegrator aws = new AwsIntegrator();
-        
 	    Gallery g = (Gallery) findViewById(R.id.gallery_gallery);
-	    //ada = new ImageAdapter(this,aws.getAll("pics"));	    
-	    ada = new ImageAdapter(this,AwsIntegrator.getSampleImages());
+	    ada = new ImageAdapter(this,AwsIntegrator.getSampleImages());	    
 	    g.setAdapter(ada);
 	    
 	    g.setOnItemSelectedListener(new OnItemSelectedListener() {
