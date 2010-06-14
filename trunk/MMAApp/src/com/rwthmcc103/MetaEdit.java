@@ -274,7 +274,7 @@ public class MetaEdit extends Activity implements OnItemClickListener{
 		mCursor.moveToPosition(position);
 		long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.IMAGE_ID));
 		//create the Uri for the Image 
-		Uri uri = Uri.withAppendedPath(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, id+"");
+		Uri uri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id+"");
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setData(uri);
 		startActivity(intent);
