@@ -96,11 +96,38 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
 	        }
 
 		//@Override
-		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
-			
+		public void onNothingSelected(AdapterView<?> arg0) {			
 		}
     };
+    
+	// open map view to select location
+	public void doSelectLocation(View v) {
+    	Intent intent = new Intent(this.getApplicationContext(), com.rwthmcc103.MMMapView.class);
+    	
+    	LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);    		
+    	Location loc = lm.getLastKnownLocation("gps");
+    	double lon = loc.getLongitude();
+    	double lat = loc.getLatitude();
+    	
+    	intent.putExtra("edit", true);
+    	intent.putExtra("lon", Double.toString(lon));
+    	intent.putExtra("lat", Double.toString(lat));
+
+    	this.startActivityForResult(intent, 1);
+	}
+	
+	private double lon;
+	private double lat;
+	
+    @Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
+
+    	Bundle result = data.getExtras();    	
+    	lon = Double.valueOf(result.getString("lon"));
+    	lat = Double.valueOf(result.getString("lat"));
+    	
+    	super.onActivityResult(requestCode, resultCode, data);
+	}	
     
     OnClickListener doSearchBtnOnClick = new OnClickListener() {		
 		public void onClick(View view) {
@@ -134,6 +161,14 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
         
         AwsIntegrator aws = new AwsIntegrator();
         
+        /*
+        LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);            
+        Location loc = lm.getLastKnownLocation("gps");
+
+        double lon = loc.getLongitude();
+        double lat = loc.getLatitude();
+        */ 
+        
         //TODO: At GPS Position
 		if(selectedItem == 0){ //Tags
 			if(((vidsChecked == true) && (picsChecked == true)) || (vidsChecked == false) && (picsChecked == false)){
@@ -159,13 +194,9 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
 		
 	}
 
-	public void onStartTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
-		
+	public void onStartTrackingTouch(SeekBar seekBar) {		
 	}
 
-	public void onStopTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
-		
+	public void onStopTrackingTouch(SeekBar seekBar) {		
 	}
 }

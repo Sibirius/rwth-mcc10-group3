@@ -1,9 +1,18 @@
 package com.rwthmcc103;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -16,16 +25,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-	public class GalleryMM extends Activity {
+public class GalleryMM extends Activity {
 	
+	private ImageAdapter ada;
+		
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.gallery); 
         
+        AwsIntegrator aws = new AwsIntegrator();
+        
 	    Gallery g = (Gallery) findViewById(R.id.gallery_gallery);
-	    g.setAdapter(new ImageAdapter(this));
+	    ada = new ImageAdapter(this, aws.getSampleImages());
+	    g.setAdapter(ada);
 	    
 	    //g.setOnItemClickListener(new OnItemClickListener() {
 	    g.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -42,7 +56,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
     
     private MediaItem currentMediaItem = getMediaItem(-1);
     
-    // TODO set information of item
+    // show information of item
     // -1 stands for empty
     private void showItemInformation(int position) {
     	currentMediaItem = getMediaItem(position);
@@ -53,17 +67,14 @@ import android.widget.AdapterView.OnItemSelectedListener;
     	
         entryTitel.setText(currentMediaItem.getTitle());
         entryDescription.setText(currentMediaItem.getDescription());
-        entryTags.setText(currentMediaItem.getTags());       
-    	
-    	//Toast.makeText(GalleryMM.this, "" + position, Toast.LENGTH_SHORT).show();
+        entryTags.setText(currentMediaItem.getTags());           	
     }
     
     private MediaItem getMediaItem(int position) {
-    	// TODO get information
     	if (position == -1) {
-    		return new MediaItem("", "-1", ""); // TODO: proper empty item
+    		return new MediaItem("", "this should not be empty", "ever"); // proper empty item
     	} else {
-    		return new MediaItem("something", Integer.toString(position), "tag");	
+    		return ada.pics[position];	
     	}    	    	
     }
 
@@ -115,18 +126,12 @@ import android.widget.AdapterView.OnItemSelectedListener;
 	    int mGalleryItemBackground;
 	    private Context mContext;
 
-	    private Integer[] mImageIds = {
-	            R.drawable.sample_1,
-	            R.drawable.sample_2,
-	            R.drawable.sample_3,
-	            R.drawable.sample_4,
-	            R.drawable.sample_5,
-	            R.drawable.sample_6,
-	            R.drawable.sample_7
-	    };
-
-	    public ImageAdapter(Context c) {
+	    public MediaItem[] pics;
+	    
+	    public ImageAdapter(Context c, List<MediaItem> picItems) {
 	        mContext = c;
+	        pics = (MediaItem[])picItems.toArray();
+	        
 	        TypedArray a = obtainStyledAttributes(R.styleable.Edit);
 	        mGalleryItemBackground = a.getResourceId(
 	                R.styleable.Edit_android_galleryItemBackground, 0);
@@ -134,7 +139,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 	    }
 
 	    public int getCount() {
-	        return mImageIds.length;
+	        return pics.length;
 	    }
 
 	    public Object getItem(int position) {
@@ -145,15 +150,38 @@ import android.widget.AdapterView.OnItemSelectedListener;
 	        return position;
 	    }
 
+	    
+	    Bitmap bmImg;
+	    
 	    public View getView(int position, View convertView, ViewGroup parent) {
-	        ImageView i = new ImageView(mContext);
-
-	        i.setImageResource(mImageIds[position]);
-	        i.setLayoutParams(new Gallery.LayoutParams(150, 100));
-	        i.setScaleType(ImageView.ScaleType.FIT_XY);
-	        i.setBackgroundResource(mGalleryItemBackground);
-
-	        return i;
+	    	ImageView i = new ImageView(mContext);
+	        
+	    	String fileUrl = pics[position].getFileURI();
+	    		
+	        URL myFileUrl =null;          
+	        try {
+	             myFileUrl= new URL(fileUrl);
+	        } catch (MalformedURLException e) {
+	             e.printStackTrace();
+	        }
+	        try {
+	             HttpURLConnection conn= (HttpURLConnection)myFileUrl.openConnection();
+	             conn.setDoInput(true);
+	             conn.connect();
+	             int length = conn.getContentLength();
+	             InputStream is = conn.getInputStream();
+	             
+	             bmImg = BitmapFactory.decodeStream(is);
+	             i.setImageBitmap( bmImg );
+	             i.setLayoutParams(new Gallery.LayoutParams(150, 100));
+	             i.setScaleType(ImageView.ScaleType.FIT_XY);
+	             i.setBackgroundResource(mGalleryItemBackground);
+		               
+	        } catch (IOException e) {
+	        	 e.printStackTrace();
+	        }	
+	        
+            return i;
 	    }
 	}    
 }
