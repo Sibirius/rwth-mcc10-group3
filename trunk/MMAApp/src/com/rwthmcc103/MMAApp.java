@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -102,9 +103,12 @@ public class MMAApp extends Activity {
     }
     
 	@Override 
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) { 
 		switch(requestCode){ 
 			case ACTIVITY_PHOTO_OR_VIDEO_ID:
+				Bundle b = intent.getExtras();
+				Bitmap bm = (Bitmap) b.get("data");
+				MediaStore.Images.Media.insertImage(getContentResolver(), bm, null, null);
 				startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc103.MetaEdit.class),0);
 				break; 
 		}
