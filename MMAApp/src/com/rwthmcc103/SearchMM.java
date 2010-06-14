@@ -168,8 +168,9 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
         double lon = loc.getLongitude();
         double lat = loc.getLatitude();
         */ 
+        double lon = 50.7777210897;
+        double lat = 6.0778105258;
         
-        //TODO: At GPS Position
 		if(selectedItem == 0){ //Tags
 			if(((vidsChecked == true) && (picsChecked == true)) || (vidsChecked == false) && (picsChecked == false)){
 				list = aws.getFilesByTag("all", searchString);
@@ -180,13 +181,14 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
 				list = aws.getFilesByTag("picture", searchString);
 			}
 		}else{ //Localization
+			   // multiply lon/lat with 10E10 to be comparable with values in database
 			if(((vidsChecked == true) && (picsChecked == true)) || (vidsChecked == false) && (picsChecked == false)){
-				list = aws.getFilesByLocation("all", Long.parseLong(searchString), Long.parseLong(searchString), Long.parseLong(String.valueOf(progress_long)), Long.parseLong(String.valueOf(progress_lat)));
+				list = aws.getFilesByLocation("all", new Double(lon*10E10).longValue(), new Double(lat * 10E10).longValue(), new Double(progress_long*10E4).longValue(), new Double(progress_lat*10E4).longValue());
 			}
 			else if((vidsChecked == true) && (picsChecked == false)){
-				list = aws.getFilesByLocation("video", Long.parseLong("long"), Long.parseLong("lat"), Long.parseLong(String.valueOf(progress_long)), Long.parseLong(String.valueOf(progress_lat)));
+				list = aws.getFilesByLocation("video", new Double(lon*10E10).longValue(), new Double(lat * 10E10).longValue(), new Double(progress_long*10E4).longValue(), new Double(progress_lat*10E4).longValue());
 			}else{
-				list = aws.getFilesByLocation("picture", Long.parseLong("long"), Long.parseLong("lat"), Long.parseLong(String.valueOf(progress_long))  , Long.parseLong(String.valueOf(progress_lat)));
+				list = aws.getFilesByLocation("picture", new Double(lon*10E10).longValue(), new Double(lat * 10E10).longValue(), new Double(progress_long*10E4).longValue(), new Double(progress_lat*10E4).longValue());
 			}
 		}
 		

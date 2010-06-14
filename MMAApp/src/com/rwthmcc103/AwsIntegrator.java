@@ -26,7 +26,7 @@ public class AwsIntegrator {
 	private String myDomain = "mcc10group3media";
 
 	public AwsIntegrator(){
-		AWSCredentials credentials = new BasicAWSCredentials("*", "*");
+		AWSCredentials credentials = new BasicAWSCredentials("", "");
 		s3 = new AmazonS3Client(credentials);
 		sdb = new AmazonSimpleDBClient(credentials);
 	}	
@@ -56,8 +56,8 @@ public class AwsIntegrator {
 			data.add(new ReplaceableAttribute().withName("Tags").withValue(tag));
 		}
 		
-		data.add(new ReplaceableAttribute().withName("Latitude").withValue("" + Double.parseDouble(mItem.getLat()) * 10E10));
-		data.add(new ReplaceableAttribute().withName("Longitude").withValue("" + Double.parseDouble(mItem.getLon()) * 10E10)); 
+		data.add(new ReplaceableAttribute().withName("Latitude").withValue("" + new Double(Double.parseDouble(mItem.getLat()) * 10E10).longValue()));
+		data.add(new ReplaceableAttribute().withName("Longitude").withValue("" + new Double(Double.parseDouble(mItem.getLon()) * 10E10).longValue())); 
 		
 		sdb.putAttributes(new PutAttributesRequest(myDomain, mItem.getId(), data));			
 	}
@@ -79,6 +79,47 @@ public class AwsIntegrator {
 		MediaItem mItem;
 		String itemTags;
 		String selectExpression = "select * from `" + myDomain + "` where (" + typeQuery + ") and ("+tagQuery+")";
+		SelectRequest selectRequest = new SelectRequest(selectExpression);
+		for (Item item : sdb.select(selectRequest).getItems()) {
+		    
+			mItem = new MediaItem();
+			mItem.setId(item.getName());
+			
+			if (type == "video") mItem.setIsVideo(true);
+			else mItem.setIsVideo(false);
+			
+			itemTags = "";
+		    for (Attribute a : item.getAttributes()) {
+		    	if(a.getName().equals("Title")) mItem.setTitle(a.getValue());
+		    	else if(a.getName().equals("Description")) mItem.setDescription(a.getValue());
+		    	else if(a.getName().equals("Tags")) itemTags += a.getValue() + " ";
+		    	else if(a.getName().equals("FileName")) mItem.setFilename(a.getValue());
+		    	else if(a.getName().equals("ThumbnailName")) mItem.setThumbnailname(a.getValue());	
+		    	else if(a.getName().equals("FileURI")) mItem.setFileURI(a.getValue());	
+		    	else if(a.getName().equals("ThumbnailURI")) mItem.setThumbnailURI(a.getValue());			    	
+		    	else if(a.getName().equals("Latitude")) mItem.setLat(a.getValue());
+		    	else if(a.getName().equals("Longitude")) mItem.setLon(a.getValue());
+		    }
+		    mItem.setTags(itemTags.trim());
+		    		    
+		    mItemList.add(mItem);
+
+		}	
+		
+		return mItemList;
+		
+	}	
+
+	public List<MediaItem> getAll(String type){
+		
+		List<MediaItem> mItemList = new ArrayList<MediaItem>();
+		
+		String typeQuery = "Type = 'Picture' or Type = 'Video'";
+		if (!type.equals("all")) typeQuery="Type = '" + type + "'"; 
+			
+		MediaItem mItem;
+		String itemTags;
+		String selectExpression = "select * from `" + myDomain + "` where (" + typeQuery + ")";
 		SelectRequest selectRequest = new SelectRequest(selectExpression);
 		for (Item item : sdb.select(selectRequest).getItems()) {
 		    
