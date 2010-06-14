@@ -11,6 +11,7 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.apache.james.mime4j.message.TextBody;
 
 import android.app.Activity;
@@ -130,11 +131,19 @@ public class MetaEdit extends Activity implements OnItemClickListener{
 		//create the Uri for the Image 
 		Uri uri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id+"");
         
-        File file = new File(uri.getPath()); //TODO set this to the right file path
-        
+		String[] projection = {
+				MediaStore.Images.ImageColumns.DATA  // The columns we want
+				};
+		Cursor myCursor = this.managedQuery(uri, projection, null, null, null);	
+		myCursor.moveToFirst();
+		String path = myCursor.getString(myCursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
+		
+        File file = new File(path); //TODO set this to the right file path
+        Log.i("FILE_PATH", path);
+        Log.i("CONTENT", m.getTitle()+" - "+m.getDescription()+" - "+m.getTags());
         try {
              HttpClient client = new DefaultHttpClient();  
-             String postURL = "http://ec2-79-125-83-100.eu-west-1.compute.amazonaws.com/AwsTranscode/UploadServlet";
+             String postURL = "http://ec2-79-125-33-140.eu-west-1.compute.amazonaws.com/AwsTranscode/UploadServlet";
              HttpPost post = new HttpPost(postURL);
                  
              FileBody bin = new FileBody(file);             
@@ -144,13 +153,13 @@ public class MetaEdit extends Activity implements OnItemClickListener{
              reqEntity.addPart("title", new StringBody(m.getTitle()));
              reqEntity.addPart("description", new StringBody(m.getDescription()));
              reqEntity.addPart("tags", new StringBody(m.getTags()));
-             reqEntity.addPart("file", bin);                          
+             reqEntity.addPart("file", bin);
              
              post.setEntity(reqEntity);  
              HttpResponse response = client.execute(post);  
              HttpEntity resEntity = response.getEntity();  
              if (resEntity != null) {    
-                       //Log.i("RESPONSE",EntityUtils.toString(resEntity));
+                       Log.i("RESPONSE",resEntity.toString());
                  }
         } catch (Exception e) {
             e.printStackTrace();
