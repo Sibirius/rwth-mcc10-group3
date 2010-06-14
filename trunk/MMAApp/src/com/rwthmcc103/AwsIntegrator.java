@@ -3,6 +3,7 @@ package com.rwthmcc103;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.widget.ImageView;
 
@@ -19,6 +20,10 @@ import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import com.amazonaws.services.simpledb.model.SelectRequest;
+import com.xerox.amazonws.sdb.Domain;
+import com.xerox.amazonws.sdb.ItemAttribute;
+import com.xerox.amazonws.sdb.QueryWithAttributesResult;
+import com.xerox.amazonws.sdb.SimpleDB;
 
 public class AwsIntegrator {
 	
@@ -28,9 +33,8 @@ public class AwsIntegrator {
 	private String myDomain = "mcc10group3media";
 
 	public AwsIntegrator(){
-		AWSCredentials credentials = new BasicAWSCredentials("AKIAIR25HYZBRP2MDTVA", "+HK96DvJ6OW1akEBI7Vu0zRzasKHy4PeLCI8KRla");
+		AWSCredentials credentials = new BasicAWSCredentials("*", "*");
 		s3 = new AmazonS3Client(credentials);
-		sdb = new AmazonSimpleDBClient(credentials);
 	}	
 	
 	public AmazonSimpleDB getSDB(){
@@ -67,49 +71,67 @@ public class AwsIntegrator {
 	public List<MediaItem> getFilesByTag(String type, String tags){
 		
 		List<MediaItem> mItemList = new ArrayList<MediaItem>();
-		String[] tagNames = tags.split(" ");
-		
-		String typeQuery = "Type = 'Picture' or Type = 'Video'";
-		if (!type.equals("all")) typeQuery="Type = '" + type + "'"; 
-		
-		String tagQuery = "";
-		for(int i = 0; i<tagNames.length; i++){
-			if(i != 0) tagQuery += " or ";
-			tagQuery += "Tags = '" + tagNames[i] + "'";
-		}
-		
-		MediaItem mItem;
-		String itemTags;
-		String selectExpression = "select * from `" + myDomain + "` where (" + typeQuery + ") and ("+tagQuery+")";
-		SelectRequest selectRequest = new SelectRequest(selectExpression);
-		for (Item item : sdb.select(selectRequest).getItems()) {
-		    
-			mItem = new MediaItem();
-			mItem.setId(item.getName());
+		try{
+			SimpleDB sds = new SimpleDB("*", "*", true);
+	        sds.setSignatureVersion(1);
+			Domain dom = sds.getDomain("mcc10group3media");
+			String[] tagNames = tags.split(" ");
 			
-			if (type == "video") mItem.setIsVideo(true);
-			else mItem.setIsVideo(false);
+			String typeQuery = "Type = 'Picture' or Type = 'Video'";
+			if (!type.equals("all")) typeQuery="Type = '" + type + "'"; 
 			
-			itemTags = "";
-		    for (Attribute a : item.getAttributes()) {
-		    	if(a.getName().equals("Title")) mItem.setTitle(a.getValue());
-		    	else if(a.getName().equals("Description")) mItem.setDescription(a.getValue());
-		    	else if(a.getName().equals("Tags")) itemTags += a.getValue() + " ";
-		    	else if(a.getName().equals("FileName")) mItem.setFilename(a.getValue());
-		    	else if(a.getName().equals("ThumbnailName")) mItem.setThumbnailname(a.getValue());	
-		    	else if(a.getName().equals("FileURI")) mItem.setFileURI(a.getValue());	
-		    	else if(a.getName().equals("ThumbnailURI")) mItem.setThumbnailURI(a.getValue());			    	
-		    	else if(a.getName().equals("Latitude")) mItem.setLat(a.getValue());
-		    	else if(a.getName().equals("Longitude")) mItem.setLon(a.getValue());
-		    }
-		    mItem.setTags(itemTags.trim());
-		    		    
-		    mItemList.add(mItem);
+			String tagQuery = "";
+			for(int i = 0; i<tagNames.length; i++){
+				if(i != 0) tagQuery += " or ";
+				tagQuery += "Tags = '" + tagNames[i] + "'";
+			}
+			
+			MediaItem mItem;
+			String itemTags;
+			String selectExpression = "select * from `" + myDomain + "` where (" + typeQuery + ") and ("+tagQuery+")";	
+			
+	        int itemCount = 0;
+	        String nextToken = null;
+	        do {
+	                QueryWithAttributesResult qwar = dom.selectItems(selectExpression, nextToken);
+	                Map<String, List<ItemAttribute>> items = qwar.getItems();
+	                for (String id : items.keySet()) {
+		    				mItem = new MediaItem();
+		    				mItem.setId(id);	                	
+	                        
+	        				if (type == "video") mItem.setIsVideo(true);
+	        				else mItem.setIsVideo(false);
+	        				
+	        				itemTags = "";	                        
+	                        for (ItemAttribute a : items.get(id)) {
+	        			    	if(a.getName().equals("Title")) mItem.setTitle(a.getValue());
+	        			    	else if(a.getName().equals("Description")) mItem.setDescription(a.getValue());
+	        			    	else if(a.getName().equals("Tags")) itemTags += a.getValue() + " ";
+	        			    	else if(a.getName().equals("FileName")) mItem.setFilename(a.getValue());
+	        			    	else if(a.getName().equals("ThumbnailName")) mItem.setThumbnailname(a.getValue());	
+	        			    	else if(a.getName().equals("FileURI")) mItem.setFileURI(a.getValue());	
+	        			    	else if(a.getName().equals("ThumbnailURI")) mItem.setThumbnailURI(a.getValue());			    	
+	        			    	else if(a.getName().equals("Latitude")) mItem.setLat(a.getValue());
+	        			    	else if(a.getName().equals("Longitude")) mItem.setLon(a.getValue());
+	                        }
+	        			    mItem.setTags(itemTags.trim());
+			    		    
+	        			    mItemList.add(mItem);	                        
+	                }
+	                nextToken = qwar.getNextToken();
+	                System.out.println("Box Usage :"+qwar.getBoxUsage());
+	        } while (nextToken != null && !nextToken.trim().equals(""));
 
-		}	
-		
-		return mItemList;
-		
+	        System.out.println("Number of items returned : "+itemCount);			
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			if (ex.getCause() != null) {
+                System.err.println("caused by : ");
+                ex.getCause().printStackTrace();
+			}
+		}
+		return mItemList;				
 	}	
 
 	public List<MediaItem> getAll(String type){
@@ -237,18 +259,6 @@ public class AwsIntegrator {
 		m.setTags("eins zwei drei");
 		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_6.jpg");
 		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_6_thumb.jpg");
-		m.setLat("50.77772108971944");
-		m.setLon("6.077810525894165");
-		ml.add(m);	
-		
-		m = new MediaItem();
-		m.setId("sample7");
-		m.setIsVideo(false);
-		m.setTitle("Sample 7");
-		m.setDescription("Image Sample Nr 7");
-		m.setTags("eins zwei drei");
-		m.setFileURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_7.jpg");
-		m.setThumbnailURI("http://7ecee678-7d24-4cae-8edc-a7bba5e391e7-mcc10group3media.s3.amazonaws.com/sample_7_thumb.jpg");
 		m.setLat("50.77772108971944");
 		m.setLon("6.077810525894165");
 		ml.add(m);		
