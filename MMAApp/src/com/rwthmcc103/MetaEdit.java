@@ -92,7 +92,7 @@ public class MetaEdit extends Activity implements OnItemClickListener{
 		// TODO
 	}
 
-	// TODO open map view to select location
+	// open map view to select location
 	public void doSelectLocation(View v) {
     	Intent intent = new Intent(this.getApplicationContext(), com.rwthmcc103.MMMapView.class);
     	
