@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.widget.ImageView;
+
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -26,7 +28,7 @@ public class AwsIntegrator {
 	private String myDomain = "mcc10group3media";
 
 	public AwsIntegrator(){
-		AWSCredentials credentials = new BasicAWSCredentials("", "");
+		AWSCredentials credentials = new BasicAWSCredentials("AKIAIR25HYZBRP2MDTVA", "+HK96DvJ6OW1akEBI7Vu0zRzasKHy4PeLCI8KRla");
 		s3 = new AmazonS3Client(credentials);
 		sdb = new AmazonSimpleDBClient(credentials);
 	}	
