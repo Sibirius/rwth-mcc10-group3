@@ -119,7 +119,7 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
 	private double lon;
 	private double lat;
 	
-    @Override
+/*    @Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) { 
 
     	Bundle result = data.getExtras();    	
@@ -128,11 +128,13 @@ public class SearchMM extends Activity implements OnSeekBarChangeListener {
     	
     	super.onActivityResult(requestCode, resultCode, data);
 	}	
-    
+*/    
     OnClickListener doSearchBtnOnClick = new OnClickListener() {		
 		public void onClick(View view) {
-				getResults();
-				//list = AwsIntegrator.getSampleImages(); 
+				//getResults();
+				//AwsIntegrator aws = new AwsIntegrator();
+				//list = aws.getFilesByTag("Picture", "eins zwei drei");
+				list = AwsIntegrator.getSampleImages();
 				Intent intent = new Intent(SearchMM.this,com.rwthmcc103.Thumbnails.class);
 		    	//intent.putExtra("RESULT", getResults());
 		    	startActivityForResult(intent,0);
