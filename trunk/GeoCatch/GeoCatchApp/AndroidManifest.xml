@@ -11,8 +11,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Map"></activity>        
+		<uses-library android:name="com.google.android.maps" />
 
     </application>
-
+	<uses-permission android:name="android.permission.INTERNET" />
 
 </manifest> 
