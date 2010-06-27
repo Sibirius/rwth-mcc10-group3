@@ -3,24 +3,31 @@ package com.rwthmcc3;
 import java.util.List;
 
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.widget.LinearLayout;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
-public class Map extends MapActivity {
+public class Map extends MapActivity{
 
-	LinearLayout linearLayout;
-	MapView mapView;
+	private MapView mapView;
+	private MapController mapController;
 	
-	List<Overlay> mapOverlays;
-	Drawable drawable;
-	PositionMarkerOverlay itemizedOverlay;
+	private List<Overlay> mapOverlays;
+	private Drawable drawable;
+	private PositionMarkerOverlay itemizedOverlay;
+	
+	private GeoPoint prePoint = null;
 
+	LocationManager lm;	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,24 +35,55 @@ public class Map extends MapActivity {
 		
 		mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
-		
-		mapOverlays = mapView.getOverlays();
+		mapController = mapView.getController();
+		mapController.setZoom(12);
+
 		drawable = this.getResources().getDrawable(R.drawable.androidmarker);
-		itemizedOverlay = new PositionMarkerOverlay(drawable);
 		
-		GeoPoint point = new GeoPoint(19240000,-99120000);
-		OverlayItem overlayitem = new OverlayItem(point, "", "");
-		GeoPoint point2 = new GeoPoint(35410000, 139460000);
-		OverlayItem overlayitem2 = new OverlayItem(point2, "", "");
-		
-		itemizedOverlay.addOverlay(overlayitem);
-		itemizedOverlay.addOverlay(overlayitem2);
-		mapOverlays.add(itemizedOverlay);
+		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new GeoUpdateHandler());
+
 	}	
 	
 	@Override
 	protected boolean isRouteDisplayed() {
 	    return false;
 	}
+	
+	public class GeoUpdateHandler implements LocationListener {
+
+		@Override
+		public void onLocationChanged(Location location) {
+			int lat = (int) (location.getLatitude() * 1E6);
+			int lng = (int) (location.getLongitude() * 1E6);		
+			
+			GeoPoint point = new GeoPoint(lat, lng);
+			OverlayItem overlayitem = new OverlayItem(point, "", "");
+
+			mapOverlays = mapView.getOverlays();
+			itemizedOverlay = new PositionMarkerOverlay(prePoint, point, drawable);
+			
+			itemizedOverlay.addOverlay(overlayitem);
+			mapOverlays.add(itemizedOverlay);
+			
+			mapController.animateTo(point);		
+			
+			prePoint = point;
+
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+		}
+	}
+
 	
 }
