@@ -28,7 +28,7 @@ public class MainMenu extends ListActivity{
         ListView lv = getListView();
 	    lv.setTextFilterEnabled(true);
 	    
-	    //setListofGames();
+	    setListofGames();
 	    
 	    mSchedule = new SimpleAdapter(this, mylist, R.layout.main_menu_list_item,
 	                new String[] {"game_name", "player_count", "distance"}, new int[] {R.id.game_name, R.id.player_count, R.id.distance});
@@ -64,7 +64,7 @@ public class MainMenu extends ListActivity{
 	public static void setListofGames(){
 		
 		//delete list before set new list
-		mylist = null;
+		//mylist = null;
 		
 		//call integrator method
 		

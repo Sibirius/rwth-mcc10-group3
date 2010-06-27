@@ -21,7 +21,7 @@ public class GeoCatch extends Activity {
         layout.setOnClickListener(doLayoutOnClick);
         
         //load list
-        MainMenu.setListofGames();
+        //MainMenu.setListofGames();
 
 	}
 
