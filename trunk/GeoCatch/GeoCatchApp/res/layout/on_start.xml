@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/on_start_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<ImageView
+            android:src="@drawable/geocatch_vorlaeufig"
+            android:id="@+id/logo"
+            android:adjustViewBounds="true"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="center"
+            android:layout_marginTop="30px"
+            />
+<TextView 	android:text="@string/click"
+			android:layout_width="wrap_content"
+			android:paddingBottom="100px"
+			android:textSize="15px"
+			android:textStyle="italic"
+			android:layout_gravity="center_horizontal"
+			android:layout_height="wrap_content"/>
+			
+<TextView 	android:text="@string/greeting"
+			android:layout_width="wrap_content"
+			android:textSize="15px"
+			android:textStyle="bold"
+			android:layout_gravity="center_horizontal"
+			android:layout_height="wrap_content"/>
+</LinearLayout>
