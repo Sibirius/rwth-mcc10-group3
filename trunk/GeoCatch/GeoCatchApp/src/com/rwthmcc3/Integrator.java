@@ -16,6 +16,8 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -26,23 +28,48 @@ public class Integrator {
 	
 	private static String AppEngineURL = "";
 	
-	public static void mainPage(){        
-        doGet("/", null);
-        //TODO handle return value
-	}
-	
-	public static void getGameList(){        
-        HttpResponse res = doGet("/games", null);
+	public static String mainPage(){        
+        HttpResponse res = doGet("/", null);
         try {
-			Document doc = parseXml(res.getEntity().getContent());
+			return res.getEntity().getContent().toString();
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
-        //TODO parse xml
+		return null;
+	}
+	
+	public static Game getGameList(){        
+        HttpResponse res = doGet("/games", null);
+        try {
+			Document doc = parseXml(res.getEntity().getContent());
+			NodeList nodes = doc.getElementsByTagName("topic");
+		    for (int i = 0; i < nodes.getLength(); i++) {
+		    	Element element = (Element) nodes.item(i);
+		    	
+		    	Game game = new Game();
+		    	
+		    	game.setName(element.getAttribute("name"));
+		    	game.setKey(element.getAttribute("key"));
+		    	game.setPlayerCount(Integer.parseInt(element.getAttribute("playerCount")));
+		    	game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("maxPlayersCount")));
+		    	game.setVersion(Float.parseFloat(element.getAttribute("version")));
+		    	String [] creatorLocation = element.getAttribute("creatorLocation").split(" ");
+		    	game.setCreatorLatitude(Float.parseFloat(creatorLocation[0]));
+		    	game.setCreatorLongitude(Float.parseFloat(creatorLocation[1]));
+		    	game.setMode(Integer.parseInt(element.getAttribute("mode")));
+		    	
+		    	return game;
+	
+		     }
+
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public static void joinGame(String player, String game){
@@ -106,10 +133,8 @@ public class Integrator {
         try {
 			return res.getEntity().getContent().toString();
 		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
