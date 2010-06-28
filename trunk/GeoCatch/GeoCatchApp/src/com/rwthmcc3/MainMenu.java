@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -31,7 +30,7 @@ public class MainMenu extends ListActivity{
 	    setListofGames();
 	    
 	    mSchedule = new SimpleAdapter(this, mylist, R.layout.main_menu_list_item,
-	                new String[] {"game_name", "player_count", "distance"}, new int[] {R.id.game_name, R.id.player_count, R.id.distance});
+	                new String[] {"game_name", "player_count", "distance"}, new int[] {R.id.game_name, R.id.player_count_list, R.id.distance});
 	    lv.setAdapter(mSchedule);
 	    	    
     };
@@ -64,19 +63,19 @@ public class MainMenu extends ListActivity{
 	public static void setListofGames(){
 		
 		//delete list before set new list
-		//mylist = null;
+		mylist.clear();
 		
 		//call integrator method
 		
 		//for every item: addItemToList
 		
 		//test data
-		addItemToList("Super Mario","4/5 Player","Distance to Creator: 4.5 km");
-		addItemToList("Tekken","3/4 Player","Distance to Creator: 2 km");
-		addItemToList("Halo","1/5 Player","Distance to Creator: 4.5 km");
-		addItemToList("Zelda","4/10 Player","Distance to Creator: 4.0 km");
-		addItemToList("Resident Evil","4/7 Player","Distance to Creator: 4.5 km");
 		addItemToList("Unreal Tournament","1/8 Player","Distance to Creator: 0.8 km");
+		addItemToList("Super Mario","4/5 Player","Distance to Creator: 1.5 km");
+		addItemToList("Tekken","3/4 Player","Distance to Creator: 2 km");
+		addItemToList("Halo","1/5 Player","Distance to Creator: 3.5 km");
+		addItemToList("Resident Evil","4/7 Player","Distance to Creator: 4.5 km");
+		
 		
 	}
 	
@@ -93,7 +92,11 @@ public class MainMenu extends ListActivity{
 	/* Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.update:
+			updateList();
+			return true;
 		case R.id.new_game:
+			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.NewGame.class),0);	
 			return true;
 		case R.id.view_map:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Map.class),0);			

@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, GeoCatch!</string>
     <string name="app_name">GeoCatch</string>
-    <string name="click">Click To Continue!</string>
-    <string name="greeting">Mobile Cloud Computing - RWTH Aachen</string>
+    <string name="click">Click To Continue...</string>
+    <string name="greeting">Mobile Cloud Computing</string>
+    <string name="copyright">- © RWTH Aachen -</string>
+    <string name="set_game_name">Spielname festlegen:</string>
+    <string name="set_player_count">Spieleranzahl festlegen:</string>
+    <string name="set_timer">Timer einstellen:</string>
+    <string name="update_player_count">8 Spieler</string>
+    
+    
+    <string name="times">Search by:</string>
+    <string-array name="times_array">
+        <item>3  min</item>
+        <item>6  min</item>
+        <item>9  min</item>
+        <item>12 min</item>
+        <item>15 min</item>
+    </string-array>
+    
 </resources>

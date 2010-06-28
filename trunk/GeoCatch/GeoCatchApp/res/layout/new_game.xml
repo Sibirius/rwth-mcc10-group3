@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout    xmlns:android="http://schemas.android.com/apk/res/android"
+   				 android:layout_width="fill_parent"
+    			 android:layout_height="fill_parent"
+    			 android:orientation="vertical"
+    			 android:padding="10px">
+    			 
+				 <TextView  	 android:text="@string/set_game_name"
+					         	 android:layout_width="fill_parent"
+						         android:layout_height="wrap_content"
+						         android:paddingLeft="2px"
+						         android:paddingBottom="20px"/>
+					        
+				 <EditText  	 android:id="@+id/edit_game_name" 
+								 android:layout_height="wrap_content" 
+								 android:inputType="text|textNoSuggestions" 
+								 android:layout_width="fill_parent"
+								 />
+	
+				 <LinearLayout   android:layout_width="fill_parent"
+				 				 android:layout_height="wrap_content"
+    			 				 >
+    			 				
+								 <TextView   android:text="@string/set_player_count" 
+											 android:layout_width="wrap_content" 
+											 android:layout_height="wrap_content"
+											 android:paddingLeft="2px"
+											 android:paddingTop="40px"
+											 android:paddingBottom="20px"/>
+											 
+								 <TextView   android:id="@+id/player_count_new_game"
+								 			 android:text="@string/update_player_count"
+								 			 android:layout_width="wrap_content" 
+											 android:layout_height="wrap_content"
+											 android:paddingLeft="30px"
+											 android:paddingTop="20px"
+											 android:paddingBottom="20px"/>	 
+				
+				 </LinearLayout>	
+							
+				 <SeekBar 	 android:id="@+id/seekbar_player_count"
+					         android:layout_width="fill_parent"
+					         android:layout_height="wrap_content"
+					         android:max="14"
+					         android:progress="7"
+					         android:paddingLeft="3px"
+					         android:paddingRight="3px"
+					         />
+					         
+					         
+				 <TextView   android:text="@string/set_timer" 
+							 android:layout_width="fill_parent" 
+							 android:layout_height="wrap_content"
+							 android:paddingLeft="3px"
+							 android:paddingTop="40px"
+							 android:paddingBottom="20px"/>	  
+							        
+				 <Spinner    android:id="@+id/spinner_new_game"
+					         android:layout_width="fill_parent"
+					         android:layout_height="wrap_content"
+					         android:prompt="@string/times"
+					         />
+    		
+    			 <Button     android:layout_height="wrap_content" 
+			    			 android:layout_width="fill_parent" 
+			    			 android:text="Weiter"
+			    			 android:id="@+id/button_next"
+			    			 android:layout_gravity="bottom"
+			    			 android:layout_marginTop="40px"
+			    			 >
+	</Button>
+</LinearLayout>
