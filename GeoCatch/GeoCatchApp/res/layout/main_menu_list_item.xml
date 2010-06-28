@@ -17,7 +17,7 @@
 							     android:layout_height="fill_parent"
 							     android:orientation="horizontal">
  
-							     <TextView 	 android:id="@+id/player_count"
+							     <TextView 	 android:id="@+id/player_count_list"
 									         android:layout_width="120dip"
 									         android:textSize="12px"
 											 android:textStyle="italic"
