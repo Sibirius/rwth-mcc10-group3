@@ -2,7 +2,11 @@ package com.rwthmcc3;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -53,7 +57,30 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
         }
     }
     
+	/* Creates the menu items */
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.new_game_options_menu, menu);
+	    
+       
+	    return true;
+	}
 
+	/* Handles item selections */
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.new_game_options_menu_view_map:
+			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Map.class),0);			
+			return true;			
+		case R.id.new_game_options_menu_prefs:
+			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Preferences.class),0);
+			return true;
+		case R.id.new_game_options_menu_help:
+			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Help.class),0);
+			return true;	
+		}
+		return false;
+	}
         
     
     

@@ -83,7 +83,7 @@ public class MainMenu extends ListActivity{
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.options_menu, menu);
+	    inflater.inflate(R.menu.main_options_menu, menu);
 	    
        
 	    return true;
@@ -92,16 +92,17 @@ public class MainMenu extends ListActivity{
 	/* Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.update:
+		case R.id.main_options_menu_update:
 			updateList();
 			return true;
-		case R.id.new_game:
+		case R.id.main_options_menu_new_game:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.NewGame.class),0);	
 			return true;
-		case R.id.view_map:
+		case R.id.main_options_menu_view_map:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Map.class),0);			
 			return true;			
-		case R.id.prefs:
+		case R.id.main_options_menu_prefs:
+			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Preferences.class),0);
 			return true;						
 		}
 		return false;
