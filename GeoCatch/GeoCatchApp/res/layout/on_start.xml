@@ -12,26 +12,38 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:scaleType="center"
-            android:layout_marginTop="30px"/>
+            android:layout_marginTop="10px"/>
             
-<TextView 	android:text="@string/click"
-			android:layout_width="wrap_content"
-			android:paddingBottom="100px"
-			android:textSize="15px"
-			android:textStyle="italic"
-			android:layout_gravity="center_horizontal"
-			android:layout_height="wrap_content"/>
-			
+
+			<Button     android:layout_height="wrap_content" 
+						android:layout_width="fill_parent" 
+						android:text="Neues Spiel"
+						android:id="@+id/button_new_game"
+						android:layout_marginTop="30px"
+						android:layout_marginRight="80px"
+						android:layout_marginLeft="80px"/>
+				
+			<Button     android:layout_height="wrap_content" 
+						android:layout_width="fill_parent" 
+						android:text="Spiel beitreten"
+						android:id="@+id/button_join_game"
+						android:layout_marginRight="80px"
+						android:layout_marginLeft="80px"
+						android:layout_marginTop="10px"/>
+						
 <TextView 	android:text="@string/greeting"
 			android:layout_width="wrap_content"
 			android:textSize="15px"
 			android:textStyle="bold"
 			android:layout_gravity="center_horizontal"
-			android:layout_height="wrap_content"/>
+			android:layout_height="wrap_content"
+			android:layout_marginTop="60px"/>
 			
 <TextView 	android:text="@string/copyright"
 			android:layout_width="wrap_content"
 			android:textSize="15px"
 			android:layout_gravity="center_horizontal"
-			android:layout_height="wrap_content"/>
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="10px"
+			android:gravity="bottom"/>
 </LinearLayout>

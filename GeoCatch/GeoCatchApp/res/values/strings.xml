@@ -3,7 +3,7 @@
     <string name="app_name">GeoCatch</string>
     <string name="click">Click To Continue...</string>
     <string name="greeting">Mobile Cloud Computing</string>
-    <string name="copyright">- © RWTH Aachen -</string>
+    <string name="copyright">- © Informatik 5 - RWTH Aachen -</string>
     <string name="set_game_name">Spielname festlegen:</string>
     <string name="set_player_count">Spieleranzahl festlegen:</string>
     <string name="set_timer">Timer einstellen:</string>
