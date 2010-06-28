@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<games>
+	{% for game in games %}
+	<game 
+		name = "{{ game.name }}"
+		key = "{{ game.key }}"
+		playerCount = "{{ game.playerCount }}"
+		maxPlayersCount = "{{ game.maxPlayerCount }}"
+		version = "{{ game.version }}"
+		creator_location = "{{ game.creatorLocation }}"
+		mode = "{{ game.mode }}"
+	/>		
+	{% endfor %}
+</games>
