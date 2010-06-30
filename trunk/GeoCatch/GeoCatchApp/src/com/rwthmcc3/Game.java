@@ -61,4 +61,6 @@ public class Game {
 	public int getMode() {
 		return mode;
 	}
+	
+	//TODO getPlayerNames return: a list of players in the game
 }

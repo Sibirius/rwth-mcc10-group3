@@ -8,9 +8,11 @@
     <string name="set_player_count">Spieleranzahl festlegen:</string>
     <string name="set_timer">Timer einstellen:</string>
     <string name="update_player_count">8 Spieler</string>
+    <string name="text_change_name">Spielername ändern:</string>
+ 
     
     
-    <string name="times">Search by:</string>
+    <string name="times">Wartezeit wählen</string>
     <string-array name="times_array">
         <item>3  min</item>
         <item>6  min</item>
