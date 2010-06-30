@@ -2,14 +2,17 @@ package com.rwthmcc3;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,14 +33,39 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
         seekPlayerCount = (SeekBar)findViewById(R.id.seekbar_player_count); 
         seekPlayerCount.setOnSeekBarChangeListener(this);
         
+        //spinner timer
         Spinner spinner = (Spinner) findViewById(R.id.spinner_new_game);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.times_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
+        
+        //button next
+    	Button buttoNext = (Button)findViewById(R.id.button_next);
+		buttoNext.setOnClickListener(doNextOnClick);
+		
+        
+	}
+
+	
+	OnClickListener doNextOnClick = new OnClickListener() {		
+		public void onClick(View view) {
+			
+			
+			
+			//message to user
+		    ProgressDialog dialog = ProgressDialog.show(NewGame.this, "", 
+	                "Spielliste wird vom Server abgerufen. Bitte warten...", true);
+			//TODO save game
+		    dialog.dismiss();
+			
+			startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.WaitForPlayers.class),0);
+			}
+	};
+        
                
-    }
+    
     
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
     	TextView text_player_count = (TextView)findViewById(R.id.player_count_new_game);

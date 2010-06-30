@@ -39,7 +39,9 @@ public class Integrator {
 		}
 		return null;
 	}
+
 	
+	//TODO return all games in a list oder quatsch mich mal an... christian
 	public static Game getGameList(){        
         HttpResponse res = doGet("/games", null);
         try {

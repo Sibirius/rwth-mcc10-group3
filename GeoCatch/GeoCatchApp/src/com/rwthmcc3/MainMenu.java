@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -27,7 +28,12 @@ public class MainMenu extends ListActivity{
         ListView lv = getListView();
 	    lv.setTextFilterEnabled(true);
 	    
+	    //message to user
+	    ProgressDialog dialog = ProgressDialog.show(MainMenu.this, "", 
+                "Spielliste wird vom Server abgerufen. Bitte warten...", true);
 	    setListofGames();
+	    dialog.dismiss();
+	    
 	    
 	    mSchedule = new SimpleAdapter(this, mylist, R.layout.main_menu_list_item,
 	                new String[] {"game_name", "player_count", "distance"}, new int[] {R.id.game_name, R.id.player_count_list, R.id.distance});
@@ -51,7 +57,7 @@ public class MainMenu extends ListActivity{
 	public void updateList(){
 		setListofGames();
 		
-		//test
+		//TODO test delete
 		mylist.remove(2);
 		mylist.remove(2);
 		
@@ -65,7 +71,7 @@ public class MainMenu extends ListActivity{
 		//delete list before set new list
 		mylist.clear();
 		
-		//call integrator method
+		//TODO call integrator method
 		
 		//for every item: addItemToList
 		
