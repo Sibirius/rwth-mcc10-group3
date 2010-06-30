@@ -9,13 +9,21 @@ from google.appengine.ext.webapp import template
 
 from google.appengine.ext import db
 
+from inputcheck import *
+
 DEBUG = True
 TEMPLATE_FOLDER = os.path.join(os.path.dirname(__file__), 'templates')
+
+def respond(caller, value):
+	template_values = {'value': value,}
+	template_path = os.path.join(TEMPLATE_FOLDER, 'response.xml') #TODO: more details on what actually happened? error into own xml tag?
+		
+	caller.response.out.write(template.render(template_path, template_values))			
 
 ##########################################################
 #data models
 ##########################################################
-class Player(db.Model): #dummy class for reference in game
+class Player(db.Model): #dummy class to be referenced by the game class, ignore it
 	pass
 
 class Game(db.Model):
@@ -79,14 +87,18 @@ class GetGameList(webapp.RequestHandler):
 class JoinGame(webapp.RequestHandler):
 	""" calling player joins the game if it exists and he is not already in another one """
 	def get(self):
-		game_key = cgi.escape(self.request.get('g'))
-		player_key = cgi.escape(self.request.get('p'))
-		
-		#TODO: maybe check mac address?
-		#TODO: sanity checks of the data?
+		try:
+			game_key = checkKey(self.request.get('g'))
+			player_key = checkKey(self.request.get('p'))
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			return
+			#yeah, you heard that future-me!
 		
 		game = Game.all().filter("key =", game_key).get()
 		player = Player.all().filter("key =", game_key).get()
+		
+		value = "error"
 		
 		if game != None and player != None:
 			if not player_key in game.players:
@@ -97,20 +109,28 @@ class JoinGame(webapp.RequestHandler):
 				player.currentGame = game_key
 				player.put()
 				logging.info('Player %s joined game %s'%((player_key,game_key))) 
+				
+				value = "done"
 			else:
 				logging.error('Player %s tried to join game %s where he already is'%(player_key,game_key))
 			logging.error('Either player %s or game %s is not existing, join failed'%(player_key,game_key))
-				
+
 		#TODO: give feedback to the player? or an error message
+		#TODO: how about establishing a connection so the client will receive changes in the lobby and other events instead of constantly polling for them?
+		respond(value)
 
 class StopGame(webapp.RequestHandler):
 	"""stops the game if called by the creator """
-	def get(self):	
-		player_key = cgi.escape(self.request.get('p'))
-		game_key = cgi.escape(self.request.get('g'))
-		
+	def get(self):
+		try:
+			game_key = checkKey(self.request.get('g'))
+			player_key = checkKey(self.request.get('p'))
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			return
+			#yeah, you heard that future-me!
+
 		#TODO: maybe check mac address?
-		#TODO: sanity checks of the data?
 		
 		game = Game.all().filter("key =", game_key).get()
 		
@@ -125,11 +145,15 @@ class StopGame(webapp.RequestHandler):
 class StartGame(webapp.RequestHandler):
 	""" start an already created game, only usable by the creator """
 	def get(self):		
-		player_key = cgi.escape(self.request.get('p'))
-		game_key = cgi.escape(self.request.get('g'))
-		
+		try:
+			game_key = checkKey(self.request.get('g'))
+			player_key = checkKey(self.request.get('p'))
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			return
+			#yeah, you heard that future-me!
+
 		#TODO: maybe check mac address?
-		#TODO: sanity checks of the data?
 		
 		game = Game.all().filter("key =", game_key).get()
 		
@@ -148,11 +172,15 @@ class StartGame(webapp.RequestHandler):
 class LeaveGame(webapp.RequestHandler):
 	""" a player can leave a game, game is closed if the player was the creator """
 	def get(self):
-		game_key = cgi.escape(self.request.get('g'))
-		player_key = cgi.escape(self.request.get('p'))
-		
+		try:
+			game_key = checkKey(self.request.get('g'))
+			player_key = checkKey(self.request.get('p'))
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			return
+			#yeah, you heard that future-me!
+
 		#TODO: maybe check mac address?
-		#TODO: sanity checks of the data?
 		
 		game = Game.all().filter("key =", game_key).get()
 		player = Player.all().filter("key =", game_key).get()
@@ -182,10 +210,14 @@ class LeaveGame(webapp.RequestHandler):
 				
 				#TODO: deal with the horrible aftermath
 				#maybe if only 2 left start showdown, give 2 minutes then set marker in between them
+				
+			value = "done"
 		else:
 			logging.error('Attempt to leave game %s by player %s failed, no game or player'%(game_key,player_key))			
+			value = "error"
 				
 		#TODO: give feedback to the player? or an error message
+		respond(self, value)
 
 class PlayerUpdateState(webapp.RequestHandler):
 	"""updates the player state and provides him with stuff he should know"""
@@ -197,10 +229,13 @@ class PlayerUpdateState(webapp.RequestHandler):
 class RegisterPlayer(webapp.RequestHandler):
 	"""checks if mac address already in database, registers a new player otherwise""" #TODO: really a good idea? captcha?
 	def get(self):
-		mac = cgi.escape(self.request.get('m'))
-		name = cgi.escape(self.request.get('n'))
-		
-		#TODO: sanity checks of the data?
+		try:
+			mac = checkMac(self.request.get('m'))
+			name = checkName(self.request.get('n'))
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			return
+			#yeah, you heard that future-me!
 		
 		player = Player.all().filter("mac =", mac).get()
 		
@@ -214,7 +249,7 @@ class RegisterPlayer(webapp.RequestHandler):
 		else:
 			if player.currentGame != None: 
 				logging.error('Creating new Player %s failed because player is in game %s'%(player_key,player.currentGame))
-				return #TODO: do something if someone tries to register whiile there is an ongoing game?
+				return #TODO: do something if someone tries to register while there is an ongoing game he already plays?
 
 			player.name = name
 			logging.info('Changed player name for %s to %s'%(player_key,player.name))
@@ -224,18 +259,20 @@ class RegisterPlayer(webapp.RequestHandler):
 		#TODO: response as xml
 		
 		#todo: say if everything went fine
+		respond(self, "done")
 		
 class CreateGame(webapp.RequestHandler):
 	""" creates game and returns it's key, 0 otherwise """
 	def get(self):
-		self.response.headers['Content-Type'] = 'text/plain'
-
-		name = cgi.escape(self.request.get('n'))
-		version = int(cgi.escape(self.request.get('v')))
-		creatorLocation = cgi.escape(self.request.get('lat'))+","+cgi.escape(self.request.get('lon'))
-		player_key = cgi.escape(self.request.get('p'))
-							
-		#TODO: sanity checks of the data?
+		try:
+			name = checkName(self.request.get('n'))
+			version = checkInt(cgi.escape(self.request.get('v')))
+			creatorLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon'))
+			player_key = checkKey(self.request.get('p'))
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			return
+			#yeah, you heard that future-me!
 		
 		#TODO: test if game can be created, abort otherwise
 		if (True):					
@@ -249,20 +286,21 @@ class CreateGame(webapp.RequestHandler):
 			game.maxPlayerCount = 3
 			game.creator = player_key
 			
-			game_key = game.put() #TODO: use the database key seems best, as they are unique already - no conflicts
+			game_key = game.put() #the use the database keys seems best, as they are unique already - no conflicts
 			
 			logging.info('New game %s created by player %s'%(game_key,player_key))
 			
-			self.response.out.write(game_key)
+			value = game_key
 			#TODO: response as xml
 			return
-		
-		logging.error('Attempt to create new game by player %s failed'%(player_key))
-		self.response.out.write("0") #abort
-		#TODO: response as xml
-		return
-		
+		else:		
+			logging.error('Attempt to create new game by player %s failed'%(player_key))
+			value = "error"
 
+		#TODO: more detailed and a reason why it can't be created if there are issues?
+		respond(self, value)
+		
+####################################stoopid methods
 def clearDatabase():
 	models = ["Player","Game","Path"]
 	base_query = "SELECT __key__ FROM "
