@@ -41,8 +41,8 @@ public class Integrator {
 	}
 
 	
-	//TODO return all games in a list oder quatsch mich mal an... christian
-	public static Game getGameList(){        
+	public static List<Game> getGameList(){
+		List<Game> result = new ArrayList<Game>();      
         HttpResponse res = doGet("/games", null);
         try {
 			Document doc = parseXml(res.getEntity().getContent());
@@ -62,9 +62,10 @@ public class Integrator {
 		    	game.setCreatorLongitude(Float.parseFloat(creatorLocation[1]));
 		    	game.setMode(Integer.parseInt(element.getAttribute("mode")));
 		    	
-		    	return game;
+		    	result.add(game);
 	
 		     }
+		    return result;
 
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
