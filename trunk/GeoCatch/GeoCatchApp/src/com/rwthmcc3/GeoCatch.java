@@ -24,8 +24,7 @@ public class GeoCatch extends Activity {
 		Button buttonJoinGame = (Button)findViewById(R.id.button_join_game);
 		buttoNewGame.setOnClickListener(doNewGameOnClick);
 		buttonJoinGame.setOnClickListener(doJoinGameOnClick);
-        //load list
-        MainMenu.setListofGames();
+       
 
 	}
 

@@ -3,6 +3,7 @@ package com.rwthmcc3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -28,7 +29,7 @@ public class MainMenu extends ListActivity{
         ListView lv = getListView();
 	    lv.setTextFilterEnabled(true);
 	    
-	    //message to user
+	    //message to user and load list 
 	    ProgressDialog dialog = ProgressDialog.show(MainMenu.this, "", 
                 "Spielliste wird vom Server abgerufen. Bitte warten...", true);
 	    setListofGames();
@@ -71,11 +72,16 @@ public class MainMenu extends ListActivity{
 		//delete list before set new list
 		mylist.clear();
 		
-		//TODO call integrator method
-		
+		//TODO getGameList()
+		/*
 		//for every item: addItemToList
+		List<Game> games = Integrator.getGameList();
 		
-		//test data
+		for (Game i : games) {
+			addItemToList(i.getName(),i.getPlayerCount()+"/"+i.getMaxPlayersCount()+" Spieler","Entfernung zum Spielersteller: 0.8 km");
+		}
+		
+		*///test data
 		addItemToList("Unreal Tournament","1/8 Player","Distance to Creator: 0.8 km");
 		addItemToList("Super Mario","4/5 Player","Distance to Creator: 1.5 km");
 		addItemToList("Tekken","3/4 Player","Distance to Creator: 2 km");
