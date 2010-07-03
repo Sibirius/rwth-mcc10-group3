@@ -31,7 +31,8 @@ public class Integrator {
 	private static String AppEngineURL = "rwth-mcc10-group3.appspot.com";
 	private static String LOGTAG = "Integrator";
 	
-	public static String mainPage(){   
+	public static String mainPage(){
+		Log.d(LOGTAG, "mainPage()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         HttpResponse res = doGet("/", qparams);
         try {
@@ -65,7 +66,7 @@ public class Integrator {
 			    	game.setKey(element.getAttribute("key"));
 			    	game.setPlayerCount(Integer.parseInt(element.getAttribute("playerCount")));
 			    	game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("maxPlayersCount")));
-			    	game.setVersion(Float.parseFloat(element.getAttribute("version")));
+			    	game.setVersion(Integer.parseInt(element.getAttribute("version")));
 			    	String [] creatorLocation = element.getAttribute("creatorLocation").split(",");
 			    	game.setCreatorLatitude(Float.parseFloat(creatorLocation[0]));
 			    	game.setCreatorLongitude(Float.parseFloat(creatorLocation[1]));
@@ -127,30 +128,34 @@ public class Integrator {
 	}
 	
 	public static void joinGame(Player player, Game game){
+		Log.d(LOGTAG, "joinGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("g", game.getKey()));
         
-        doGet("/join", qparams);
+        Log.d(LOGTAG, "joinGame: "+getResponse(doGet("/join", qparams)));
 	}
 	
 	public static void stopGame(Player player, Game game){
+		Log.d(LOGTAG, "stopGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("g", game.getKey()));
         
-        doGet("/stop", qparams);
+        Log.d(LOGTAG, "stopGame: "+getResponse(doGet("/stop", qparams)));
 	}
 	
 	public static void startGame(Player player, Game game){
+		Log.d(LOGTAG, "startGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("g", game.getKey()));
         
-        doGet("/start", qparams);
+        Log.d(LOGTAG, "startGame: "+getResponse(doGet("/start", qparams)));
 	}
 	
 	public static void leaveGame(Player player, Game game){
+		Log.d(LOGTAG, "leaveGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("g", game.getKey()));
@@ -159,39 +164,51 @@ public class Integrator {
 	}
 	
 	public static void playerUpdateState(Player player, Game game){
-		//TODO everything xD
+		Log.d(LOGTAG, "playerUpdateState()");
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+        qparams.add(new BasicNameValuePair("p", player.getKey()));
+        qparams.add(new BasicNameValuePair("g", game.getKey()));
+        qparams.add(new BasicNameValuePair("lon", String.valueOf(player.getLongitude())));
+        qparams.add(new BasicNameValuePair("lat", String.valueOf(player.getLatitude())));
+        
+        //TODO get updated state
+        doGet("/update", qparams);
 	}
 	
-	public static String registerPlayer(String mac, String name){
+	public static Player registerPlayer(String mac, String name){
+		Log.d(LOGTAG, "registerPlayer()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("m", mac));
         qparams.add(new BasicNameValuePair("n", name));
         
-        HttpResponse res = doGet("/register", qparams);
-        try {
-			return res.getEntity().getContent().toString();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+        Player player = new Player();
+        player.setKey(getResponse(doGet("/register", qparams)));
+        player.setPlayerName(name);
+        Log.d(LOGTAG, "registerPlayer success");
+        return player;
 	}
 	
-	public static String createGame(Player player, Game game){
+	public static Game createGame(Player player, String name, int maxPlayerCount, int version, float creatorLongitude, float creatorLatitude){
+		Log.d(LOGTAG, "createGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
-        qparams.add(new BasicNameValuePair("g", game.getKey()));
+        qparams.add(new BasicNameValuePair("n", name));
+        qparams.add(new BasicNameValuePair("mpc", String.valueOf(maxPlayerCount)));
+        qparams.add(new BasicNameValuePair("v", String.valueOf(version)));
+        qparams.add(new BasicNameValuePair("lon", String.valueOf(creatorLongitude)));
+        qparams.add(new BasicNameValuePair("lat", String.valueOf(creatorLatitude)));
         
-        HttpResponse res = doGet("/create", qparams);
-        try {
-			return res.getEntity().getContent().toString();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+        String key = getResponse(doGet("/create", qparams));
+        
+        Game game = new Game();
+        game.setName(name);
+        game.setCreatorLongitude(creatorLongitude);
+        game.setCreatorLatitude(creatorLatitude);
+        game.setVersion(version);
+        game.setKey(key);
+        
+        Log.d(LOGTAG, "createGame success");
+        return game;
         
 	}
 	
@@ -199,11 +216,13 @@ public class Integrator {
 	// DEBUG FUNCTIONS
 	
 	public static void fillWithTestData(){
+		Log.d(LOGTAG, "fillWithTestData()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         doGet("/fillWithTestData", qparams);
 	}
 	
 	public static void clearData(){
+		Log.d(LOGTAG, "clearData");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         doGet("/clearData", qparams);
 	}
@@ -229,6 +248,31 @@ public class Integrator {
 		
 	}
 	
+	private static String getResponse(HttpResponse res){
+		Log.d(LOGTAG, "getResponse()");
+		if(res != null){
+	        try {
+				Log.d(LOGTAG, "parsing response");
+	        	Document doc = parseXml(res.getEntity().getContent());
+				NodeList nodes = doc.getElementsByTagName("response");
+		    	Element element = (Element) nodes.item(0);
+		    	String result = element.getAttribute("value");
+				Log.d(LOGTAG,"getResponse success");
+				
+		    	return result;
+		    	
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }else{
+        	Log.w(LOGTAG, "No Response from Server");
+        }
+		Log.e(LOGTAG, "NullPointer, getResponse");
+		return "";
+	}
+	
 	private static Document parseXml(InputStream xmlStream){
 		Log.d(LOGTAG, "parseXml()");
 		//get the factory
@@ -240,7 +284,9 @@ public class Integrator {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			
 			//parse using builder to get DOM representation of the XML file
-			return db.parse(xmlStream);
+			Document doc = db.parse(xmlStream);
+			Log.d(LOGTAG,"parseXml success");
+			return doc;
 			
 
 		}catch(ParserConfigurationException pce) {

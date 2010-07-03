@@ -73,4 +73,20 @@ public class Player {
 	public String getKey() {
 		return key;
 	}
+
+	public void setLongitude(float longitude) {
+		this.longitude = longitude;
+	}
+
+	public float getLongitude() {
+		return longitude;
+	}
+
+	public void setLatitude(float latitude) {
+		this.latitude = latitude;
+	}
+
+	public float getLatitude() {
+		return latitude;
+	}
 }
