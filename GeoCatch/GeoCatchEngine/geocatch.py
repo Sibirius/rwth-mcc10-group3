@@ -170,7 +170,7 @@ class StopGame(webapp.RequestHandler):
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
 			respond(self, "input error")
-			return!
+			return
 
 		#TODO: maybe check mac address?
 		
