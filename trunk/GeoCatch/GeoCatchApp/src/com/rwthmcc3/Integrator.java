@@ -46,7 +46,7 @@ public class Integrator {
 
 	
 	public static List<Game> getGameList(){
-		Log.d(LOGTAG, "getGamesList()");
+		Log.d(LOGTAG, "getGameList()");
 		List<Game> result = new ArrayList<Game>();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         HttpResponse res = doGet("/games", qparams);
@@ -89,11 +89,11 @@ public class Integrator {
 	}
 	
 	public static List<Player> getPlayerList(Game game){
-		Log.d(LOGTAG, "getGamesList()");
+		Log.d(LOGTAG, "getPlayerList()");
 		List<Player> result = new ArrayList<Player>();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair("g", game.getKey()));
-        HttpResponse res = doGet("/games", qparams);
+        HttpResponse res = doGet("/gamePlayers", qparams);
         if(res != null){
 	        try {
 				Log.d(LOGTAG, "start parsing playerlist");
