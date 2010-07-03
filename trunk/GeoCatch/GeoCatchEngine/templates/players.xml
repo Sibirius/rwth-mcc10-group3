@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<players>
+	{% for player in players %}
+	<player 
+		name = "{{ player.name }}"
+		number = {{ player.number }}
+		creator = {{ player.creator }}
+	/>		
+	{% endfor %}
+</players>

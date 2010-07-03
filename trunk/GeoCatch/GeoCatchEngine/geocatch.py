@@ -83,6 +83,35 @@ class GetGameList(webapp.RequestHandler):
 		
 		template_path = os.path.join(TEMPLATE_FOLDER, 'games.xml')
 		self.response.out.write(template.render(template_path, template_values))
+
+class GetGamePlayerList(webapp.RequestHandler):
+	""" returns an xml file with all players in a game """
+	def get(self):
+		try:
+			game_key = checkKey(self.request.get('g'))
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			return
+			#yeah, you heard that future-me!	
+		
+		game = Game.get(game_key)
+		players = []
+		
+		for (i,j) in enumerate(game.players, start=1):
+			player = {}
+			player["number"] = i
+			
+			currentPlayer = Player.get(j)
+			
+			player["name"] = currentPlayer.name
+			player["creator"] = 1 if (game.creator.key() == j) else 0
+			players.append(player)
+		
+		template_values = {'players': players,}
+		
+		template_path = os.path.join(TEMPLATE_FOLDER, 'players.xml')
+		self.response.out.write(template.render(template_path, template_values))
+		
 		
 class JoinGame(webapp.RequestHandler):
 	""" calling player joins the game if it exists and he is not already in another one """
@@ -95,8 +124,8 @@ class JoinGame(webapp.RequestHandler):
 			return
 			#yeah, you heard that future-me!
 		
-		game = Game.all().filter("key =", game_key).get()
-		player = Player.all().filter("key =", game_key).get()
+		game = Game.get(game_key)
+		player = Player.get(player_key)
 		
 		value = "error"
 		
@@ -132,7 +161,7 @@ class StopGame(webapp.RequestHandler):
 
 		#TODO: maybe check mac address?
 		
-		game = Game.all().filter("key =", game_key).get()
+		game = Game.get(game_key)
 		
 		#check if game can be started and user has the right to
 		if game != None and game.creator == player_key and game.status == 1:
@@ -155,7 +184,7 @@ class StartGame(webapp.RequestHandler):
 
 		#TODO: maybe check mac address?
 		
-		game = Game.all().filter("key =", game_key).get()
+		game = Game.get(game_key)
 		
 		#check if game can be started and user has the right to
 		if game != None and game.creator == player_key and game.status == 0:
@@ -182,8 +211,8 @@ class LeaveGame(webapp.RequestHandler):
 
 		#TODO: maybe check mac address?
 		
-		game = Game.all().filter("key =", game_key).get()
-		player = Player.all().filter("key =", game_key).get()
+		game = Game.get(game_key)
+		player = Player.get(player_key)
 		
 		#check if player is in game and game exists, if the player is the creator close the game
 		if game != None and player != None:
@@ -222,10 +251,47 @@ class LeaveGame(webapp.RequestHandler):
 class PlayerUpdateState(webapp.RequestHandler):
 	"""updates the player state and provides him with stuff he should know"""
 	def get(self):
-		logging.info('Player %s sent update for game %s'%(player_key,game_key))
-		pass #TODO: deal with update information
-		#TODO: return updated game state
+		logging.debug('Player %s sent update for game %s'%(player_key,game_key))
+		try:
+			game_key = checkKey(self.request.get('g'))
+			player_key = checkKey(self.request.get('p'))
 
+			newLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon')).split(",")
+			#TODO: additional event requests, like "aktivate a powerup"			
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			return
+			#yeah, you heard that future-me!
+		
+		game = Game.get(game_key)
+		player = Player.get(player_key)
+
+		if game != None and player != None:
+			if player_key in game.players:
+				
+				#TODO: deal with update information
+				path = Path()
+				path.player = player_key
+				path.game = game_key
+				path.location = GeoPt(newLocation[0], newLocation[1])
+
+				#TODO: return updated game state
+
+				state = []
+				events = []
+
+				template_values = {'state': state, 'events': events}
+		
+				template_path = os.path.join(TEMPLATE_FOLDER, 'state.xml')
+				self.response.out.write(template.render(template_path, template_values))		
+		
+			else:
+				logging.error('Player %s sent update for game %s, but he is not in the game at all'%(player_key,game_key))
+				return #TODO: form error message
+		else:
+			logging.error('Player %s sent update for game %s, game or player not found'%(player_key,game_key))
+			return #TODO: form error message
+		
 class RegisterPlayer(webapp.RequestHandler):
 	"""checks if mac address already in database, registers a new player otherwise""" #TODO: really a good idea? captcha?
 	def get(self):
@@ -379,6 +445,7 @@ class FillWithTestdata(webapp.RequestHandler):
 application = webapp.WSGIApplication(
                                      [('/', MainPage),
                                       ('/games', GetGameList),
+                                      ('/gamePlayers', GetGamePlayerList),
                                       
                                       ('/register', RegisterPlayer),
                                       
