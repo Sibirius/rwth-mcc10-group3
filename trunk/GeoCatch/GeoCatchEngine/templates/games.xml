@@ -4,9 +4,9 @@
 	<game 
 		name = "{{ game.name }}"
 		key = "{{ game.key }}"
-		playerCount = {{ game.playerCount }}
-		maxPlayersCount = {{ game.maxPlayerCount }}
-		version = {{ game.version }}
+		playerCount = "{{ game.playerCount }}"
+		maxPlayersCount = "{{ game.maxPlayerCount }}"
+		version = "{{ game.version }}"
 		creatorLocation = "{{ game.creatorLocation }}"
 		mode = "{{ game.mode }}"
 	/>		

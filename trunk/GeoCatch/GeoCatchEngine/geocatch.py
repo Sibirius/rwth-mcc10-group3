@@ -56,6 +56,9 @@ class Player(db.Model):
 	name = db.StringProperty(multiline=False)
 	mac = db.StringProperty(multiline=False)
     
+    hunter = db.SelfReferenceProperty() #TODO: use
+    prey = db.SelfReferenceProperty()
+    
 	powerUp = db.IntegerProperty()
 	powerUpLocation = db.GeoPtProperty()
 
@@ -77,6 +80,7 @@ class MainPage(webapp.RequestHandler):
 class GetGameList(webapp.RequestHandler):
 	""" returns an xml file with all games with vacant slots """
 	def get(self):
+		#TODO: limit and sort by distance to requesting person
 		games = Game.all().filter("status = ",0).order('-name')
 		
 		template_values = {'games': games,}
@@ -91,8 +95,8 @@ class GetGamePlayerList(webapp.RequestHandler):
 			game_key = checkKey(self.request.get('g'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
 			return
-			#yeah, you heard that future-me!	
 		
 		game = Game.get(game_key)
 		players = []
@@ -121,8 +125,8 @@ class JoinGame(webapp.RequestHandler):
 			player_key = checkKey(self.request.get('p'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
 			return
-			#yeah, you heard that future-me!
 		
 		game = Game.get(game_key)
 		player = Player.get(player_key)
@@ -165,8 +169,8 @@ class StopGame(webapp.RequestHandler):
 			player_key = checkKey(self.request.get('p'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
-			return
-			#yeah, you heard that future-me!
+			respond(self, "input error")
+			return!
 
 		#TODO: maybe check mac address?
 		
@@ -190,8 +194,8 @@ class StartGame(webapp.RequestHandler):
 			player_key = checkKey(self.request.get('p'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
 			return
-			#yeah, you heard that future-me!
 
 		#TODO: maybe check mac address?
 		
@@ -220,8 +224,8 @@ class LeaveGame(webapp.RequestHandler):
 			player_key = checkKey(self.request.get('p'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
 			return
-			#yeah, you heard that future-me!
 
 		#TODO: maybe check mac address?
 		
@@ -276,8 +280,8 @@ class PlayerUpdateState(webapp.RequestHandler):
 			#TODO: additional event requests, like "aktivate a powerup"			
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
 			return
-			#yeah, you heard that future-me!
 		
 		game = Game.get(game_key)
 		player = Player.get(player_key)
@@ -316,8 +320,8 @@ class RegisterPlayer(webapp.RequestHandler):
 			name = checkName(self.request.get('n'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
 			return
-			#yeah, you heard that future-me!
 		
 		player = Player.all().filter("mac =", mac).get()
 		
@@ -353,8 +357,8 @@ class CreateGame(webapp.RequestHandler):
 			player_key = checkKey(self.request.get('p'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
 			return
-			#yeah, you heard that future-me!
 		
 		player = Player.get(player_key)
 		
