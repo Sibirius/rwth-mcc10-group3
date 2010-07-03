@@ -113,13 +113,11 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
     
     
     
-	@Override
 	public void onStartTrackingTouch(SeekBar arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void onStopTrackingTouch(SeekBar arg0) {
 		// TODO Auto-generated method stub
 		
