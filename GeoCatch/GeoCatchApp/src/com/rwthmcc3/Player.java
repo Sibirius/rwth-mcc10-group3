@@ -6,13 +6,15 @@ public class Player {
 	
 	private static Player player = null;
 	
+	private boolean isCreator = false;
 	private boolean isMemberOfGame = false;
 	private String name = "Player 1";
 	private float longitude = 0;
 	private float latitude = 0;
-	private Player (){
+	private String key;
+	/*private Player (){
 		
-	}
+	}*/
 	//TODO get actual position
 	
 	
@@ -52,5 +54,23 @@ public class Player {
 	    int meterConversion = 1609;
 
 	    return new Float(dist * meterConversion).floatValue();
+	}
+
+
+	public void setCreator(boolean isCreator) {
+		this.isCreator = isCreator;
+	}
+
+
+	public boolean isCreator() {
+		return isCreator;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public String getKey() {
+		return key;
 	}
 }

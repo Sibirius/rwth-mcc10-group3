@@ -9,6 +9,7 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ public class MainMenu extends ListActivity{
 	
 	private static ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
 	private SimpleAdapter mSchedule;
+	private static String LOGTAG = "MainMenu";
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +75,17 @@ public class MainMenu extends ListActivity{
 		mylist.clear();
 		
 		//TODO getGameList()
-		/*
+		
 		//for every item: addItemToList
 		List<Game> games = Integrator.getGameList();
-		
-		for (Game i : games) {
-			addItemToList(i.getName(),i.getPlayerCount()+"/"+i.getMaxPlayersCount()+" Spieler","Entfernung zum Spielersteller: 0.8 km");
+		if (games != null){
+			for (Game i : games) {
+				Log.d(LOGTAG, "game: "+i.getName());
+				addItemToList(i.getName(),i.getPlayerCount()+"/"+i.getMaxPlayersCount()+" Spieler","Entfernung zum Spielersteller: 0.8 km");
+			}
 		}
 		
-		*///test data
+		//test data
 		addItemToList("Unreal Tournament","1/8 Player","Distance to Creator: 0.8 km");
 		addItemToList("Super Mario","4/5 Player","Distance to Creator: 1.5 km");
 		addItemToList("Tekken","3/4 Player","Distance to Creator: 2 km");
