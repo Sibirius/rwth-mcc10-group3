@@ -97,9 +97,9 @@ class GetGamePlayerList(webapp.RequestHandler):
 		game = Game.get(game_key)
 		players = []
 		
-		for (i,j) in enumerate(game.players, start=1):
+		for (i,j) in enumerate(game.players):
 			player = {}
-			player["number"] = i
+			player["number"] = i+1
 			
 			currentPlayer = Player.get(j)
 			
@@ -130,23 +130,32 @@ class JoinGame(webapp.RequestHandler):
 		value = "error"
 		
 		if game != None and player != None:
-			if not player_key in game.players:
-				game.players.append(player_key)
-				game.playerCount += 1
-				game.put()
-				
-				player.currentGame = game_key
-				player.put()
-				logging.info('Player %s joined game %s'%((player_key,game_key))) 
-				
-				value = "done"
+			if game.playerCount < game.maxPlayerCount:
+				if player.currentGame == None:				
+					if not (player.key() in game.players):
+						game.players.append(player.key())
+						game.playerCount += 1
+						game.put()
+						
+						player.currentGame = game.key()
+						player.put()
+						
+						logging.info('Player %s joined game %s'%((player_key,game_key))) 
+						
+						value = "done"
+					else:
+						logging.error('Player %s tried to join game %s where he already is'%(player_key,game_key))
+				else:
+					logging.error('Player %s tried to join game %s but he already is in another game'%(player_key,game_key))
 			else:
-				logging.error('Player %s tried to join game %s where he already is'%(player_key,game_key))
+				logging.error('Player %s tried to join game %s but there was no room'%(player_key,game_key))
+				#TODO: tell the poor guy
+		else:
 			logging.error('Either player %s or game %s is not existing, join failed'%(player_key,game_key))
 
 		#TODO: give feedback to the player? or an error message
 		#TODO: how about establishing a connection so the client will receive changes in the lobby and other events instead of constantly polling for them?
-		respond(value)
+		respond(self, value)
 
 class StopGame(webapp.RequestHandler):
 	"""stops the game if called by the creator """
@@ -215,7 +224,7 @@ class LeaveGame(webapp.RequestHandler):
 		player = Player.get(player_key)
 		
 		#check if player is in game and game exists, if the player is the creator close the game
-		if game != None and player != None:
+		if game != None and player != None:			
 			if game.creator == player_key:
 				#TODO: close game
 				
@@ -226,12 +235,12 @@ class LeaveGame(webapp.RequestHandler):
 				game.put()
 				
 				logging.info('Creator %s left game %s, game stopped'%(player_key,game_key))
-				
-			elif player_key in game.players:
+				value = "done"
+			elif player.key() in game.players:
 				player.currentGame = None
 				player.put()
 				
-				game.players.remove(player_key)
+				game.players.remove(player.key())
 				game.playerCount -= 1
 				game.put()
 
@@ -239,8 +248,10 @@ class LeaveGame(webapp.RequestHandler):
 				
 				#TODO: deal with the horrible aftermath
 				#maybe if only 2 left start showdown, give 2 minutes then set marker in between them
-				
-			value = "done"
+				value = "done"
+			else:
+				logging.error('Attempt to leave game %s by player %s failed, not in list apparently and not creator'%(game_key,player_key))			
+				value = "error"		
 		else:
 			logging.error('Attempt to leave game %s by player %s failed, no game or player'%(game_key,player_key))			
 			value = "error"
@@ -311,21 +322,21 @@ class RegisterPlayer(webapp.RequestHandler):
 			player.mac = mac
 			player.name = name
 			
-			logging.info('Created new Player %s with name %s and mac %s'%(player_key,player.name,player.mac))
+			logging.info('Created new Player with name %s and mac %s'%(player.name,player.mac))
 		else:
 			if player.currentGame != None: 
-				logging.error('Creating new Player %s failed because player is in game %s'%(player_key,player.currentGame))
+				logging.error('Creating new Player %s failed because player is in game %s'%(player.key(),player.currentGame.key()))
+				respond(self, "error")
 				return #TODO: do something if someone tries to register while there is an ongoing game he already plays?
 
 			player.name = name
-			logging.info('Changed player name for %s to %s'%(player_key,player.name))
+			logging.info('Changed player name for %s to %s'%(player.key(),player.name))
 
-		player_key = player.put()
-		self.response.out.write(player_key)
+		player_key = player.put()		
 		#TODO: response as xml
 		
 		#todo: say if everything went fine
-		respond(self, "done")
+		respond(self, player_key)
 		
 class CreateGame(webapp.RequestHandler):
 	""" creates game and returns it's key, 0 otherwise """
@@ -396,19 +407,19 @@ class FillWithTestdata(webapp.RequestHandler):
 		#fill with junk
 		player1 = Player()
 		player1.name = "Player 1"
-		player1.mac = "mac1"
+		player1.mac = "11:11:11:11:11:11"
 		player1.lastLocation = "0,0"
 		player1_key = player1.put()
 		
 		player2 = Player()
 		player2.name = "Player 2"
-		player2.mac = "mac2"
+		player2.mac = "22:22:22:22:22:22"
 		player2.lastLocation = "20,20"
 		player2_key = player2.put()
 		
 		player3 = Player()
 		player3.name = "Player 3"
-		player3.mac = "mac3"
+		player3.mac = "33:33:33:33:33:33"
 		player3.lastLocation = "50,30"		
 		player3_key = player3.put()
 		
@@ -423,9 +434,10 @@ class FillWithTestdata(webapp.RequestHandler):
 		game1.playerCount = 2
 		game1.maxPlayerCount = 3
 		
-		game1_key = game1.put()
-		player1.currentGame = game1_key
-		player3.currentGame = game1_key
+		game1.put()
+		
+		player1.currentGame = game1
+		player3.currentGame = game1
 
 		game2 = Game()
 		game2.name = "game2"
@@ -437,8 +449,13 @@ class FillWithTestdata(webapp.RequestHandler):
 		game2.players = [player2_key,]
 		game2.playerCount = 1
 		game2.maxPlayerCount = 3
+		game2.put()
 
-		player2.currentGame = game2.put()
+		player2.currentGame = game2
+		
+		player1.put()
+		player2.put()
+		player3.put()
 
 
 ##########################################################
