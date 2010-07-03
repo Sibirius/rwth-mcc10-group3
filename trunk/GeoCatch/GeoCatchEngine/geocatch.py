@@ -56,8 +56,8 @@ class Player(db.Model):
 	name = db.StringProperty(multiline=False)
 	mac = db.StringProperty(multiline=False)
     
-    hunter = db.SelfReferenceProperty() #TODO: use
-    prey = db.SelfReferenceProperty()
+    #hunter = db.SelfReferenceProperty() #TODO: use
+    #prey = db.SelfReferenceProperty()
     
 	powerUp = db.IntegerProperty()
 	powerUpLocation = db.GeoPtProperty()
