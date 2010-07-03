@@ -4,10 +4,10 @@
 	<game 
 		name = "{{ game.name }}"
 		key = "{{ game.key }}"
-		playerCount = "{{ game.playerCount }}"
-		maxPlayersCount = "{{ game.maxPlayerCount }}"
-		version = "{{ game.version }}"
-		creator_location = "{{ game.creatorLocation }}"
+		playerCount = {{ game.playerCount }}
+		maxPlayersCount = {{ game.maxPlayerCount }}
+		version = {{ game.version }}
+		creatorLocation = "{{ game.creatorLocation }}"
 		mode = "{{ game.mode }}"
 	/>		
 	{% endfor %}
