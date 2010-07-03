@@ -177,8 +177,10 @@ class StopGame(webapp.RequestHandler):
 			game.status = 2
 			game.put()
 			logging.info('Game %s stopped by player %s'%(game_key,player_key))
+			respond(self, "done")
 		else:
 			logging.error('Attempt to stop game %s by player %s failed'%(game_key,player_key))
+			respond(self, "error")
 
 class StartGame(webapp.RequestHandler):
 	""" start an already created game, only usable by the creator """
@@ -201,11 +203,14 @@ class StartGame(webapp.RequestHandler):
 				game.status = 1
 				game.put()
 				logging.info('Game %s started by player %s'%(game_key,player_key))
+				respond(self, "done")
 			else:
 				logging.info('Game %s starting by player %s failed due to too small playercount'%(game_key,player_key))
+				respond(self, "error")
 				#TODO: give feedback to creator why it failed?
 		else:
 			logging.error('Attempt to start game %s by player %s failed'%(game_key,player_key))
+			respond(self, "error")
 
 class LeaveGame(webapp.RequestHandler):
 	""" a player can leave a game, game is closed if the player was the creator """
@@ -282,8 +287,8 @@ class PlayerUpdateState(webapp.RequestHandler):
 				
 				#TODO: deal with update information
 				path = Path()
-				path.player = player_key
-				path.game = game_key
+				path.player = player
+				path.game = game
 				path.location = GeoPt(newLocation[0], newLocation[1])
 
 				#TODO: return updated game state
@@ -298,10 +303,10 @@ class PlayerUpdateState(webapp.RequestHandler):
 		
 			else:
 				logging.error('Player %s sent update for game %s, but he is not in the game at all'%(player_key,game_key))
-				return #TODO: form error message
+				return #TODO: proper error message
 		else:
 			logging.error('Player %s sent update for game %s, game or player not found'%(player_key,game_key))
-			return #TODO: form error message
+			return #TODO: proper error message
 		
 class RegisterPlayer(webapp.RequestHandler):
 	"""checks if mac address already in database, registers a new player otherwise""" #TODO: really a good idea? captcha?
@@ -324,7 +329,7 @@ class RegisterPlayer(webapp.RequestHandler):
 			
 			logging.info('Created new Player with name %s and mac %s'%(player.name,player.mac))
 		else:
-			if player.currentGame != None: 
+			if player.currentGame != None:
 				logging.error('Creating new Player %s failed because player is in game %s'%(player.key(),player.currentGame.key()))
 				respond(self, "error")
 				return #TODO: do something if someone tries to register while there is an ongoing game he already plays?
@@ -344,24 +349,28 @@ class CreateGame(webapp.RequestHandler):
 		try:
 			name = checkName(self.request.get('n'))
 			version = checkInt(cgi.escape(self.request.get('v')))
-			creatorLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon'))
+			creatorLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon')).split(",")
 			player_key = checkKey(self.request.get('p'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
 			return
 			#yeah, you heard that future-me!
 		
+		player = Player.get(player_key)
+		
 		#TODO: test if game can be created, abort otherwise
-		if (True):					
+		if player != None:					
 			game = Game()
 			
 			game.name = name
 			game.status = 0
 			game.version = version
-			game.creatorLocation = creatorLocation
+			game.creatorLocation = GeoPt(creatorLocation[0], creatorLocation[1])
 			game.playerCount = 1
 			game.maxPlayerCount = 3
-			game.creator = player_key
+			game.creator = player
+			
+			#todo: update player location?
 			
 			game_key = game.put() #the use the database keys seems best, as they are unique already - no conflicts
 			
