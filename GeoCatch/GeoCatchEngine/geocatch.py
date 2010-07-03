@@ -177,7 +177,7 @@ class StopGame(webapp.RequestHandler):
 		game = Game.get(game_key)
 		
 		#check if game can be started and user has the right to
-		if game != None and game.creator == player_key and game.status == 1:
+		if game != None and game.creator.key() == player_key and game.status == 1:
 			game.status = 2
 			game.put()
 			logging.info('Game %s stopped by player %s'%(game_key,player_key))
@@ -202,7 +202,7 @@ class StartGame(webapp.RequestHandler):
 		game = Game.get(game_key)
 		
 		#check if game can be started and user has the right to
-		if game != None and game.creator == player_key and game.status == 0:
+		if game != None and game.creator.key() == player_key and game.status == 0:
 			if game.playerCount == game.maxPlayerCount:
 				game.status = 1
 				game.put()
@@ -234,7 +234,7 @@ class LeaveGame(webapp.RequestHandler):
 		
 		#check if player is in game and game exists, if the player is the creator close the game
 		if game != None and player != None:			
-			if game.creator == player_key:
+			if game.creator.key() == player_key:
 				#TODO: close game
 				
 				game.creator.currentGame = None
@@ -293,7 +293,7 @@ class PlayerUpdateState(webapp.RequestHandler):
 				path = Path()
 				path.player = player
 				path.game = game
-				path.location = GeoPt(newLocation[0], newLocation[1])
+				path.location = db.GeoPt(newLocation[0], newLocation[1])
 
 				#TODO: return updated game state
 
@@ -352,9 +352,11 @@ class CreateGame(webapp.RequestHandler):
 	def get(self):
 		try:
 			name = checkName(self.request.get('n'))
-			version = checkInt(cgi.escape(self.request.get('v')))
+			version = checkInt(self.request.get('v'))
 			creatorLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon')).split(",")
 			player_key = checkKey(self.request.get('p'))
+			
+			maxPlayerCount = checkInt(self.request.get('mpc'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
 			respond(self, "input error")
@@ -369,10 +371,10 @@ class CreateGame(webapp.RequestHandler):
 			game.name = name
 			game.status = 0
 			game.version = version
-			game.creatorLocation = GeoPt(creatorLocation[0], creatorLocation[1])
+			game.creatorLocation = db.GeoPt(creatorLocation[0], creatorLocation[1])
 			game.playerCount = 1
-			game.maxPlayerCount = 3
-			game.creator = player
+			game.maxPlayerCount = maxPlayerCount
+			game.creator = player.key()
 			
 			#todo: update player location?
 			
@@ -381,8 +383,6 @@ class CreateGame(webapp.RequestHandler):
 			logging.info('New game %s created by player %s'%(game_key,player_key))
 			
 			value = game_key
-			#TODO: response as xml
-			return
 		else:		
 			logging.error('Attempt to create new game by player %s failed'%(player_key))
 			value = "error"
