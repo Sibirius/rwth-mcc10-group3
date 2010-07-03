@@ -5,7 +5,7 @@ public class Game {
 	private String key;
 	private int playerCount;
 	private int maxPlayersCount;
-	private float version;
+	private int version;
 	private float creatorLatitude;
 	private float creatorLongitude;
 	private int mode;
@@ -37,10 +37,10 @@ public class Game {
 	public int getMaxPlayersCount() {
 		return maxPlayersCount;
 	}
-	public void setVersion(float version) {
+	public void setVersion(int version) {
 		this.version = version;
 	}
-	public float getVersion() {
+	public int getVersion() {
 		return version;
 	}
 	public void setCreatorLatitude(float creatorLatitude) {

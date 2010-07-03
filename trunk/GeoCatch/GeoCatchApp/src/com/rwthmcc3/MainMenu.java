@@ -77,6 +77,8 @@ public class MainMenu extends ListActivity{
 		//TODO getGameList()
 		
 		//for every item: addItemToList
+		//Player player = Integrator.registerPlayer("F1:12:23:34:45:56", "playertest");
+		//Integrator.createGame(player, "testgame", 5, 1, 13.37f, 13.337f);
 		List<Game> games = Integrator.getGameList();
 		if (games != null){
 			for (Game i : games) {
@@ -85,13 +87,14 @@ public class MainMenu extends ListActivity{
 			}
 		}
 		
+		/*
 		//test data
 		addItemToList("Unreal Tournament","1/8 Player","Distance to Creator: 0.8 km");
 		addItemToList("Super Mario","4/5 Player","Distance to Creator: 1.5 km");
 		addItemToList("Tekken","3/4 Player","Distance to Creator: 2 km");
 		addItemToList("Halo","1/5 Player","Distance to Creator: 3.5 km");
 		addItemToList("Resident Evil","4/7 Player","Distance to Creator: 4.5 km");
-		
+		*/
 		
 	}
 	
