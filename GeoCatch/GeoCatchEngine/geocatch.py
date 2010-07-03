@@ -234,7 +234,7 @@ class LeaveGame(webapp.RequestHandler):
 		
 		#check if player is in game and game exists, if the player is the creator close the game
 		if game != None and player != None:			
-			if game.creator.key() == player_key:
+			if game.creator == player:
 				#TODO: close game
 				
 				game.creator.currentGame = None
@@ -365,25 +365,30 @@ class CreateGame(webapp.RequestHandler):
 		player = Player.get(player_key)
 		
 		#TODO: test if game can be created, abort otherwise
-		if player != None:					
+		if player != None and player.currentGame == None:
 			game = Game()
 			
 			game.name = name
 			game.status = 0
+			game.mode = 2
 			game.version = version
 			game.creatorLocation = db.GeoPt(creatorLocation[0], creatorLocation[1])
 			game.playerCount = 1
 			game.maxPlayerCount = maxPlayerCount
 			game.creator = player.key()
+			game.players = [player.key(), ]
 			
 			#todo: update player location?
 			
 			game_key = game.put() #the use the database keys seems best, as they are unique already - no conflicts
 			
+			player.currentGame = game
+			player.put()
+			
 			logging.info('New game %s created by player %s'%(game_key,player_key))
 			
 			value = game_key
-		else:		
+		else:
 			logging.error('Attempt to create new game by player %s failed'%(player_key))
 			value = "error"
 
