@@ -143,42 +143,38 @@ public class Integrator {
 	}
 	
 	//TODO
-	public static void stopGame(Player player, Game game){
+	public static void stopGame(Player player){
 		Log.d(LOGTAG, "stopGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
-        qparams.add(new BasicNameValuePair("g", game.getKey()));
         
         Log.d(LOGTAG, "stopGame: "+getResponse(doGet("/stop", qparams)));
 	}
 	
 	//TODO
-	public static void startGame(Player player, Game game){
+	public static void startGame(Player player){
 		Log.d(LOGTAG, "startGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
-        qparams.add(new BasicNameValuePair("g", game.getKey()));
         
         Log.d(LOGTAG, "startGame: "+getResponse(doGet("/start", qparams)));
 	}
 	
-	public static void leaveGame(Player player, Game game){
+	public static void leaveGame(Player player){
 		Log.d(LOGTAG, "leaveGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
-        qparams.add(new BasicNameValuePair("g", game.getKey()));
         
         Log.d(LOGTAG, "leaveGame: "+getResponse(doGet("/leave", qparams)));
         
         player.setMember(false);
-        game.removeFromPlayerList(player);
+        //game.removeFromPlayerList(player);
 	}
 	
-	public static void playerUpdateState(Player player, Game game){
+	public static void playerUpdateState(Player player){
 		Log.d(LOGTAG, "playerUpdateState()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
-        qparams.add(new BasicNameValuePair("g", game.getKey()));
         qparams.add(new BasicNameValuePair("lon", String.valueOf(player.getLongitude())));
         qparams.add(new BasicNameValuePair("lat", String.valueOf(player.getLatitude())));
         
