@@ -23,7 +23,7 @@ public class Player {
 	
 	public static Player getPlayer() {
 	        if (player == null) {
-	            player = Integrator.registerPlayer("FF:FF:FF:FF:FF", "Player1");
+	            player = Integrator.registerPlayer("FF:FF:FF:FF:FF:FF", "Player1");
 	        }
 	        return player;
 	}
