@@ -3,6 +3,7 @@ package com.rwthmcc3;
 import java.util.List;
 
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -21,7 +22,11 @@ public class Map extends MapActivity{
 	private MapController mapController;
 	
 	private List<Overlay> mapOverlays;
-	private Drawable drawable;
+	private Drawable startMarker;
+	private Drawable marker;
+	private Drawable curPosMarker;
+	private Drawable targetMarker;
+	private Drawable powerupMarker;
 	private PositionMarkerOverlay itemizedOverlay;
 	
 	private GeoPoint prePoint = null;
@@ -38,10 +43,16 @@ public class Map extends MapActivity{
 		mapController = mapView.getController();
 		mapController.setZoom(12);
 
-		drawable = this.getResources().getDrawable(R.drawable.androidmarker);
+		startMarker = this.getResources().getDrawable(R.drawable.start);
+		marker = this.getResources().getDrawable(R.drawable.point);
+		curPosMarker = this.getResources().getDrawable(R.drawable.point_blue);
+		targetMarker = this.getResources().getDrawable(R.drawable.point_red);
+		powerupMarker = this.getResources().getDrawable(R.drawable.point_yellow);
 		
 		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new GeoUpdateHandler());
+		String bestProvider = lm.getBestProvider(new Criteria(), false);
+		lm.getLastKnownLocation(bestProvider);
+		lm.requestLocationUpdates(bestProvider, 0, 0, new GeoUpdateHandler());
 
 	}	
 	
@@ -60,8 +71,11 @@ public class Map extends MapActivity{
 			OverlayItem overlayitem = new OverlayItem(point, "", "");
 
 			mapOverlays = mapView.getOverlays();
-			itemizedOverlay = new PositionMarkerOverlay(prePoint, point, drawable);
-			
+			if(prePoint == null ){
+				itemizedOverlay = new PositionMarkerOverlay(prePoint, point, startMarker);
+			} else {
+				itemizedOverlay = new PositionMarkerOverlay(prePoint, point, marker);
+			}
 			itemizedOverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedOverlay);
 			

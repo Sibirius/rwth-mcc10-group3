@@ -3,7 +3,9 @@ package com.rwthmcc3;
 import java.util.ArrayList;
 
 import android.graphics.Canvas;
+import android.graphics.DrawFilter;
 import android.graphics.Paint;
+import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 
@@ -32,23 +34,26 @@ public class PositionMarkerOverlay extends ItemizedOverlay<OverlayItem> {
     public void draw(Canvas canvas, MapView mapView, boolean shadow) {
 
         super.draw(canvas, mapView, shadow);
-
-        if(prePoint != null){
+    	
+    	if(prePoint != null){
 	        Paint paint=new Paint();
 	        Point screenCoords=new Point();
 	        Point screenCoords1=new Point();
 	
 	        mapView.getProjection().toPixels(prePoint, screenCoords);
 	        int x1=screenCoords.x;
-	        int y1=screenCoords.y;
+	        int y1=screenCoords.y-5;
 	
 	        mapView.getProjection().toPixels(currentPoint, screenCoords1);
 	        int x2=screenCoords1.x;
-	        int y2=screenCoords1.y;
+	        int y2=screenCoords1.y-5;
 	
-	        paint.setStrokeWidth(3);
+	        paint.setStrokeWidth(2);
+	        DrawFilter drawFilter = new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG);
+	        canvas.setDrawFilter(drawFilter);	        
 	        canvas.drawLine(x1, y1, x2, y2, paint);
         }
+
     }
 	
 	
