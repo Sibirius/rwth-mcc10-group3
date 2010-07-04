@@ -31,7 +31,7 @@ public class MainMenu extends ListActivity{
 	private static String LOGTAG = "MainMenu";
 	private AlertDialog alert;
 	private List<Game> games = null;
-	private Game chosenGame = null;
+	public static Game chosenGame = null;
 	public static String[] arrayOfPlayers = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,23 +62,12 @@ public class MainMenu extends ListActivity{
 	        		//hier vielleicht auf antwort warten?
 	        		Integrator.joinGame(Player.getPlayer(), chosenGame);
 	        		
-	        		List<Player> players = Integrator.getPlayerList(chosenGame);
-	        		int j =0;
-	        		arrayOfPlayers = new String[players.size()];
-	        		for(Player i: players){
-	        			arrayOfPlayers[j] = i.getPlayerName();
-	        			j++;
-	        		}
-	        		//startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
+	        		updateArrayOfPlayers();
+	        		
+	        		startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
 	        		
 	        	}else{
-	        		List<Player> players = Integrator.getPlayerList(chosenGame);
-	        		int j =0;
-	        		arrayOfPlayers = new String[players.size()];
-	        		for(Player i: players){
-	        			arrayOfPlayers[j] = i.getPlayerName();
-	        			j++;
-	        		}
+	        		updateArrayOfPlayers();
 	        		startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.ListOfPlayers.class),0);
 	        	}
 	            
@@ -133,7 +122,7 @@ public class MainMenu extends ListActivity{
 		
 		//message to user and load list 
 	    ProgressDialog dialog = ProgressDialog.show(MainMenu.this, "", 
-                "Spielliste wird vom Server abgerufen. Bitte warten...", true);
+                "Bitte warten...", true);
 	  
 		//delete list before set new list
 		mylist.clear();
@@ -195,6 +184,18 @@ public class MainMenu extends ListActivity{
 			return true;						
 		}
 		return false;
+	}
+	
+	public void updateArrayOfPlayers(){
+		
+		List<Player> players = Integrator.getPlayerList(chosenGame);
+		int j =0;
+		arrayOfPlayers = new String[players.size()];
+		for(Player i: players){
+			arrayOfPlayers[j] = i.getPlayerName();
+			j++;
+		}
+				
 	}
 	
 }
