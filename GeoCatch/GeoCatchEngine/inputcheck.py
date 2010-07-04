@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # methods check input and throw errors if something goes wrong
 # http://docs.python.org/library/exceptions.html
 
