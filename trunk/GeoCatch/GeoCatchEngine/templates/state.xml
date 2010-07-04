@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<state>
-</state>
+<state value="{{state}}"/>
 
 <events>
+	{% for event in events %}
+	<event 
+	/>		
+	{% endfor %}
 </events>

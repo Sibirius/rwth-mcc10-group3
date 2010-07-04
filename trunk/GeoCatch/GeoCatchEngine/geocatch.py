@@ -23,15 +23,32 @@ def respond(caller, value):
 ##########################################################
 #data models
 ##########################################################
-class Player(db.Model): #dummy class to be referenced by the game class, ignore it
+class Game(db.Model): #dummy class to be referenced by the player class, ignore it
 	pass
+
+class Player(db.Model):	
+	""" player data """
+	lastLocation = db.GeoPtProperty()
+	currentGame = db.ReferenceProperty(Game)
+    
+	name = db.StringProperty(multiline=False)
+	mac = db.StringProperty(multiline=False)
+    
+	hunter = db.SelfReferenceProperty(collection_name="hunter_set")
+	prey = db.SelfReferenceProperty(collection_name="prey_set")
+    
+	nearlyCaught = db.BooleanProperty()
+    
+	powerUp = db.IntegerProperty()
+	powerUpLocation = db.GeoPtProperty()
 
 class Game(db.Model):
 	""" game data """
 	name = db.StringProperty(multiline=False)
 	# 0 = not yet started
 	# 1 = running
-	# 2 = finished
+	# 2 = stopped
+	# 3 = finished
 	status = db.IntegerProperty()
     
 	version = db.IntegerProperty() # used when there are multiple versions
@@ -47,20 +64,6 @@ class Game(db.Model):
 
 	playerCount = db.IntegerProperty()
 	maxPlayerCount = db.IntegerProperty()    
-
-class Player(db.Model):	
-	""" player data """
-	lastLocation = db.GeoPtProperty()
-	currentGame = db.ReferenceProperty(Game)
-    
-	name = db.StringProperty(multiline=False)
-	mac = db.StringProperty(multiline=False)
-    
-    #hunter = db.SelfReferenceProperty() #TODO: use
-    #prey = db.SelfReferenceProperty()
-    
-	powerUp = db.IntegerProperty()
-	powerUpLocation = db.GeoPtProperty()
 
 class Path(db.Model):
 	""" path points of the way a player has traveled during a game  """
@@ -115,7 +118,8 @@ class GetGamePlayerList(webapp.RequestHandler):
 		
 		template_path = os.path.join(TEMPLATE_FOLDER, 'players.xml')
 		self.response.out.write(template.render(template_path, template_values))
-		
+
+#############################################		
 		
 class JoinGame(webapp.RequestHandler):
 	""" calling player joins the game if it exists and he is not already in another one """
@@ -165,16 +169,21 @@ class StopGame(webapp.RequestHandler):
 	"""stops the game if called by the creator """
 	def get(self):
 		try:
-			game_key = checkKey(self.request.get('g'))
 			player_key = checkKey(self.request.get('p'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
 			respond(self, "input error")
 			return
-
-		#TODO: maybe check mac address?
 		
-		game = Game.get(game_key)
+		player = Player.get(player_key)
+		
+		if player != None:
+			game_key = player.currentGame.key()
+			game = Game.get(game_key)
+		else:
+			logging.error('Player %s not in any game'%(player_key))
+			respond(self,"error")
+			return
 		
 		#check if game can be started and user has the right to
 		if game != None and game.creator.key() == player_key and game.status == 1:
@@ -190,16 +199,21 @@ class StartGame(webapp.RequestHandler):
 	""" start an already created game, only usable by the creator """
 	def get(self):		
 		try:
-			game_key = checkKey(self.request.get('g'))
 			player_key = checkKey(self.request.get('p'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
 			respond(self, "input error")
 			return
 
-		#TODO: maybe check mac address?
+		player = Player.get(player_key)
 		
-		game = Game.get(game_key)
+		if player != None:
+			game_key = player.currentGame.key()
+			game = Game.get(game_key)
+		else:
+			logging.error('Player %s not in any game'%(player_key))
+			respond(self,"error")
+			return
 		
 		#check if game can be started and user has the right to
 		if game != None and game.creator.key() == player_key and game.status == 0:
@@ -220,25 +234,30 @@ class LeaveGame(webapp.RequestHandler):
 	""" a player can leave a game, game is closed if the player was the creator """
 	def get(self):
 		try:
-			game_key = checkKey(self.request.get('g'))
 			player_key = checkKey(self.request.get('p'))
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
 			respond(self, "input error")
 			return
 
-		#TODO: maybe check mac address?
-		
-		game = Game.get(game_key)
 		player = Player.get(player_key)
+		
+		if player != None:
+			game_key = player.currentGame.key()
+			game = Game.get(game_key)
+		else:
+			logging.error('Player %s not in any game'%(player_key))
+			respond(self,"error")
+			return
 		
 		#check if player is in game and game exists, if the player is the creator close the game
 		if game != None and player != None:			
-			if game.creator == player:
+			if game.creator == player.key():
 				#TODO: close game
 				
 				game.creator.currentGame = None
 				game.status = 2
+				#TODO: change players and playercount?
 				
 				game.creator.put()
 				game.put()
@@ -273,7 +292,6 @@ class PlayerUpdateState(webapp.RequestHandler):
 	def get(self):
 		logging.debug('Player %s sent update for game %s'%(player_key,game_key))
 		try:
-			game_key = checkKey(self.request.get('g'))
 			player_key = checkKey(self.request.get('p'))
 
 			newLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon')).split(",")
@@ -283,21 +301,38 @@ class PlayerUpdateState(webapp.RequestHandler):
 			respond(self, "input error")
 			return
 		
-		game = Game.get(game_key)
 		player = Player.get(player_key)
+		
+		if player != None:
+			game_key = player.currentGame.key()
+			game = Game.get(game_key)
+		else:
+			logging.error('Player %s not in any game'%(player_key))
+			respond(self,"error")
+			return
 
 		if game != None and player != None:
 			if player_key in game.players:
 				
 				#TODO: deal with update information
 				path = Path()
-				path.player = player
-				path.game = game
+				path.player = player.key()
+				path.game = game.key()
 				path.location = db.GeoPt(newLocation[0], newLocation[1])
+				path.put()
+
+				player.lastLocation = path.location
+				player.put()
+				
+				#check if someone caught someone else 
+				#check takes 2 refresh states to make sure there are no "lagcatches"
+				#the first proximity puts up a flag, the second makes it final 
+
+				
 
 				#TODO: return updated game state
 
-				state = []
+				state = game.state
 				events = []
 
 				template_values = {'state': state, 'events': events}
@@ -454,8 +489,8 @@ class FillWithTestdata(webapp.RequestHandler):
 		
 		game1.put()
 		
-		player1.currentGame = game1
-		player3.currentGame = game1
+		player1.currentGame = game1.key()
+		player3.currentGame = game1.key()
 
 		game2 = Game()
 		game2.name = "game2"
@@ -469,7 +504,7 @@ class FillWithTestdata(webapp.RequestHandler):
 		game2.maxPlayerCount = 3
 		game2.put()
 
-		player2.currentGame = game2
+		player2.currentGame = game2.key()
 		
 		player1.put()
 		player2.put()

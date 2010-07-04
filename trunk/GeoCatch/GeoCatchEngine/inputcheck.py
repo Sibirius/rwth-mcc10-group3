@@ -6,7 +6,7 @@ import re
 def checkKey(key):
 	""" check if key is a google store type key """
 	#TODO: wrong
-	if re.match("^[a-zA-Z0-9-_]{1,100}$", key) != None:
+	if re.match("^[a-zA-Z0-9-_]{8,100}$", key) != None:
 		return key
 	else:
 		raise ValueError()
