@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import cgi
 import logging
 
@@ -444,9 +446,8 @@ class RegisterPlayer(webapp.RequestHandler):
 			logging.info('Changed player name for %s to %s'%(player.key(),player.name))
 
 		player_key = player.put()		
-		#TODO: response as xml
 		
-		#todo: say if everything went fine
+		#say if everything went fine
 		respond(self, player_key)
 		
 class CreateGame(webapp.RequestHandler):
