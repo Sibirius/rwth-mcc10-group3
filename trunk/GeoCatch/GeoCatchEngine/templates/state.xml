@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<state value="{{state}}"/>
+<state 
+	mode ="{{mode}}"
+	state="{{state}}"
+	
+	{% if mode == 0 %} {% comment %} race TODO {% endcomment %}
+		
+	{% else %} 
+	{% if mode == 1 %} {% comment %} chaincatch {% endcomment %}
+		lat="{{modespecific.lat}}"
+		lon="{{modespecific.lon}}"
+	{% endif %}	
+	{% endif %}
+/>
 
 <events>
 	{% for event in events %}
 	<event 
+		title="{{event.title}}"
+		info="{{event.info}}"
 	/>		
 	{% endfor %}
 </events>

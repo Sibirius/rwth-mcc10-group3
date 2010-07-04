@@ -2,4 +2,5 @@
 <response
 	value="{{value}}"
 />
-<!-- TODO: errors go here -->
+{% comment %} TODO: errors go here? {% endcomment %}
+
