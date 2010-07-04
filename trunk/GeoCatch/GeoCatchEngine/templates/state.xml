@@ -4,12 +4,11 @@
 	state="{{state}}"
 	
 	{% if mode == 0 %} {% comment %} race TODO {% endcomment %}
-		
-	{% else %} 
+	{% endif %}	
+			
 	{% if mode == 1 %} {% comment %} chaincatch {% endcomment %}
 		lat="{{modespecific.lat}}"
 		lon="{{modespecific.lon}}"
-	{% endif %}	
 	{% endif %}
 />
 

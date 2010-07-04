@@ -320,14 +320,15 @@ def leaveGame(game, player): # is also called in register player if THE UNPROBAB
 	if game != None and player != None:			
 		if game.creator.key() == player.key():
 			#TODO: close game
+
+			player.currentGame = None
+			player.put()
 			
-			game.creator.currentGame = None
 			game.status = 2
-			#TODO: change players and playercount?
-			
-			game.creator.put()
+			game.players.remove(player.key())
+			game.playerCount -= 1
 			game.put()
-			
+						
 			logging.info('Creator %s left game %s, game stopped'%(player_key,game_key))
 			value = "done"
 		elif player.key() in game.players:
@@ -360,7 +361,6 @@ class Event: #todo: save events in the database, this is just a testing thing
 class PlayerUpdateState(webapp.RequestHandler):
 	"""updates the player state and provides him with stuff he should know"""
 	def get(self):
-		logging.debug('Player %s sent update for game %s'%(player_key,game_key))
 		try:
 			player_key = checkKey(self.request.get('p'))
 
@@ -385,18 +385,21 @@ class PlayerUpdateState(webapp.RequestHandler):
 			logging.error('There is no player %s'%(player_key))
 			respond(self,"error")
 			return
+			
+		logging.debug('Player %s sent update for game %s'%(player_key,game_key))			
 
 		if game != None and player != None:
 			if player.key() in game.players:
+				loc = db.GeoPt(newLocation[0], newLocation[1])
 				
 				#TODO: deal with update information
 				path = Path()
 				path.player = player.key()
 				path.game = game.key()
-				path.location = db.GeoPt(newLocation[0], newLocation[1])
+				path.location = loc
 				path.put()
 
-				player.lastLocation = path.location
+				player.lastLocation = loc
 				player.put()
 				
 				if game.mode == 1: #catch
@@ -406,11 +409,11 @@ class PlayerUpdateState(webapp.RequestHandler):
 				#the first proximity puts up a flag, the second makes it final 
 				elif game.mode == 0: #race, im moment auf 5 nachkommastellen genau prüfen ob am ziel angekommen
 					modespecific = {}
-					modespecific.lat = game.goal.lat #goal lat and lon
-					modespecific.lon = game.goal.lon
+					modespecific["lat"] = game.goal.lat #goal lat and lon
+					modespecific["lon"] = game.goal.lon
 				
 					#test if player close enough to goal point
-					if round(player.location.lat, 5) ==  round(game.goal.lat, 5) and round(player.location.lon, 5) ==  round(game.goal.lon, 5):
+					if round(loc.lat, 5) ==  round(game.goal.lat, 5) and round(loc.lon, 5) ==  round(game.goal.lon, 5):
 						# \o/ victory
 						#finish game, save who won
 						game.winner = player.key()
@@ -461,11 +464,14 @@ class RegisterPlayer(webapp.RequestHandler):
 				logging.error('Creating new Player %s, but he is already in game %s, leaving'%(player.key(),player.currentGame.key()))
 				# kicking the bugger
 				leaveGame(player.currentGame,player) #TODO: errors here are not caught or returned to the client, well, shit
+				
+				#TODO: maybe this could be done better?
+				player = Player.get(player.key()) #get a new player, otherwise the old one is overwritten and still has a current game
 
 			player.name = name
 			logging.info('Changed player name for %s to %s'%(player.key(),player.name))
 
-		player_key = player.put()		
+		player_key = player.put()
 		
 		#say if everything went fine
 		respond(self, player_key)
@@ -491,11 +497,13 @@ class CreateGame(webapp.RequestHandler):
 		if player != None and player.currentGame == None:
 			game = Game()
 			
+			loc = db.GeoPt(creatorLocation[0], creatorLocation[1])
+			
 			game.name = name
 			game.status = 0
 			game.mode = 2 #TODO: set here, not in the game start thingy
 			game.version = version
-			game.creatorLocation = db.GeoPt(creatorLocation[0], creatorLocation[1])
+			game.creatorLocation = loc
 			game.playerCount = 1
 			game.maxPlayerCount = maxPlayerCount
 			game.creator = player.key()
@@ -506,6 +514,7 @@ class CreateGame(webapp.RequestHandler):
 			game_key = game.put() #the use the database keys seems best, as they are unique already - no conflicts
 			
 			player.currentGame = game.key()
+			player.lastLocation = loc
 			player.put()
 			
 			logging.info('New game %s created by player %s'%(game_key,player_key))
