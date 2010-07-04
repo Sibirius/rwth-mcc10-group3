@@ -20,6 +20,10 @@ def respond(caller, value):
 		
 	caller.response.out.write(template.render(template_path, template_values))			
 
+# geo stuff:
+# http://code.google.com/appengine/articles/geosearch.html
+# http://code.google.com/apis/maps/articles/geospatial.html (maps, nvm)
+
 ##########################################################
 #data models
 ##########################################################
@@ -52,6 +56,9 @@ class Game(db.Model):
 	status = db.IntegerProperty()
     
 	version = db.IntegerProperty() # used when there are multiple versions
+	
+	# 0 = race to the point
+	# 1 = chain-catch, who catches first wins
 	mode = db.IntegerProperty() # used when there are multiple gamemodes
     
 	creator = db.ReferenceProperty(Player)
@@ -63,7 +70,10 @@ class Game(db.Model):
 	#http://www.gomuse.com/google-app-engine-using-the-list-property-dbl
 
 	playerCount = db.IntegerProperty()
-	maxPlayerCount = db.IntegerProperty()    
+	maxPlayerCount = db.IntegerProperty()
+	
+	goal = db.GeoPtProperty()
+	winner = db.ReferenceProperty(Player, collection_name="winner_set")
 
 class Path(db.Model):
 	""" path points of the way a player has traveled during a game  """
@@ -186,7 +196,7 @@ class StopGame(webapp.RequestHandler):
 			return
 		
 		#check if game can be started and user has the right to
-		if game != None and game.creator.key() == player_key and game.status == 1:
+		if game != None and game.creator.key() == player.key() and game.status == 1:
 			game.status = 2
 			game.put()
 			logging.info('Game %s stopped by player %s'%(game_key,player_key))
@@ -216,8 +226,38 @@ class StartGame(webapp.RequestHandler):
 			return
 		
 		#check if game can be started and user has the right to
-		if game != None and game.creator.key() == player_key and game.status == 0:
+		if game != None and game.creator.key() == player.key() and game.status == 0:
 			if game.playerCount == game.maxPlayerCount:
+				if game.playerCount < 3: #"race to the point" game
+					#TODO: any way to make sure the marker is on a walkable place after this?
+					if game.playerCount == 1:
+						lat = player.lastLocation.lat+0.0001
+						lon = player.lastLocation.lon+0.0001 #TODO random in a certain radius range, calculating meter to lat/lon dependig on the position will sure be a lot fun
+					else:
+						#TODO: calculate something fair between the 2 players
+						#right now it's just the average, at least it should be but i doubt it
+						lat = 0.0
+						lon = 0.0
+						
+						for i in game.players:
+							lat += i.lastLocation.lat
+							lon += i.lastLocation.lon
+							
+						lat /= len(game.players)
+						lon /= len(game.players)
+								
+					#TODO: check & modulo lat and lon? are they bounded? (for the unexpected case where people are playing between min and max 
+		
+					game.goal = db.GeoPt(lat,lon)
+					game.mode = 0 #TODO: don't, you should get the mode and check it, not set it
+				else:
+					#TODO: random and watch out for it to be one big cycle
+					for i,j in enumerate(game.players):
+						j.hunter = game.players[i+1].key()
+						j.prey = game.players[i-1].key()
+						j.put()
+					game.mode = 1 #TODO: don't, you should get the mode and check it, not set it
+				
 				game.status = 1
 				game.put()
 				logging.info('Game %s started by player %s'%(game_key,player_key))
@@ -250,42 +290,55 @@ class LeaveGame(webapp.RequestHandler):
 			respond(self,"error")
 			return
 		
-		#check if player is in game and game exists, if the player is the creator close the game
-		if game != None and player != None:			
-			if game.creator == player.key():
-				#TODO: close game
-				
-				game.creator.currentGame = None
-				game.status = 2
-				#TODO: change players and playercount?
-				
-				game.creator.put()
-				game.put()
-				
-				logging.info('Creator %s left game %s, game stopped'%(player_key,game_key))
-				value = "done"
-			elif player.key() in game.players:
-				player.currentGame = None
-				player.put()
-				
-				game.players.remove(player.key())
-				game.playerCount -= 1
-				game.put()
-
-				logging.info('Player %s left game %s, game has now %s players left'%(player_key,game_key,game.playerCount))
-				
-				#TODO: deal with the horrible aftermath
-				#maybe if only 2 left start showdown, give 2 minutes then set marker in between them
-				value = "done"
-			else:
-				logging.error('Attempt to leave game %s by player %s failed, not in list apparently and not creator'%(game_key,player_key))			
-				value = "error"		
-		else:
-			logging.error('Attempt to leave game %s by player %s failed, no game or player'%(game_key,player_key))			
-			value = "error"
+		value = leaveGame(game,player)
 				
 		#TODO: give feedback to the player? or an error message
 		respond(self, value)
+
+def leaveGame(game, player): # is also called in register player if THE UNPROBABLE happens (e.g. there was a crash and bobby can't come in again)
+	#check if player is in game and game exists, if the player is the creator close the game
+	game_key = game.key()
+	player_key = player.key()
+	
+	if game != None and player != None:			
+		if game.creator.key() == player.key():
+			#TODO: close game
+			
+			game.creator.currentGame = None
+			game.status = 2
+			#TODO: change players and playercount?
+			
+			game.creator.put()
+			game.put()
+			
+			logging.info('Creator %s left game %s, game stopped'%(player_key,game_key))
+			value = "done"
+		elif player.key() in game.players:
+			player.currentGame = None
+			player.put()
+			
+			game.players.remove(player.key())
+			game.playerCount -= 1
+			game.put()
+
+			logging.info('Player %s left game %s, game has now %s players left'%(player_key,game_key,game.playerCount))
+			
+			#TODO: deal with the horrible aftermath
+			#maybe if only 2 left start showdown, give 2 minutes then set marker in between them
+			value = "done"
+		else:
+			logging.error('Attempt to leave game %s by player %s failed, not in list apparently and not creator'%(game_key,player_key))			
+			value = "error"		
+	else:
+		logging.error('Attempt to leave game %s by player %s failed, no game or player'%(game_key,player_key))			
+		value = "error"
+		
+	return value
+
+class Event: #todo: save events in the database, this is just a testing thing
+	def __init__(self, what, who):
+		self.title = what
+		self.info = who
 
 class PlayerUpdateState(webapp.RequestHandler):
 	"""updates the player state and provides him with stuff he should know"""
@@ -312,7 +365,7 @@ class PlayerUpdateState(webapp.RequestHandler):
 			return
 
 		if game != None and player != None:
-			if player_key in game.players:
+			if player.key() in game.players:
 				
 				#TODO: deal with update information
 				path = Path()
@@ -324,18 +377,32 @@ class PlayerUpdateState(webapp.RequestHandler):
 				player.lastLocation = path.location
 				player.put()
 				
+				if game.mode == 1: #catch
+					pass
 				#check if someone caught someone else 
 				#check takes 2 refresh states to make sure there are no "lagcatches"
 				#the first proximity puts up a flag, the second makes it final 
-
+				elif game.mode == 0: #race, im moment auf 5 nachkommastellen genau prüfen ob am ziel angekommen
+					modespecific = {}
+					modespecific.lat = game.goal.lat #goal lat and lon
+					modespecific.lon = game.goal.lon
 				
-
+					#test if player close enough to goal point
+					if round(player.location.lat, 5) ==  round(game.goal.lat, 5) and round(player.location.lon, 5) ==  round(game.goal.lon, 5):
+						# \o/ victory
+						#finish game, save who won
+						game.winner = player.key()
+						game.state = 3
+						game.put()
+				
 				#TODO: return updated game state
 
-				state = game.state
 				events = []
+				
+				if game.state == 3:
+					events.append(Event("victory", game.winner.name))
 
-				template_values = {'state': state, 'events': events}
+				template_values = {'state': game.state, 'mode': game.mode, 'modespecific':modespecific, 'events': events}
 		
 				template_path = os.path.join(TEMPLATE_FOLDER, 'state.xml')
 				self.response.out.write(template.render(template_path, template_values))		
@@ -369,9 +436,9 @@ class RegisterPlayer(webapp.RequestHandler):
 			logging.info('Created new Player with name %s and mac %s'%(player.name,player.mac))
 		else:
 			if player.currentGame != None:
-				logging.error('Creating new Player %s failed because player is in game %s'%(player.key(),player.currentGame.key()))
-				respond(self, "error")
-				return #TODO: do something if someone tries to register while there is an ongoing game he already plays?
+				logging.error('Creating new Player %s, but he is already in game %s, leaving'%(player.key(),player.currentGame.key()))
+				# kicking the bugger
+				leaveGame(player.currentGame,player) #TODO: errors here are not caught or returned to the client, well, shit
 
 			player.name = name
 			logging.info('Changed player name for %s to %s'%(player.key(),player.name))
@@ -405,7 +472,7 @@ class CreateGame(webapp.RequestHandler):
 			
 			game.name = name
 			game.status = 0
-			game.mode = 2
+			game.mode = 2 #TODO: set here, not in the game start thingy
 			game.version = version
 			game.creatorLocation = db.GeoPt(creatorLocation[0], creatorLocation[1])
 			game.playerCount = 1
@@ -417,7 +484,7 @@ class CreateGame(webapp.RequestHandler):
 			
 			game_key = game.put() #the use the database keys seems best, as they are unique already - no conflicts
 			
-			player.currentGame = game
+			player.currentGame = game.key()
 			player.put()
 			
 			logging.info('New game %s created by player %s'%(game_key,player_key))
