@@ -3,13 +3,13 @@
 	mode ="{{mode}}"
 	state="{{state}}"
 	
-	{% if mode == 0 %} {% comment %} race TODO {% endcomment %}
-	{% endif %}	
+	{% ifequal mode "0" %} {% comment %} race TODO {% endcomment %}
+	{% endifequal %}	
 			
-	{% if mode == 1 %} {% comment %} chaincatch {% endcomment %}
+	{% ifequal mode "1" %} {% comment %} chaincatch {% endcomment %}
 		lat="{{modespecific.lat}}"
 		lon="{{modespecific.lon}}"
-	{% endif %}
+	{% endifequal %}
 />
 
 <events>
