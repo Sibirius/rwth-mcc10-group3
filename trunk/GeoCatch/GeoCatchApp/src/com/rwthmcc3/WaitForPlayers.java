@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
+import android.os.CountDownTimer;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 
 public class WaitForPlayers extends ListActivity {
 	
+	private CountDownTimer counter;
 	private static ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
 	private SimpleAdapter mSchedule;
 	@Override
@@ -26,9 +26,17 @@ public class WaitForPlayers extends ListActivity {
               new String[] {"player_name"}, new int[] {R.id.text_listofplayers});
 	  lv.setAdapter(mSchedule);
 	  
-	  
-	  ProgressDialog dialog = ProgressDialog.show(WaitForPlayers.this, "", 
-              "Auf Mitspieler warten...", true);
+	  /*counter =  new CountdownTimer(30000, 1000) {
+
+		     public void onTick(long millisUntilFinished) {
+		         mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+		     }
+
+		     public void onFinish() {
+		         mTextField.setText("done!");
+		     }
+		  };
+	  */
 	 }
 	
 	

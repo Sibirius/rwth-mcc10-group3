@@ -57,6 +57,9 @@ public class GeoCatch extends Activity {
 		case R.id.geocatch_options_menu_new_game:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.NewGame.class),0);	
 			return true;
+		case R.id.geocatch_options_menu_join_game:
+			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.MainMenu.class),0);	
+			return true;
 		case R.id.geocatch_options_menu_view_map:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Map.class),0);			
 			return true;			
