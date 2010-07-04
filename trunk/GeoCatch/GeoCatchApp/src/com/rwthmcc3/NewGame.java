@@ -1,8 +1,11 @@
 package com.rwthmcc3;
 
 
+
+
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,9 +16,11 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 
@@ -52,16 +57,28 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 	OnClickListener doNextOnClick = new OnClickListener() {		
 		public void onClick(View view) {
 			
+			EditText gameNameField = (EditText)findViewById(R.id.edit_game_name);
+			String gameName = gameNameField.toString();
+			SeekBar maxPlayerSeekbar = (SeekBar)findViewById(R.id.seekbar_player_count);
+	        int maxPlayersCount = maxPlayerSeekbar.getProgress() + 3;
 			
-			
-			//message to user
-		    ProgressDialog dialog = ProgressDialog.show(NewGame.this, "", 
-	                "Spielliste wird vom Server abgerufen. Bitte warten...", true);
-			//TODO save game
-		    dialog.dismiss();
-			
-			startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.WaitForPlayers.class),0);
+			ProgressDialog dialog = ProgressDialog.show(NewGame.this, "", 
+	                "Bitte warten...", true);
+			if((!gameName.startsWith(" ")) || (gameName.length()< 3)){
+				//message to user
+			    Integrator.createGame(Player.getPlayer(),gameName , maxPlayersCount, 2, Player.getPlayer().getLongitude(), Player.getPlayer().getLatitude());
+			    dialog.dismiss();
+				startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.WaitForPlayers.class),0);
+			}else{
+				 dialog.dismiss();
+				//message to user
+				Context context = getApplicationContext();
+				CharSequence text = "Ungültiger Spielername";
+				int duration = Toast.LENGTH_SHORT;
+				Toast toast = Toast.makeText(context, text, duration);
+				toast.show();
 			}
+		}
 	};
         
                

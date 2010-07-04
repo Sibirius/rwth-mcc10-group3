@@ -90,6 +90,7 @@ public class Integrator {
 		return null;
 	}
 	
+	
 	public static List<Player> getPlayerList(Game game){
 		Log.d(LOGTAG, "getPlayerList()");
 		List<Player> result = new ArrayList<Player>();
@@ -110,11 +111,13 @@ public class Integrator {
 			    	player.setPlayerName(element.getAttribute("name"));
 			    	player.setCreator(Boolean.parseBoolean(element.getAttribute("creator")));
 			    	player.setIsMember(true);
+			    	
 			    	//TODO lon, lat, key
 			    	result.add(player);
 		
 			     }
 			    Log.d(LOGTAG,"getPlayerList success");
+			    game.setPlayerCount(nodes.getLength());
 			    return result;
 	
 			} catch (IllegalStateException e) {
@@ -138,6 +141,7 @@ public class Integrator {
         Log.d(LOGTAG, "joinGame: "+getResponse(doGet("/join", qparams)));
         
         player.setIsMember(true);
+        Player.setMyGame(game);
         game.addToPlayerList(player);
         game.setPlayerCount(game.getPlayerCount()+1);
 	}
@@ -168,6 +172,7 @@ public class Integrator {
         Log.d(LOGTAG, "leaveGame: "+getResponse(doGet("/leave", qparams)));
         
         player.setIsMember(false);
+        Player.setMyGame(null);
         //game.removeFromPlayerList(player);
         
         Log.d(LOGTAG, "leaveGame success");
@@ -221,6 +226,7 @@ public class Integrator {
         
         player.setCreator(true);
         player.setIsMember(true);
+        Player.setMyGame(game);
         
         Log.d(LOGTAG, "createGame success");
         return game;

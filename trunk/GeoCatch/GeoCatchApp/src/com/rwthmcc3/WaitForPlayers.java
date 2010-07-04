@@ -6,7 +6,7 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.app.ProgressDialog;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +20,7 @@ public class WaitForPlayers extends ListActivity {
 	
 	private static ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
 	private SimpleAdapter mSchedule;
-	private Game chosenGame = MainMenu.chosenGame;
+	private Game chosenGame = Player.getMyGame();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -89,14 +89,14 @@ public class WaitForPlayers extends ListActivity {
 		List<Player> players = Integrator.getPlayerList(chosenGame);
 		
 		HashMap<String, String> map = null;
-	    int playercount = 0;
+	    
 	    for(Player i: players){
 	    	map = new HashMap<String, String>();
 			map.put("player_name", i.getPlayerName());
 			mylist.add(map);
-			playercount++;
+			
 		}
-	    chosenGame.setPlayerCount(playercount);
+	    
 		mSchedule.notifyDataSetChanged();
 	}
 	

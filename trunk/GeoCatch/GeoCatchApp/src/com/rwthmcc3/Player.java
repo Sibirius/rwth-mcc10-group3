@@ -1,7 +1,7 @@
 package com.rwthmcc3;
 
 
-//singleton
+
 public class Player {
 	
 	private static Player player = null;
@@ -9,11 +9,12 @@ public class Player {
 	private boolean isCreator = false;
 	private boolean isMemberOfGame = false;
 	private String name = "Player 1";
-	private float longitude = 0;
-	private float latitude = 0;
+	private float longitude = (float) 6.087310;
+	private float latitude = (float) 50.768295;
 	private String key;
 	private Player hunter;
 	private Player target;
+	private static Game myGame;
 	
 	
 	/*private Player (){
@@ -24,7 +25,7 @@ public class Player {
 	
 	public static Player getPlayer() {
 	        if (player == null) {
-	            player = Integrator.registerPlayer("FF:FF:FF:FF:FF:FF", "Player1");
+	            player = Integrator.registerPlayer("FF:FF:FF:FF:FF:1F", "Player3");
 	        }
 	        return player;
 	}
@@ -108,6 +109,14 @@ public class Player {
 
 	public Player getTarget() {
 		return target;
+	}
+
+	public static void setMyGame(Game game) {
+		myGame = game;
+	}
+
+	public static Game getMyGame() {
+		return myGame;
 	}
 
 }
