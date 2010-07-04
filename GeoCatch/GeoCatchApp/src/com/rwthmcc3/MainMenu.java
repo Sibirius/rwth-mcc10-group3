@@ -58,6 +58,8 @@ public class MainMenu extends ListActivity{
 	        public void onClick(DialogInterface dialog, int item) {
 	        	
 	        	if(item == 0){ // join game
+	        		Integrator.leaveGame(Player.getPlayer());
+	        		//hier vielleicht auf antwort warten?
 	        		Integrator.joinGame(Player.getPlayer(), chosenGame);
 	        		
 	        		List<Player> players = Integrator.getPlayerList(chosenGame);
@@ -132,9 +134,9 @@ public class MainMenu extends ListActivity{
 		//message to user and load list 
 	    ProgressDialog dialog = ProgressDialog.show(MainMenu.this, "", 
                 "Spielliste wird vom Server abgerufen. Bitte warten...", true);
-	    
+	  
 		//delete list before set new list
-		mylist.removeAll(mylist);
+		mylist.clear();
 		
 		//TODO set distance
 		
