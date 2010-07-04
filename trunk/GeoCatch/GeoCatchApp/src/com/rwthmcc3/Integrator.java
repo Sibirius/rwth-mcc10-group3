@@ -169,6 +169,8 @@ public class Integrator {
         
         player.setMember(false);
         //game.removeFromPlayerList(player);
+        
+        Log.d(LOGTAG, "leaveGame success");
 	}
 	
 	public static void playerUpdateState(Player player){
@@ -267,9 +269,9 @@ public class Integrator {
 	        try {
 				Log.d(LOGTAG, "parsing response");
 	        	Document doc = parseXml(res.getEntity().getContent());
-				NodeList nodes = doc.getElementsByTagName("response");
-		    	Element element = (Element) nodes.item(0);
-		    	String result = element.getAttribute("value");
+	        	NodeList nodes = doc.getElementsByTagName("response");
+	        	Element element = (Element) nodes.item(0);
+	        	String result = element.getAttribute("value");
 				Log.d(LOGTAG,"getResponse success");
 				
 		    	return result;
