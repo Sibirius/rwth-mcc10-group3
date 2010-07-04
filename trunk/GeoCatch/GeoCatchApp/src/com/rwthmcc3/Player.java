@@ -12,6 +12,8 @@ public class Player {
 	private float longitude = 0;
 	private float latitude = 0;
 	private String key;
+	private Player hunter;
+	private Player target;
 	/*private Player (){
 		
 	}*/
@@ -88,5 +90,21 @@ public class Player {
 
 	public float getLatitude() {
 		return latitude;
+	}
+
+	public void setHunter(Player hunter) {
+		this.hunter = hunter;
+	}
+
+	public Player getHunter() {
+		return hunter;
+	}
+
+	public void setTarget(Player target) {
+		this.target = target;
+	}
+
+	public Player getTarget() {
+		return target;
 	}
 }
