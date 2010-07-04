@@ -15,6 +15,7 @@ public class Player {
 	private Player hunter;
 	private Player target;
 	
+	
 	/*private Player (){
 		
 	}*/
@@ -36,7 +37,7 @@ public class Player {
 		return name;
 	} 
 	
-	public void setMember(boolean is){
+	public void setIsMember(boolean is){
 		isMemberOfGame = is;
 	}
 	
@@ -108,4 +109,5 @@ public class Player {
 	public Player getTarget() {
 		return target;
 	}
+
 }

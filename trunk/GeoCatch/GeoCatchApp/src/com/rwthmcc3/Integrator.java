@@ -109,7 +109,7 @@ public class Integrator {
 			    	
 			    	player.setPlayerName(element.getAttribute("name"));
 			    	player.setCreator(Boolean.parseBoolean(element.getAttribute("creator")));
-			    	player.setMember(true);
+			    	player.setIsMember(true);
 			    	//TODO lon, lat, key
 			    	result.add(player);
 		
@@ -137,7 +137,7 @@ public class Integrator {
         
         Log.d(LOGTAG, "joinGame: "+getResponse(doGet("/join", qparams)));
         
-        player.setMember(true);
+        player.setIsMember(true);
         game.addToPlayerList(player);
         game.setPlayerCount(game.getPlayerCount()+1);
 	}
@@ -167,7 +167,7 @@ public class Integrator {
         
         Log.d(LOGTAG, "leaveGame: "+getResponse(doGet("/leave", qparams)));
         
-        player.setMember(false);
+        player.setIsMember(false);
         //game.removeFromPlayerList(player);
         
         Log.d(LOGTAG, "leaveGame success");
@@ -220,7 +220,7 @@ public class Integrator {
         game.setPlayerCount(1);
         
         player.setCreator(true);
-        player.setMember(true);
+        player.setIsMember(true);
         
         Log.d(LOGTAG, "createGame success");
         return game;
