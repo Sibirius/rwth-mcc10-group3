@@ -30,7 +30,9 @@ public class MainMenu extends ListActivity{
 	private SimpleAdapter mSchedule;
 	private static String LOGTAG = "MainMenu";
 	private AlertDialog alert;
-	
+	private List<Game> games = null;
+	private Game chosenGame = null;
+	public static String[] arrayOfPlayers = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +56,31 @@ public class MainMenu extends ListActivity{
 	    builder.setTitle("Bitte auswählen:");
 	    builder.setItems(items, new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int item) {
-	            Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
+	        	
+	        	if(item == 0){ // join game
+	        		Integrator.joinGame(Player.getPlayer(), chosenGame);
+	        		
+	        		List<Player> players = Integrator.getPlayerList(chosenGame);
+	        		int j =0;
+	        		arrayOfPlayers = new String[players.size()];
+	        		for(Player i: players){
+	        			arrayOfPlayers[j] = i.getPlayerName();
+	        			j++;
+	        		}
+	        		//startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
+	        		
+	        	}else{
+	        		List<Player> players = Integrator.getPlayerList(chosenGame);
+	        		int j =0;
+	        		arrayOfPlayers = new String[players.size()];
+	        		for(Player i: players){
+	        			arrayOfPlayers[j] = i.getPlayerName();
+	        			j++;
+	        		}
+	        		startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.ListOfPlayers.class),0);
+	        	}
+	            
+	            
 	        }
 	    });
 	    alert = builder.create();
@@ -67,6 +93,7 @@ public class MainMenu extends ListActivity{
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int arg2, long arg3) {
 			alert.show();
+			chosenGame = games.get(arg2);
 			return false;
 		}		
     };
@@ -108,14 +135,14 @@ public class MainMenu extends ListActivity{
                 "Spielliste wird vom Server abgerufen. Bitte warten...", true);
 	    
 		//delete list before set new list
-		mylist.clear();
+		mylist.removeAll(mylist);
 		
 		//TODO set distance
 		
 		//for every item: addItemToList
 		//Player player = Integrator.registerPlayer("F1:12:23:34:45:56", "playertest");
 		//Integrator.createGame(player, "testgame", 5, 1, 13.37f, 13.337f);
-		List<Game> games = Integrator.getGameList();
+		games = Integrator.getGameList();
 		if (games != null){
 			for (Game i : games) {
 				Log.d(LOGTAG, "game: "+i.getName());

@@ -14,6 +14,7 @@ public class Player {
 	private String key;
 	private Player hunter;
 	private Player target;
+	
 	/*private Player (){
 		
 	}*/
