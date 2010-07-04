@@ -190,10 +190,15 @@ class StopGame(webapp.RequestHandler):
 		player = Player.get(player_key)
 		
 		if player != None:
-			game_key = player.currentGame.key()
-			game = Game.get(game_key)
+			if player.currentGame != None:
+				game_key = player.currentGame.key()
+				game = Game.get(game_key)
+			else:
+				logging.error('Player %s is in no game'%(player_key))
+				respond(self,"error")
+				return
 		else:
-			logging.error('Player %s not in any game'%(player_key))
+			logging.error('There is no player %s'%(player_key))
 			respond(self,"error")
 			return
 		
@@ -220,10 +225,15 @@ class StartGame(webapp.RequestHandler):
 		player = Player.get(player_key)
 		
 		if player != None:
-			game_key = player.currentGame.key()
-			game = Game.get(game_key)
+			if player.currentGame != None:
+				game_key = player.currentGame.key()
+				game = Game.get(game_key)
+			else:
+				logging.error('Player %s is in no game'%(player_key))
+				respond(self,"error")
+				return
 		else:
-			logging.error('Player %s not in any game'%(player_key))
+			logging.error('There is no player %s'%(player_key))
 			respond(self,"error")
 			return
 		
@@ -285,10 +295,15 @@ class LeaveGame(webapp.RequestHandler):
 		player = Player.get(player_key)
 		
 		if player != None:
-			game_key = player.currentGame.key()
-			game = Game.get(game_key)
+			if player.currentGame != None:
+				game_key = player.currentGame.key()
+				game = Game.get(game_key)
+			else:
+				logging.error('Player %s is in no game'%(player_key))
+				respond(self,"error")
+				return
 		else:
-			logging.error('Player %s not in any game'%(player_key))
+			logging.error('There is no player %s'%(player_key))
 			respond(self,"error")
 			return
 		
@@ -359,10 +374,15 @@ class PlayerUpdateState(webapp.RequestHandler):
 		player = Player.get(player_key)
 		
 		if player != None:
-			game_key = player.currentGame.key()
-			game = Game.get(game_key)
+			if player.currentGame != None:
+				game_key = player.currentGame.key()
+				game = Game.get(game_key)
+			else:
+				logging.error('Player %s is in no game'%(player_key))
+				respond(self,"error")
+				return
 		else:
-			logging.error('Player %s not in any game'%(player_key))
+			logging.error('There is no player %s'%(player_key))
 			respond(self,"error")
 			return
 
