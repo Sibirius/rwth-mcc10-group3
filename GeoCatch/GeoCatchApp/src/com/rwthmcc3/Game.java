@@ -1,5 +1,7 @@
 package com.rwthmcc3;
 
+import java.util.*;
+
 public class Game {
 	private String name;
 	private String key;
@@ -9,7 +11,7 @@ public class Game {
 	private float creatorLatitude;
 	private float creatorLongitude;
 	private int mode;
-	
+	private List<Player> playerList = new ArrayList<Player>();
 	
 	// getter and setter
 	
@@ -61,6 +63,16 @@ public class Game {
 	public int getMode() {
 		return mode;
 	}
-	
-	//TODO getPlayerNames return: a list of players in the game
+	public void setPlayerList(List<Player> playerList) {
+		this.playerList = playerList;
+	}
+	public List<Player> getPlayerList() {
+		return playerList;
+	}
+	public void addToPlayerList(Player player) {
+		this.playerList.add(player);
+	}
+	public void removeFromPlayerList(Player player) {
+		this.playerList.remove(player);
+	}
 }

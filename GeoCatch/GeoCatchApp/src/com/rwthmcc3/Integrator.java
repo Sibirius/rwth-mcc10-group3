@@ -71,6 +71,7 @@ public class Integrator {
 			    	game.setCreatorLatitude(Float.parseFloat(creatorLocation[0]));
 			    	game.setCreatorLongitude(Float.parseFloat(creatorLocation[1]));
 			    	game.setMode(Integer.parseInt(element.getAttribute("mode")));
+			    	//TODO game.setPlayerList(getPlayerList(game));
 			    	result.add(game);
 		
 			     }
@@ -109,6 +110,7 @@ public class Integrator {
 			    	player.setPlayerName(element.getAttribute("name"));
 			    	player.setCreator(Boolean.parseBoolean(element.getAttribute("creator")));
 			    	player.setMember(true);
+			    	//TODO lon, lat, key
 			    	result.add(player);
 		
 			     }
@@ -134,8 +136,13 @@ public class Integrator {
         qparams.add(new BasicNameValuePair("g", game.getKey()));
         
         Log.d(LOGTAG, "joinGame: "+getResponse(doGet("/join", qparams)));
+        
+        player.setMember(true);
+        game.addToPlayerList(player);
+        game.setPlayerCount(game.getPlayerCount()+1);
 	}
 	
+	//TODO
 	public static void stopGame(Player player, Game game){
 		Log.d(LOGTAG, "stopGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -145,6 +152,7 @@ public class Integrator {
         Log.d(LOGTAG, "stopGame: "+getResponse(doGet("/stop", qparams)));
 	}
 	
+	//TODO
 	public static void startGame(Player player, Game game){
 		Log.d(LOGTAG, "startGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -160,7 +168,10 @@ public class Integrator {
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("g", game.getKey()));
         
-        doGet("/leave", qparams);
+        Log.d(LOGTAG, "leaveGame: "+getResponse(doGet("/leave", qparams)));
+        
+        player.setMember(false);
+        game.removeFromPlayerList(player);
 	}
 	
 	public static void playerUpdateState(Player player, Game game){
@@ -180,7 +191,7 @@ public class Integrator {
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("m", mac));
         qparams.add(new BasicNameValuePair("n", name));
-        
+       
         Player player = new Player();
         player.setKey(getResponse(doGet("/register", qparams)));
         player.setPlayerName(name);
@@ -188,12 +199,12 @@ public class Integrator {
         return player;
 	}
 	
-	public static Game createGame(Player player, String name, int maxPlayerCount, int version, float creatorLongitude, float creatorLatitude){
+	public static Game createGame(Player player, String name, int maxPlayersCount, int version, float creatorLongitude, float creatorLatitude){
 		Log.d(LOGTAG, "createGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("n", name));
-        qparams.add(new BasicNameValuePair("mpc", String.valueOf(maxPlayerCount)));
+        qparams.add(new BasicNameValuePair("mpc", String.valueOf(maxPlayersCount)));
         qparams.add(new BasicNameValuePair("v", String.valueOf(version)));
         qparams.add(new BasicNameValuePair("lon", String.valueOf(creatorLongitude)));
         qparams.add(new BasicNameValuePair("lat", String.valueOf(creatorLatitude)));
@@ -206,6 +217,12 @@ public class Integrator {
         game.setCreatorLatitude(creatorLatitude);
         game.setVersion(version);
         game.setKey(key);
+        game.addToPlayerList(player);
+        game.setMaxPlayersCount(maxPlayersCount);
+        game.setPlayerCount(1);
+        
+        player.setCreator(true);
+        player.setMember(true);
         
         Log.d(LOGTAG, "createGame success");
         return game;
