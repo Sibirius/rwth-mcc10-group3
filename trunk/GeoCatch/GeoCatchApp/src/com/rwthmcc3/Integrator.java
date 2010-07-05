@@ -90,10 +90,10 @@ public class Integrator {
 		return null;
 	}
 	
-	
-	public static List<Player> getPlayerList(Game game){
+
+	public static List<String> getPlayerList(Game game){
 		Log.d(LOGTAG, "getPlayerList()");
-		List<Player> result = new ArrayList<Player>();
+		List<String> result = new ArrayList<String>();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair("g", game.getKey()));
         HttpResponse res = doGet("/gamePlayers", qparams);
@@ -106,15 +106,8 @@ public class Integrator {
 			    	Log.d(LOGTAG, "parsing element #"+i);
 			    	Element element = (Element) nodes.item(i);
 			    	
-			    	Player player = new Player();
-			    	
-			    	player.setPlayerName(element.getAttribute("name"));
-			    	player.setCreator(Boolean.parseBoolean(element.getAttribute("creator")));
-			    	player.setIsMember(true);
-			    	
-			    	//TODO lon, lat, key
-			    	result.add(player);
-		
+			    	result.add(element.getAttribute("name"));
+
 			     }
 			    Log.d(LOGTAG,"getPlayerList success");
 			    game.setPlayerCount(nodes.getLength());
@@ -128,78 +121,133 @@ public class Integrator {
         }else{
         	Log.w(LOGTAG, "No Response from Server");
         }
-		Log.e(LOGTAG, "NullPointer, getGameList");
+		Log.e(LOGTAG, "NullPointer, getPlayerList");
 		return null;
 	}
 	
-	public static void joinGame(Player player, Game game){
+	public static boolean joinGame(Player player, Game game){
 		Log.d(LOGTAG, "joinGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("g", game.getKey()));
         
-        Log.d(LOGTAG, "joinGame: "+getResponse(doGet("/join", qparams)));
+        String result = getResponse(doGet("/join", qparams));
+        Log.d(LOGTAG, "joinGame: "+result);
         
+        //TODO check player class
         player.setIsMember(true);
         Player.setMyGame(game);
-        game.addToPlayerList(player);
         game.setPlayerCount(game.getPlayerCount()+1);
+        
+        return !result.contains("error");
 	}
 	
-	//TODO
-	public static void stopGame(Player player){
+	public static boolean stopGame(Player player){
 		Log.d(LOGTAG, "stopGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         
-        Log.d(LOGTAG, "stopGame: "+getResponse(doGet("/stop", qparams)));
+        String result = getResponse(doGet("/stop", qparams));
+        Log.d(LOGTAG, "stopGame: "+result);
+        return !result.contains("error");
 	}
 	
-	//TODO
-	public static void startGame(Player player){
+	public static boolean startGame(Player player){
 		Log.d(LOGTAG, "startGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         
-        Log.d(LOGTAG, "startGame: "+getResponse(doGet("/start", qparams)));
+        String result = getResponse(doGet("/start", qparams));
+        Log.d(LOGTAG, "startGame: "+result);
+        return !result.contains("error");
 	}
 	
-	public static void leaveGame(Player player){
+	public static boolean leaveGame(Player player){
 		Log.d(LOGTAG, "leaveGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         
-        Log.d(LOGTAG, "leaveGame: "+getResponse(doGet("/leave", qparams)));
-        
+        //TODO check player class
         player.setIsMember(false);
         Player.setMyGame(null);
         //game.removeFromPlayerList(player);
         
-        Log.d(LOGTAG, "leaveGame success");
+        String result = getResponse(doGet("/leave", qparams));
+        Log.d(LOGTAG, "leaveGame: "+result);
+        return !result.contains("error");
 	}
 	
-	public static void playerUpdateState(Player player){
+	/**
+	 * 
+	 * @param player
+	 * @return A list of HashMaps. Keys: title, info
+	 */
+	public static List<HashMap<String,String>> playerUpdateState(Player player){
 		Log.d(LOGTAG, "playerUpdateState()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("lon", String.valueOf(player.getLongitude())));
         qparams.add(new BasicNameValuePair("lat", String.valueOf(player.getLatitude())));
         
-        //TODO get updated state
-        doGet("/update", qparams);
+        HttpResponse res = doGet("/update", qparams);
+        if(res != null){
+	        try {
+				List<HashMap<String,String>> result = new ArrayList<HashMap<String,String>>();
+	        	
+	        	Log.d(LOGTAG, "start parsing gamestate");
+	        	Document doc = parseXml(res.getEntity().getContent());
+	        	
+	        	NodeList node = doc.getElementsByTagName("state");
+	        	Element ele = (Element) node.item(0);
+	        	
+	        	//TODO check player class
+	        	//player.setTargetLongitude(ele.getAttribute("lon"));
+	        	//player.setTargetLatitude(ele.getAttribute("lat"));
+	        	
+				NodeList nodes = doc.getElementsByTagName("event");
+			    for (int i = 0; i < nodes.getLength(); i++) {
+			    	Log.d(LOGTAG, "parsing element #"+i);
+			    	Element element = (Element) nodes.item(i);
+
+			    	HashMap<String,String> hash = new HashMap<String,String>();
+			    	hash.put("title", element.getAttribute("title"));
+			    	hash.put("info", element.getAttribute("info"));
+			    	result.add(hash);
+			    	//TODO game.setPlayerList(getPlayerList(game));
+		
+			     }
+			    Log.d(LOGTAG,"playerUpdateState success");
+			    return result;
+	
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }else{
+        	Log.w(LOGTAG, "No Response from Server");
+        }
+		Log.e(LOGTAG, "NullPointer, playerUpdateState");
+		return null;
+        
 	}
 	
-	public static Player registerPlayer(String mac, String name){
+	public static boolean registerPlayer(String mac, String name){
 		Log.d(LOGTAG, "registerPlayer()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("m", mac));
         qparams.add(new BasicNameValuePair("n", name));
        
-        Player player = new Player();
-        player.setKey(getResponse(doGet("/register", qparams)));
-        player.setPlayerName(name);
-        Log.d(LOGTAG, "registerPlayer success");
-        return player;
+        String result = getResponse(doGet("/register", qparams));
+        Log.d(LOGTAG, "registerPlayer: "+result);
+        if(result.contains("error")){
+        	return false;
+        }else{
+        	Player.getPlayer().setKey(result);
+        	Player.getPlayer().setPlayerName(name);
+        	return true;
+        }
+
 	}
 	
 	public static Game createGame(Player player, String name, int maxPlayersCount, int version, float creatorLongitude, float creatorLatitude){
@@ -220,10 +268,10 @@ public class Integrator {
         game.setCreatorLatitude(creatorLatitude);
         game.setVersion(version);
         game.setKey(key);
-        game.addToPlayerList(player);
         game.setMaxPlayersCount(maxPlayersCount);
         game.setPlayerCount(1);
         
+        //TODO check player class
         player.setCreator(true);
         player.setIsMember(true);
         Player.setMyGame(game);
@@ -291,7 +339,7 @@ public class Integrator {
         	Log.w(LOGTAG, "No Response from Server");
         }
 		Log.e(LOGTAG, "NullPointer, getResponse");
-		return "";
+		return "error";
 	}
 	
 	private static Document parseXml(InputStream xmlStream){
