@@ -1,6 +1,6 @@
 package com.rwthmcc3;
 
-
+import android.bluetooth.*;
 
 public class Player {
 	
@@ -25,7 +25,8 @@ public class Player {
 	
 	public static Player getPlayer() {
 	        if (player == null) {
-	            player = Integrator.registerPlayer("FF:FF:FF:FF:FF:1F", "Player3");
+	        	String mac = BluetoothAdapter.getDefaultAdapter().getAddress();
+	            player = Integrator.registerPlayer(mac, "Player5");
 	        }
 	        return player;
 	}
