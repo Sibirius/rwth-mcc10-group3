@@ -1,62 +1,43 @@
 package com.rwthmcc3;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
+import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
-public class Preferences extends Activity {
+public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
-	private static String playerName = "Player 1";
+	public static final String PREFS_NAME = "MyPrefsFile";
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.preferences);
+				
+		addPreferencesFromResource(R.xml.preferences);
 		
-		//config button
-		Button buttonSavePlayerName = (Button)findViewById(R.id.button_save_player_name);
-		buttonSavePlayerName.setOnClickListener(doSavePlayerNameOnClick);
 		
-		//config editbox and show playername
-		EditText savePlayerName = (EditText)findViewById(R.id.edit_player_name);
-		savePlayerName.setText(Player.getPlayer().getPlayerName());
-		
+		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 	}
 	
-	
-
-	OnClickListener doSavePlayerNameOnClick = new OnClickListener() {		
-		public void onClick(View view) {
-			
-			//read newname and set
-			EditText savePlayerName = (EditText)findViewById(R.id.edit_player_name);
-			String newName = savePlayerName.getText().toString();
-			Player.getPlayer().setPlayerName(newName);
-			
-			//message to user and update name on server
-			if(Player.getPlayer().isMemberOfGame()==true){
-				    ProgressDialog dialog = ProgressDialog.show(Preferences.this, "", 
-			                "Spielername wird mit Server synchronisiert. Bitte warten...", true);
-				    //TODO update playername on server
-				    dialog.dismiss();
-			}
-			//TODO catch error
-		    
-			//message to user
-			Context context = getApplicationContext();
-			CharSequence text = "Name wurde gespeichert!";
-			int duration = Toast.LENGTH_SHORT;
-			Toast toast = Toast.makeText(context, text, duration);
-			toast.show();
-			
-			
-			}
-	};
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(key.equals("player_name")){
+        	String playerName = sharedPreferences.getString("player_name", "Player 1");
+        	if(playerName.startsWith(" ") || (playerName.length() < 4)){
+        		Toast.makeText(getApplicationContext(), "Ungültiger Name! Name wurde zurückgesetzt!" , Toast.LENGTH_LONG).show();
+        		SharedPreferences.Editor editor = sharedPreferences.edit();
+        	    editor.putString("player_name", "Player 1");
+        	    editor.commit();
+        	    playerName = "Player 1";
+        	}
+        	Player.setName(playerName);
+        }
+        if(key.equals("list_size")){
+        	int listSize = Integer.parseInt(sharedPreferences.getString("list_size", "10"));
+        	Player.setListSize(listSize);
+        }
+        
+    }
 	
 	
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+       <EditTextPreference 
+       		android:key="player_name"
+            android:title="Spielername ändern"
+            android:dialogTitle="Spielername eingeben" 
+            />
+       <ListPreference
+                android:key="list_size"
+                android:title="Listengröße ändern"
+                android:summary="Hier kann die Länge der Spielliste geändert werden."
+                android:entries="@array/array_listsize"
+                android:entryValues="@array/array_listsize_values"
+                android:dialogTitle="Spiellistengröße auswählen:" />
+</PreferenceScreen>

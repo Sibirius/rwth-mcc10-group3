@@ -62,12 +62,10 @@ public class MainMenu extends ListActivity{
 	        		//hier vielleicht auf antwort warten?
 	        		Integrator.joinGame(Player.getPlayer(), chosenGame);
 	        		
-	        		updateArrayOfPlayers();
-	        		
 	        		startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
 	        		
 	        	}else{
-	        		updateArrayOfPlayers();
+	        		
 	        		startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.ListOfPlayers.class),0);
 	        	}
 	            
@@ -186,16 +184,5 @@ public class MainMenu extends ListActivity{
 		return false;
 	}
 	
-	public void updateArrayOfPlayers(){
 		
-		List<Player> players = Integrator.getPlayerList(chosenGame);
-		int j =0;
-		arrayOfPlayers = new String[players.size()];
-		for(Player i: players){
-			arrayOfPlayers[j] = i.getPlayerName();
-			j++;
-		}
-				
-	}
-	
 }

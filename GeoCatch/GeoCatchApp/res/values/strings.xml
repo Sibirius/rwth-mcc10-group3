@@ -21,4 +21,18 @@
         <item>15 min</item>
     </string-array>
     
+    <string-array name="array_listsize">
+        <item>10 Spiele</item>
+        <item>20 Spiele</item>
+        <item>30 Spiele</item>
+        <item>50 Spiele</item>
+        
+    </string-array>
+    <string-array name="array_listsize_values">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>50</item>
+        
+    </string-array>
 </resources>

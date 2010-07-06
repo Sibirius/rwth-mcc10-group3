@@ -46,10 +46,10 @@ public class WaitForPlayers extends ListActivity {
 	                  WaitForPlayers.this.finish();
 	             }
 	         });
-	  final AlertDialog alert = builder.create();
+	  final AlertDialog waitForPlayers = builder.create();
 	  
 	  
-	  // create a thread for updating the progress bar
+	  // create a thread for updating the player_list
       Thread background = new Thread (new Runnable() {
          public void run() {
              try {
@@ -60,9 +60,10 @@ public class WaitForPlayers extends ListActivity {
                      // active the update handler
                      progressHandler.sendMessage(progressHandler.obtainMessage());
                  }
-                 alert.cancel();
+                 waitForPlayers.cancel();
                  Thread.sleep(100);
-                 startActivityForResult(new Intent(WaitForPlayers.this, com.rwthmcc3.Map.class),0);	
+                 
+                 //TODO start map or wait on started game	
              } catch (java.lang.InterruptedException e) {
                  // if something fails do something smart
              }
@@ -71,7 +72,7 @@ public class WaitForPlayers extends ListActivity {
       });
       
       background.start();
-      alert.show();
+      waitForPlayers.show();
 	 }
 	
 	// handler for the background updating
@@ -83,16 +84,21 @@ public class WaitForPlayers extends ListActivity {
     };
 
 	
-	  
+	 /** Clears the playerList and updates playerList from server.
+	  * 
+	  */
 	public void updateList(){
+		
 		mylist.clear();
-		List<Player> players = Integrator.getPlayerList(chosenGame);
+		
+		
+		List<String> playerNames = Integrator.getPlayerList(Player.getMyGame());
 		
 		HashMap<String, String> map = null;
 	    
-	    for(Player i: players){
+	    for(String i: playerNames){
 	    	map = new HashMap<String, String>();
-			map.put("player_name", i.getPlayerName());
+			map.put("player_name", i);
 			mylist.add(map);
 			
 		}

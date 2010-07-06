@@ -1,51 +1,44 @@
 package com.rwthmcc3;
 
-import android.bluetooth.*;
 
 public class Player {
 	
 	private static Player player = null;
+	private static boolean isCreator = false;
+	private static String name = null;
+	private static float longitude = 0;
+	private static float latitude = 0;
+	private static String key = null;
+	private static String hunterKey = null;
+	private static String targetKey = null;
+	private static float hunterLong = 0;
+	private static float targetLong = 0;
+	private static float hunterLat = 0;
+	private static float targetLat = 0;
+	private static Game myGame = null;
+	private static int listSize;
 	
-	private boolean isCreator = false;
-	private boolean isMemberOfGame = false;
-	private String name = "Player 1";
-	private float longitude = (float) 6.087310;
-	private float latitude = (float) 50.768295;
-	private String key;
-	private Player hunter;
-	private Player target;
-	private static Game myGame;
-	
-	
-	/*private Player (){
+	private Player(){
 		
-	}*/
+	}
+	
 	//TODO get actual position
 	
 	
 	public static Player getPlayer() {
+		 	
 	        if (player == null) {
-	        	String mac = BluetoothAdapter.getDefaultAdapter().getAddress();
-	            player = Integrator.registerPlayer(mac, "Player5");
+	        	player = new Player();
 	        }
 	        return player;
 	}
 	
-	public void setPlayerName(String newName){
-		name = newName;
+	public static void setPlayerName(String newName){
+		setName(newName);
 	}
 	
-	public String getPlayerName(){
-		return name;
-	} 
 	
-	public void setIsMember(boolean is){
-		isMemberOfGame = is;
-	}
 	
-	public boolean isMemberOfGame(){
-		return isMemberOfGame;
-	} 
 	
 	public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
 	    double earthRadius = 3958.75;
@@ -63,54 +56,9 @@ public class Player {
 	}
 
 
-	public void setCreator(boolean isCreator) {
-		this.isCreator = isCreator;
-	}
 
+	
 
-	public boolean isCreator() {
-		return isCreator;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setLongitude(float longitude) {
-		this.longitude = longitude;
-	}
-
-	public float getLongitude() {
-		return longitude;
-	}
-
-	public void setLatitude(float latitude) {
-		this.latitude = latitude;
-	}
-
-	public float getLatitude() {
-		return latitude;
-	}
-
-	public void setHunter(Player hunter) {
-		this.hunter = hunter;
-	}
-
-	public Player getHunter() {
-		return hunter;
-	}
-
-	public void setTarget(Player target) {
-		this.target = target;
-	}
-
-	public Player getTarget() {
-		return target;
-	}
 
 	public static void setMyGame(Game game) {
 		myGame = game;
@@ -119,5 +67,102 @@ public class Player {
 	public static Game getMyGame() {
 		return myGame;
 	}
+
+	public static void setHunterKey(String hunterKey) {
+		Player.hunterKey = hunterKey;
+	}
+
+	public static String getHunterKey() {
+		return hunterKey;
+	}
+
+	public static void setTargetKey(String targetKey) {
+		Player.targetKey = targetKey;
+	}
+
+	public static String getTargetKey() {
+		return targetKey;
+	}
+
+	public static void setCreator(boolean isCreator) {
+		Player.isCreator = isCreator;
+	}
+
+	public static boolean isCreator() {
+		return isCreator;
+	}
+
+	public static void setLongitude(float longitude) {
+		Player.longitude = longitude;
+	}
+
+	public static float getLongitude() {
+		return longitude;
+	}
+
+	public static void setLatitude(float latitude) {
+		Player.latitude = latitude;
+	}
+
+	public static float getLatitude() {
+		return latitude;
+	}
+
+	public static void setName(String name) {
+		Player.name = name;
+	}
+
+	public static String getName() {
+		return name;
+	}
+
+	public static void setKey(String key) {
+		Player.key = key;
+	}
+
+	public static String getKey() {
+		return key;
+	}
+
+	public static void setListSize(int listSize) {
+		Player.listSize = listSize;
+	}
+
+	public static int getListSize() {
+		return listSize;
+	}
+
+	public static void setHunterLong(float hunterLong) {
+		Player.hunterLong = hunterLong;
+	}
+
+	public static float getHunterLong() {
+		return hunterLong;
+	}
+
+	public static void setTargetLong(float targetLong) {
+		Player.targetLong = targetLong;
+	}
+
+	public static float getTargetLong() {
+		return targetLong;
+	}
+
+	public static void setHunterLat(float hunterLat) {
+		Player.hunterLat = hunterLat;
+	}
+
+	public static float getHunterLat() {
+		return hunterLat;
+	}
+
+	public static void setTargetLat(float targetLat) {
+		Player.targetLat = targetLat;
+	}
+
+	public static float getTargetLat() {
+		return targetLat;
+	}
+
 
 }
