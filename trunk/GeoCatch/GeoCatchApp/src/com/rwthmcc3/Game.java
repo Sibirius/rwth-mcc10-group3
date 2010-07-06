@@ -9,6 +9,7 @@ public class Game {
 	private float creatorLatitude;
 	private float creatorLongitude;
 	private int mode;
+	private int state;
 	
 	// getter and setter
 	
@@ -59,5 +60,11 @@ public class Game {
 	}
 	public int getMode() {
 		return mode;
+	}
+	public void setState(int state) {
+		this.state = state;
+	}
+	public int getState() {
+		return state;
 	}
 }
