@@ -1,6 +1,8 @@
 package com.rwthmcc3;
 
 
+
+
 public class Player {
 	
 	private static  Player player = null;
@@ -17,6 +19,7 @@ public class Player {
 	private  float targetLat = 0;
 	private  Game myGame = null;
 	private  int listSize;
+	private  String mac;
 	
 	private Player(){
 		
@@ -163,6 +166,18 @@ public class Player {
 	public int getListSize() {
 		return listSize;
 	}
+
+	
+	public void setMac(String mac) {
+		this.mac = mac;
+	}
+
+	public String getMac() {
+		return mac;
+	}
+
+	
+	
 
 	
 
