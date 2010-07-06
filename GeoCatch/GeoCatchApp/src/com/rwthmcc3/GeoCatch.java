@@ -4,17 +4,19 @@ package com.rwthmcc3;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 public class GeoCatch extends Activity {
@@ -31,12 +33,16 @@ public class GeoCatch extends Activity {
 		
 		//restore player_name and list-size
 		SharedPreferences settings = getSharedPreferences(Preferences.PREFS_NAME, 0);
-	    Player.setName(settings.getString("player_name", "Player 1"));
-	    Player.setListSize(settings.getInt("list_size", 10));
+		Player p = Player.getPlayer();
+	    p.setName(settings.getString("player_name", "Player 1"));
+	    p.setListSize(settings.getInt("list_size", 10));
 	    
 	    
 	    //register player
-	    String mac = BluetoothAdapter.getDefaultAdapter().getAddress();
+	    TelephonyManager telMan = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+	    String deviceID = telMan.getDeviceId();
+	    Toast.makeText(GeoCatch.this, deviceID, Toast.LENGTH_LONG).show();
+	    /*
         boolean hasRegister = Integrator.registerPlayer(mac, "Player5");
         
         //register player failed
@@ -59,7 +65,7 @@ public class GeoCatch extends Activity {
 	        	AlertDialog alert = builder.create();;
 	        	alert.show();
         	}
-        }
+        }*/
 	}
 
 	

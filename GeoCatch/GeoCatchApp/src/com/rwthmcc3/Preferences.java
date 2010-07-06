@@ -21,6 +21,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	}
 	
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		Player p = Player.getPlayer();
         if(key.equals("player_name")){
         	String playerName = sharedPreferences.getString("player_name", "Player 1");
         	if(playerName.startsWith(" ") || (playerName.length() < 4)){
@@ -30,11 +31,12 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         	    editor.commit();
         	    playerName = "Player 1";
         	}
-        	Player.setName(playerName);
+        	
+        	p.setName(playerName);
         }
         if(key.equals("list_size")){
         	int listSize = Integer.parseInt(sharedPreferences.getString("list_size", "10"));
-        	Player.setListSize(listSize);
+        	p.setListSize(listSize);
         }
         
     }

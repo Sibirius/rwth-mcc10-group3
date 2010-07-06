@@ -20,7 +20,8 @@ public class WaitForPlayers extends ListActivity {
 	
 	private static ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
 	private SimpleAdapter mSchedule;
-	private Game chosenGame = Player.getMyGame();
+	private Player p = Player.getPlayer();
+	private Game chosenGame = p.getMyGame();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,8 +92,7 @@ public class WaitForPlayers extends ListActivity {
 		
 		mylist.clear();
 		
-		
-		List<String> playerNames = Integrator.getPlayerList(Player.getMyGame());
+		List<String> playerNames = Integrator.getPlayerList(p.getMyGame());
 		
 		HashMap<String, String> map = null;
 	    
