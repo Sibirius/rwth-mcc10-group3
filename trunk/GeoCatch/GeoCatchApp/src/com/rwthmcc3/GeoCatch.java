@@ -3,7 +3,11 @@ package com.rwthmcc3;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,8 +28,38 @@ public class GeoCatch extends Activity {
 		Button buttonJoinGame = (Button)findViewById(R.id.button_join_game);
 		buttoNewGame.setOnClickListener(doNewGameOnClick);
 		buttonJoinGame.setOnClickListener(doJoinGameOnClick);
-       
-
+		
+		//restore player_name and list-size
+		SharedPreferences settings = getSharedPreferences(Preferences.PREFS_NAME, 0);
+	    Player.setName(settings.getString("player_name", "Player 1"));
+	    Player.setListSize(settings.getInt("list_size", 10));
+	    
+	    
+	    //register player
+	    String mac = BluetoothAdapter.getDefaultAdapter().getAddress();
+        boolean hasRegister = Integrator.registerPlayer(mac, "Player5");
+        
+        //register player failed
+        if(hasRegister == false){
+        	hasRegister = Integrator.registerPlayer(mac, "Player5");
+        	if(hasRegister == false){
+	        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        	builder.setMessage("Registrierung fehlgeschlagen! Bitte starten Sie GeoCatch neu und überprüfen Ihre Internetverbindung! GeoCatch beenden?")
+	        	       .setCancelable(false)
+	        	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	        	           public void onClick(DialogInterface dialog, int id) {
+	        	                GeoCatch.this.finish();
+	        	           }
+	        	       })
+	        	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+	        	           public void onClick(DialogInterface dialog, int id) {
+	        	                dialog.cancel();
+	        	           }
+	        	       });
+	        	AlertDialog alert = builder.create();;
+	        	alert.show();
+        	}
+        }
 	}
 
 	
