@@ -3,20 +3,20 @@ package com.rwthmcc3;
 
 public class Player {
 	
-	private static Player player = null;
-	private static boolean isCreator = false;
-	private static String name = null;
-	private static float longitude = 0;
-	private static float latitude = 0;
-	private static String key = null;
-	private static String hunterKey = null;
-	private static String targetKey = null;
-	private static float hunterLong = 0;
-	private static float targetLong = 0;
-	private static float hunterLat = 0;
-	private static float targetLat = 0;
-	private static Game myGame = null;
-	private static int listSize;
+	private static  Player player = null;
+	private  boolean isCreator = false;
+	private  String name = null;
+	private  float longitude = 0;
+	private  float latitude = 0;
+	private  String key = null;
+	private  String hunterKey = null;
+	private  String targetKey = null;
+	private  float hunterLong = 0;
+	private  float targetLong = 0;
+	private  float hunterLat = 0;
+	private  float targetLat = 0;
+	private  Game myGame = null;
+	private  int listSize;
 	
 	private Player(){
 		
@@ -25,7 +25,7 @@ public class Player {
 	//TODO get actual position
 	
 	
-	public static Player getPlayer() {
+	public  static Player getPlayer() {
 		 	
 	        if (player == null) {
 	        	player = new Player();
@@ -33,14 +33,14 @@ public class Player {
 	        return player;
 	}
 	
-	public static void setPlayerName(String newName){
+	public  void setPlayerName(String newName){
 		setName(newName);
 	}
 	
 	
 	
 	
-	public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
+	public  float distFrom(float lat1, float lng1, float lat2, float lng2) {
 	    double earthRadius = 3958.75;
 	    double dLat = Math.toRadians(lat2-lat1);
 	    double dLng = Math.toRadians(lng2-lng1);
@@ -60,109 +60,111 @@ public class Player {
 	
 
 
-	public static void setMyGame(Game game) {
+	public  void setMyGame(Game game) {
 		myGame = game;
 	}
 
-	public static Game getMyGame() {
+	public  Game getMyGame() {
 		return myGame;
 	}
 
-	public static void setHunterKey(String hunterKey) {
-		Player.hunterKey = hunterKey;
+	public void setCreator(boolean isCreator) {
+		this.isCreator = isCreator;
 	}
 
-	public static String getHunterKey() {
-		return hunterKey;
-	}
-
-	public static void setTargetKey(String targetKey) {
-		Player.targetKey = targetKey;
-	}
-
-	public static String getTargetKey() {
-		return targetKey;
-	}
-
-	public static void setCreator(boolean isCreator) {
-		Player.isCreator = isCreator;
-	}
-
-	public static boolean isCreator() {
+	public boolean isCreator() {
 		return isCreator;
 	}
 
-	public static void setLongitude(float longitude) {
-		Player.longitude = longitude;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public static float getLongitude() {
-		return longitude;
-	}
-
-	public static void setLatitude(float latitude) {
-		Player.latitude = latitude;
-	}
-
-	public static float getLatitude() {
-		return latitude;
-	}
-
-	public static void setName(String name) {
-		Player.name = name;
-	}
-
-	public static String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public static void setKey(String key) {
-		Player.key = key;
+	public void setLongitude(float longitude) {
+		this.longitude = longitude;
 	}
 
-	public static String getKey() {
+	public float getLongitude() {
+		return longitude;
+	}
+
+	public void setLatitude(float latitude) {
+		this.latitude = latitude;
+	}
+
+	public float getLatitude() {
+		return latitude;
+	}
+
+	public void setHunterKey(String hunterKey) {
+		this.hunterKey = hunterKey;
+	}
+
+	public String getHunterKey() {
+		return hunterKey;
+	}
+
+	public void setTargetKey(String targetKey) {
+		this.targetKey = targetKey;
+	}
+
+	public String getTargetKey() {
+		return targetKey;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public String getKey() {
 		return key;
 	}
 
-	public static void setListSize(int listSize) {
-		Player.listSize = listSize;
+	public void setHunterLong(float hunterLong) {
+		this.hunterLong = hunterLong;
 	}
 
-	public static int getListSize() {
-		return listSize;
-	}
-
-	public static void setHunterLong(float hunterLong) {
-		Player.hunterLong = hunterLong;
-	}
-
-	public static float getHunterLong() {
+	public float getHunterLong() {
 		return hunterLong;
 	}
 
-	public static void setTargetLong(float targetLong) {
-		Player.targetLong = targetLong;
+	public void setTargetLong(float targetLong) {
+		this.targetLong = targetLong;
 	}
 
-	public static float getTargetLong() {
+	public float getTargetLong() {
 		return targetLong;
 	}
 
-	public static void setHunterLat(float hunterLat) {
-		Player.hunterLat = hunterLat;
+	public void setHunterLat(float hunterLat) {
+		this.hunterLat = hunterLat;
 	}
 
-	public static float getHunterLat() {
+	public float getHunterLat() {
 		return hunterLat;
 	}
 
-	public static void setTargetLat(float targetLat) {
-		Player.targetLat = targetLat;
+	public void setTargetLat(float targetLat) {
+		this.targetLat = targetLat;
 	}
 
-	public static float getTargetLat() {
+	public float getTargetLat() {
 		return targetLat;
 	}
+
+	public void setListSize(int listSize) {
+		this.listSize = listSize;
+	}
+
+	public int getListSize() {
+		return listSize;
+	}
+
+	
 
 
 }
