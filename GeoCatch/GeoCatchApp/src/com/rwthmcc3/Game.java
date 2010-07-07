@@ -10,6 +10,7 @@ public class Game {
 	private float creatorLongitude;
 	private int mode;
 	private int state;
+	private int timer;
 	
 	// getter and setter
 	
@@ -66,5 +67,11 @@ public class Game {
 	}
 	public int getState() {
 		return state;
+	}
+	public void setTimer(int timer) {
+		this.timer = timer;
+	}
+	public int getTimer() {
+		return timer;
 	}
 }
