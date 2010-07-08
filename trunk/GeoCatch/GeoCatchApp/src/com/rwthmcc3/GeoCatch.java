@@ -39,10 +39,16 @@ public class GeoCatch extends Activity {
 	    p.setListSize(settings.getInt("list_size", 10));
 	    
 	    
-	    //check bluetooth
 	    
 	    
-	    
+       
+	}
+
+	
+	public void onResume(){
+		super.onResume();
+		
+		//check bluetooth
 	    if (mBluetoothAdapter == null) {
 	    	
 	        // Device does not support Bluetooth
@@ -64,7 +70,7 @@ public class GeoCatch extends Activity {
 	        	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 	        	           public void onClick(DialogInterface dialog, int id) {
 	        	        	   	Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-	        	   	        	startActivityForResult(enableBtIntent, 0);
+	        	   	        	startActivityForResult(enableBtIntent, RESULT_OK);
 	        	           }
 	        	       })
 	        	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -76,16 +82,12 @@ public class GeoCatch extends Activity {
 	        	alertBluetoothOff.show();
 	        
 	    }
-	    
-	    	    
-	    
-	    
-	    
 	    //register player
 	    
 	    if(mBluetoothAdapter.isEnabled()){
 	    	 //set mac
 		     mac = mBluetoothAdapter.getAddress();
+		     Player p = Player.getPlayer();
 		     p.setMac(mac);
 		     		     
 	    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName());
@@ -108,11 +110,7 @@ public class GeoCatch extends Activity {
 	         	}
 	         }
 	    }
-	    
-       
 	}
-
-	
 	
 	OnClickListener doNewGameOnClick = new OnClickListener() {		
 		public void onClick(View view) {
