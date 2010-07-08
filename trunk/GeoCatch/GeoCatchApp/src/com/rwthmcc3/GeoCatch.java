@@ -4,24 +4,25 @@ package com.rwthmcc3;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
+import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 
 public class GeoCatch extends Activity {
+	private String mac = null;
+	private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+	
 	/** Called when the activity is first created. */
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,36 +39,80 @@ public class GeoCatch extends Activity {
 	    p.setListSize(settings.getInt("list_size", 10));
 	    
 	    
-	    //register player
-	    TelephonyManager telMan = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-	    String deviceID = telMan.getDeviceId();
-	    Toast.makeText(GeoCatch.this, deviceID, Toast.LENGTH_LONG).show();
-	    /*
-        boolean hasRegister = Integrator.registerPlayer(mac, "Player5");
-        
-        //register player failed
-        if(hasRegister == false){
-        	hasRegister = Integrator.registerPlayer(mac, "Player5");
-        	if(hasRegister == false){
-	        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	        	builder.setMessage("Registrierung fehlgeschlagen! Bitte starten Sie GeoCatch neu und überprüfen Ihre Internetverbindung! GeoCatch beenden?")
+	    //check bluetooth
+	    
+	    
+	    
+	    if (mBluetoothAdapter == null) {
+	    	
+	        // Device does not support Bluetooth
+	    	AlertDialog.Builder builderNoBluetooth = new AlertDialog.Builder(this);
+	    	builderNoBluetooth.setMessage("Sie benötigen Bluetooth um dieses Spiel zu spielen! GeoCatch beenden?")
+	        	       .setCancelable(false)
+	        	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+	        	           public void onClick(DialogInterface dialog, int id) {
+	        	                GeoCatch.this.finish();
+	        	           }
+	        	       });
+	        	AlertDialog alertNoBluetooth = builderNoBluetooth.create();;
+	        	alertNoBluetooth.show();
+	    }
+	    if (!mBluetoothAdapter.isEnabled()) {
+	    	AlertDialog.Builder builderBluetoothOff = new AlertDialog.Builder(this);
+	    	builderBluetoothOff.setMessage("Bluetooth muss aktiviert sein um dieses Spiel zu spielen! Bluetooth aktivieren?")
 	        	       .setCancelable(false)
 	        	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 	        	           public void onClick(DialogInterface dialog, int id) {
-	        	                GeoCatch.this.finish();
+	        	        	   	Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+	        	   	        	startActivityForResult(enableBtIntent, 0);
 	        	           }
 	        	       })
 	        	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
 	        	           public void onClick(DialogInterface dialog, int id) {
-	        	                dialog.cancel();
+	        	        	   GeoCatch.this.finish();
 	        	           }
 	        	       });
-	        	AlertDialog alert = builder.create();;
-	        	alert.show();
-        	}
-        }*/
+	        	AlertDialog alertBluetoothOff = builderBluetoothOff.create();;
+	        	alertBluetoothOff.show();
+	        
+	    }
+	    
+	    	    
+	    
+	    
+	    
+	    //register player
+	    
+	    if(mBluetoothAdapter.isEnabled()){
+	    	 //set mac
+		     mac = mBluetoothAdapter.getAddress();
+		     p.setMac(mac);
+		     		     
+	    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName());
+	         
+	         //register player failed
+	         if(hasRegister == false){
+	         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName());
+	         	 //register player failed (second time)
+	         	if(hasRegister == false){
+	 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);
+	 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! GeoCatch muss neu gestartet werden! Bitte überprüfen Sie Ihre Internetverbindung! GeoCatch beenden?")
+	 	        	       .setCancelable(false)
+	 	        	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+	 	        	           public void onClick(DialogInterface dialog, int id) {
+	 	        	                GeoCatch.this.finish();
+	 	        	           }
+	 	        	      });
+	 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
+	 	        	alertRegisterFailed.show();
+	         	}
+	         }
+	    }
+	    
+       
 	}
 
+	
 	
 	OnClickListener doNewGameOnClick = new OnClickListener() {		
 		public void onClick(View view) {
@@ -82,7 +127,9 @@ public class GeoCatch extends Activity {
 	};
 	
 	
-	/* Creates the menu items */
+	/**
+	 *	Creates the menu items 
+	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.geocatch_options_menu, menu);
@@ -91,7 +138,9 @@ public class GeoCatch extends Activity {
 	    return true;
 	}
 
-	/* Handles item selections */
+	/**
+	 *  Handles item selections.
+	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.geocatch_options_menu_new_game:
