@@ -96,7 +96,6 @@ public class MainMenu extends Activity{
     private final LocationListener locationListener = new LocationListener() {
     	@Override
     	public void onLocationChanged(Location location){
-    		//Player p = Player.getPlayer();
            p.setLatitude(location.getLatitude());
            p.setLongitude(location.getLongitude());
         }
