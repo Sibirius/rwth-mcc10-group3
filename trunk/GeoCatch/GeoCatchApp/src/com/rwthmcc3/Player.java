@@ -8,15 +8,15 @@ public class Player {
 	private static  Player player = null;
 	private  boolean isCreator = false;
 	private  String name = null;
-	private  float longitude = 0;
-	private  float latitude = 0;
+	private  double longitude = 0;
+	private  double latitude = 0;
 	private  String key = null;
 	private  String hunterKey = null;
 	private  String targetKey = null;
-	private  float hunterLong = 0;
-	private  float targetLong = 0;
-	private  float hunterLat = 0;
-	private  float targetLat = 0;
+	private  double hunterLong = 0;
+	private  double targetLong = 0;
+	private  double hunterLat = 0;
+	private  double targetLat = 0;
 	private  Game myGame = null;
 	private  int listSize;
 	private  String mac;
@@ -43,7 +43,9 @@ public class Player {
 	
 	
 	
-	public  float distFrom(float lat1, float lng1, float lat2, float lng2) {
+	public double distFromToPlayer(double lat1, double lng1) {
+		double lat2 = getLatitude();
+		double lng2 = getLongitude();
 	    double earthRadius = 3958.75;
 	    double dLat = Math.toRadians(lat2-lat1);
 	    double dLng = Math.toRadians(lng2-lng1);
@@ -55,7 +57,7 @@ public class Player {
 
 	    int meterConversion = 1609;
 
-	    return new Float(dist * meterConversion).floatValue();
+	    return (dist * meterConversion);
 	}
 
 
@@ -87,19 +89,19 @@ public class Player {
 		return name;
 	}
 
-	public void setLongitude(float longitude) {
-		this.longitude = longitude;
+	public void setLongitude(double d) {
+		this.longitude = d;
 	}
 
-	public float getLongitude() {
+	public double getLongitude() {
 		return longitude;
 	}
 
-	public void setLatitude(float latitude) {
-		this.latitude = latitude;
+	public void setLatitude(double d) {
+		this.latitude = d;
 	}
 
-	public float getLatitude() {
+	public double getLatitude() {
 		return latitude;
 	}
 
@@ -131,7 +133,7 @@ public class Player {
 		this.hunterLong = hunterLong;
 	}
 
-	public float getHunterLong() {
+	public double getHunterLong() {
 		return hunterLong;
 	}
 
@@ -139,7 +141,7 @@ public class Player {
 		this.targetLong = targetLong;
 	}
 
-	public float getTargetLong() {
+	public double getTargetLong() {
 		return targetLong;
 	}
 
@@ -147,7 +149,7 @@ public class Player {
 		this.hunterLat = hunterLat;
 	}
 
-	public float getHunterLat() {
+	public double getHunterLat() {
 		return hunterLat;
 	}
 
@@ -155,7 +157,7 @@ public class Player {
 		this.targetLat = targetLat;
 	}
 
-	public float getTargetLat() {
+	public double getTargetLat() {
 		return targetLat;
 	}
 
