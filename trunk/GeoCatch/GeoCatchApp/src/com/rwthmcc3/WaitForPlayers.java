@@ -9,6 +9,8 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -109,6 +111,17 @@ public class WaitForPlayers extends Activity {
 	      });
 	      
 	     background.start();
+	     
+	     //not show waiting, when maxplayercount is reached
+	     View layoutView = (View)findViewById(R.id.layout2_waitforplayers);
+	     View lineView = (View)findViewById(R.id.line_waitforplayers);
+	     if(chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount()){
+	    	 layoutView.setVisibility(View.GONE);
+	    	 lineView.setVisibility(View.GONE);
+	     }else{
+	    	 layoutView.setVisibility(View.VISIBLE);
+	    	 lineView.setVisibility(View.VISIBLE);
+	     }
 	}
 	
 	
