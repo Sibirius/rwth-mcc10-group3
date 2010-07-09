@@ -48,6 +48,10 @@ public class WaitForPlayers extends Activity {
     Handler progressHandler = new Handler() {
         public void handleMessage(Message msg) {
         	updateScreen();
+        	View layoutMainMenuView = (View)findViewById(R.id.layout3_waitforplayers);
+        	View listView = (View)findViewById(R.id.listview_waitforplayers);
+        	layoutMainMenuView.setVisibility(View.GONE);
+        	listView.setVisibility(View.VISIBLE);
         	
         }
     };
@@ -86,21 +90,23 @@ public class WaitForPlayers extends Activity {
 	@Override
 	public void onResume(){
 		super.onResume();
-		ProgressDialog dialog = ProgressDialog.show(this, "", 
-                "Laden. Bitte warten...", true);
-		updateScreen();
-		dialog.dismiss();
+		View layoutMainMenuView = (View)findViewById(R.id.layout3_waitforplayers);
+    	View listView = (View)findViewById(R.id.listview_waitforplayers);
+    	layoutMainMenuView.setVisibility(View.VISIBLE);
+    	listView.setVisibility(View.GONE);
 		isAlive=true;
 		// create a thread for updating the player_list
 	    background = new Thread (new Runnable() {
 	         public void run() {
 	             try {
 	            	 	while(isAlive){
-		                      // wait 
-		                     Thread.sleep(15000);
-	
+	            	 	// wait 
+		                     Thread.sleep(1000);
 		                     // active the update handler
 		                     progressHandler.sendMessage(progressHandler.obtainMessage());
+		                     
+		                     // wait 
+		                     Thread.sleep(14000);
 	            	 	}
 	             		
 	             } catch (java.lang.InterruptedException e) {

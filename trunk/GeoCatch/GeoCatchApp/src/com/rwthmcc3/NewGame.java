@@ -28,7 +28,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener{
 	
 	SeekBar seekPlayerCount;
-	
+	private Player p = Player.getPlayer();
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,23 +60,19 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 			EditText gameNameField = (EditText)findViewById(R.id.edit_game_name);
 			String gameName = gameNameField.toString();
 			SeekBar maxPlayerSeekbar = (SeekBar)findViewById(R.id.seekbar_player_count);
-	        int maxPlayersCount = maxPlayerSeekbar.getProgress() + 3;
+	        int maxPlayersCount = maxPlayerSeekbar.getProgress()+1;
 			
-			ProgressDialog dialog = ProgressDialog.show(NewGame.this, "", 
-	                "Bitte warten...", true);
 			if((!gameName.startsWith(" ")) || (gameName.length()< 3)){
 				//message to user
-			    Integrator.createGame(Player.getPlayer(),gameName , maxPlayersCount, 2, Player.getPlayer().getLongitude(), Player.getPlayer().getLatitude());
-			    dialog.dismiss();
-				startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.WaitForPlayers.class),0);
+			     //TODO catch error  			
+    			Integrator.createGame(Player.getPlayer(),gameName , maxPlayersCount, 1, Player.getPlayer().getLongitude(), Player.getPlayer().getLatitude());
+	        	
+				startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.MainMenu.class),0);
 			}else{
-				 dialog.dismiss();
+								 
 				//message to user
-				Context context = getApplicationContext();
-				CharSequence text = "Ungültiger Spielername";
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(context, text, duration);
-				toast.show();
+				Toast.makeText(NewGame.this, "Ungültiger Spielname", Toast.LENGTH_SHORT).show();
+				
 			}
 		}
 	};
@@ -86,7 +82,7 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
     
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
     	TextView text_player_count = (TextView)findViewById(R.id.player_count_new_game);
-    	progress+=3;  //set min to 3
+    	progress+=1;  //set min to 1
         if(seekBar.getId()== R.id.seekbar_player_count) text_player_count.setText(progress+" Spieler");
     }
 
