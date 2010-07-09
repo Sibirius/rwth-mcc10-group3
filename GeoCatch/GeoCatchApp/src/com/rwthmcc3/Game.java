@@ -6,8 +6,8 @@ public class Game {
 	private int playerCount;
 	private int maxPlayersCount;
 	private int version;
-	private float creatorLatitude;
-	private float creatorLongitude;
+	private double creatorLatitude;
+	private double creatorLongitude;
 	private int mode;
 	private int state;
 	private int timer;
@@ -44,16 +44,16 @@ public class Game {
 	public int getVersion() {
 		return version;
 	}
-	public void setCreatorLatitude(float creatorLatitude) {
-		this.creatorLatitude = creatorLatitude;
+	public void setCreatorLatitude(double e) {
+		this.creatorLatitude = e;
 	}
-	public float getCreatorLatitude() {
+	public double getCreatorLatitude() {
 		return creatorLatitude;
 	}
-	public void setCreatorLongitude(float creatorLongitude) {
-		this.creatorLongitude = creatorLongitude;
+	public void setCreatorLongitude(double d) {
+		this.creatorLongitude = d;
 	}
-	public float getCreatorLongitude() {
+	public double getCreatorLongitude() {
 		return creatorLongitude;
 	} 
 	public void setMode(int mode) {

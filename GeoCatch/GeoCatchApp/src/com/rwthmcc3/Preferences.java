@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
@@ -16,7 +15,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		super.onCreate(savedInstanceState);
 				
 		addPreferencesFromResource(R.xml.preferences);
-		
 		
 		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		

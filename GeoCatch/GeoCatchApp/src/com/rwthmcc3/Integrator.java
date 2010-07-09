@@ -244,22 +244,22 @@ public class Integrator {
 
 	}
 	
-	public static Game createGame(Player player, String name, int maxPlayersCount, int version, float creatorLongitude, float creatorLatitude){
+	public static Game createGame(Player player, String name, int maxPlayersCount, int version, double d, double e){
 		Log.d(LOGTAG, "createGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("n", name));
         qparams.add(new BasicNameValuePair("mpc", String.valueOf(maxPlayersCount)));
         qparams.add(new BasicNameValuePair("v", String.valueOf(version)));
-        qparams.add(new BasicNameValuePair("lon", String.valueOf(creatorLongitude)));
-        qparams.add(new BasicNameValuePair("lat", String.valueOf(creatorLatitude)));
+        qparams.add(new BasicNameValuePair("lon", String.valueOf(d)));
+        qparams.add(new BasicNameValuePair("lat", String.valueOf(e)));
         
         String key = getResponse(doGet("/create", qparams));
         
         Game game = new Game();
         game.setName(name);
-        game.setCreatorLongitude(creatorLongitude);
-        game.setCreatorLatitude(creatorLatitude);
+        game.setCreatorLongitude(d);
+        game.setCreatorLatitude(e);
         game.setVersion(version);
         game.setKey(key);
         game.setMaxPlayersCount(maxPlayersCount);

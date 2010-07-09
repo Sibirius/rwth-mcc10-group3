@@ -21,6 +21,7 @@ import android.widget.TextView;
 public class GeoCatch extends Activity {
 	private String mac = null;
 	private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+	private  Player p = Player.getPlayer();
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -38,10 +39,7 @@ public class GeoCatch extends Activity {
 	    p.setName(settings.getString("player_name", "Player 1"));
 	    p.setListSize(settings.getInt("list_size", 10));
 	    
-	    
-	    
-	    
-       
+	           
 	}
 
 	
@@ -83,33 +81,34 @@ public class GeoCatch extends Activity {
 	        
 	    }
 	    //register player
-	    
-	    if(mBluetoothAdapter.isEnabled()){
-	    	 //set mac
-		     mac = mBluetoothAdapter.getAddress();
-		     Player p = Player.getPlayer();
-		     p.setMac(mac);
-		     		     
-	    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName());
-	         
-	         //register player failed
-	         if(hasRegister == false){
-	         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName());
-	         	 //register player failed (second time)
-	         	if(hasRegister == false){
-	 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);
-	 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! GeoCatch muss neu gestartet werden! Bitte überprüfen Sie Ihre Internetverbindung! GeoCatch beenden?")
-	 	        	       .setCancelable(false)
-	 	        	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-	 	        	           public void onClick(DialogInterface dialog, int id) {
-	 	        	                GeoCatch.this.finish();
-	 	        	           }
-	 	        	      });
-	 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
-	 	        	alertRegisterFailed.show();
-	         	}
-	         }
-	    }
+	   
+	   // if(p.getKey()!= null){
+		    if(mBluetoothAdapter.isEnabled()){
+		    	 //set mac
+			     mac = mBluetoothAdapter.getAddress();
+			     p.setMac(mac);
+			     		     
+		    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName());
+		         
+		         //register player failed
+		         if(hasRegister == false){
+		         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName());
+		         	 //register player failed (second time)
+		         	if(hasRegister == false){
+		 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);
+		 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! GeoCatch muss neu gestartet werden! Bitte überprüfen Sie Ihre Internetverbindung! GeoCatch beenden?")
+		 	        	       .setCancelable(false)
+		 	        	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		 	        	           public void onClick(DialogInterface dialog, int id) {
+		 	        	                GeoCatch.this.finish();
+		 	        	           }
+		 	        	      });
+		 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
+		 	        	alertRegisterFailed.show();
+		         	}
+		         }
+		    }
+	   // }
 	}
 	
 	OnClickListener doNewGameOnClick = new OnClickListener() {		

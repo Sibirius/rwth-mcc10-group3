@@ -1,16 +1,23 @@
 package com.rwthmcc3;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,11 +27,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 
 
-public class MainMenu extends ListActivity{
+public class MainMenu extends Activity{
 	
 	private static ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
 	private SimpleAdapter mSchedule;
@@ -33,56 +41,241 @@ public class MainMenu extends ListActivity{
 	private List<Game> games = null;
 	public static Game chosenGame = null;
 	public static String[] arrayOfPlayers = null;
+	private LocationManager lm;
+	private String provider = "";
+	private Player p = Player.getPlayer();
+	private Thread backgroundMainMenu = null;
+	private boolean isAlive = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main_menu);
         
-        //create list
-        ListView lv = getListView();
+        	    
+        //create listview
+	    
+		 
+		ListView lv = (ListView)findViewById(R.id.listview_mainmenu);
 	    lv.setTextFilterEnabled(true);
-	    lv.setOnItemLongClickListener(doListItemOnClick);
+	    lv.setOnItemLongClickListener(doListItemOnLongClick);
 	    mSchedule = new SimpleAdapter(this, mylist, R.layout.main_menu_list_item,
                 new String[] {"game_name", "player_count", "distance"}, new int[] {R.id.game_name, R.id.player_count_list, R.id.distance});
 	    lv.setAdapter(mSchedule);
 	    
 	    
-	    //load list 
-	    setListofGames();
 	    
 	    
-	    //create dialog
-	    final CharSequence[] items = {"Spiel beitreten", "Spielerliste anzeigen"};
-	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    builder.setTitle("Bitte auswählen:");
-	    builder.setItems(items, new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int item) {
-	        	
-	        	if(item == 0){ // join game
-	        		Integrator.leaveGame(Player.getPlayer());
-	        		//hier vielleicht auf antwort warten?
-	        		Integrator.joinGame(Player.getPlayer(), chosenGame);
-	        		
-	        		startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
-	        		
-	        	}else{
-	        		
-	        		startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.ListOfPlayers.class),0);
-	        	}
-	            
-	            
-	        }
-	    });
-	    alert = builder.create();
+	    lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+		if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+			provider = LocationManager.GPS_PROVIDER;
+		} else {
+			provider = LocationManager.NETWORK_PROVIDER;			
+		}
+		
+		lm.getLastKnownLocation(provider);
+		lm.requestLocationUpdates(provider, 0, 0, locationListener);
+		
+		
+	      
+	     
+		 
+		
 	    
     };
-	
+
+	// handler for the backgroundMainMenu updating
+    Handler progressHandlerMainMenu = new Handler() {
+        public void handleMessage(Message msg) {
+        	setListofGames();
+        	
+        }
+    };
     
-    OnItemLongClickListener doListItemOnClick = new OnItemLongClickListener() {
+    
+    private final LocationListener locationListener = new LocationListener() {
+    	@Override
+    	public void onLocationChanged(Location location){
+    		//Player p = Player.getPlayer();
+           p.setLatitude(location.getLatitude());
+           p.setLongitude(location.getLongitude());
+        }
+
+
+		@Override
+		public void onProviderDisabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+			// TODO Auto-generated method stub
+			
+		}
+    };
+    
+    
+    OnItemLongClickListener doListItemOnLongClick = new OnItemLongClickListener() {
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int arg2, long arg3) {
-			alert.show();
 			chosenGame = games.get(arg2);
+			
+			//create dialog
+			CharSequence[] chosenItems = null;
+			
+			//compare keys
+			boolean sameKey = true;
+			String chosenGameKey = chosenGame.getKey();
+			if(p.getMyGame()== null){
+				sameKey = false;
+			}else{
+				String myGameKey = p.getMyGame().getKey();
+				sameKey = chosenGameKey.equals(myGameKey);
+			}
+			
+				
+		    if(sameKey && p.isCreator()){//for creator
+		    	if(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount()){//enough player
+		    		CharSequence[] items = {"Spiel starten", "Spiel beenden", "Spielerliste anzeigen"};
+		    		chosenItems = items;
+		    	}else{//not enough player
+		    		CharSequence[] items = {"Spiel beenden", "Spielerliste anzeigen"};
+		    		chosenItems = items;
+		    	}
+		    	
+		    }else{
+		    	if(sameKey){//jointed
+		    		CharSequence[] items = {"Spiel verlassen", "Spielerliste anzeigen"};
+			    	chosenItems = items;
+		    	}else{//not jointed
+		    		CharSequence[] items = {"Spiel beitreten", "Spielerliste anzeigen"};
+			    	chosenItems = items;
+		    	}
+		    	
+		    }
+		    
+		    AlertDialog.Builder builder = new AlertDialog.Builder(MainMenu.this);
+		    builder.setTitle("Bitte auswählen:");
+		    builder.setItems(chosenItems, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int item) {
+		        	
+		        	//compare keys
+					boolean sameKey = true;
+					String chosenGameKey = chosenGame.getKey();
+					if(p.getMyGame()== null){
+						sameKey = false;
+					}else{
+						String myGameKey = p.getMyGame().getKey();
+						sameKey = chosenGameKey.equals(myGameKey);
+					}
+					
+					
+		        	if(sameKey && p.isCreator()){//for creator
+		        		if(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount()){//enough player
+		        			switch(item){
+			        			case 0:
+					    			boolean start = Integrator.startGame(Player.getPlayer());
+					    			//check
+					        		if(start){
+					        			Toast.makeText(MainMenu.this,"Spiel wurde gestartet!", Toast.LENGTH_SHORT).show();
+					        			
+					        			startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
+					        		}else{
+					        			Toast.makeText(MainMenu.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
+					        		}
+					    			break;
+					    		case 1:
+					    			break;
+					    		case 2:
+					    			startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
+					    			break;
+					    		default:
+					    			break;
+		        			}
+		        			
+		        		}else{//not enough player
+		        			switch(item){
+			        			case 0:
+					    			boolean stop = Integrator.stopGame(Player.getPlayer());
+					    			//check
+					        		if(stop){
+					        			Toast.makeText(MainMenu.this,"Spiel wurde beendet!", Toast.LENGTH_SHORT).show();
+					        		}else{
+					        			Toast.makeText(MainMenu.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
+					        		}
+					    			break;
+					    		case 1:
+					    			startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
+					    			break;
+					    		default:
+					    			break;
+			        		}
+		        		}
+				    		
+				    }else{
+				    	if(sameKey){//jointed
+				    		switch(item){
+					    		case 0:
+					    			boolean leave = Integrator.leaveGame(Player.getPlayer());
+						        	
+						        	//check
+					        		if(leave){
+					        			Toast.makeText(MainMenu.this,"Spiel wurde verlassen!", Toast.LENGTH_SHORT).show();
+					        		}else{
+					        			Toast.makeText(MainMenu.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
+					        		}
+					    			break;
+					    		case 1:
+					    			startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
+					    			break;
+					    		default:
+					    			break;
+				    		}
+				    	}else{//not jointed
+				    		switch(item){
+					    		case 0:
+					    			boolean leave = true;
+					    			if(p.getMyGame()!=null){
+					    				leave = Integrator.leaveGame(Player.getPlayer());
+					    			}
+					    			
+						        	boolean join = Integrator.joinGame(Player.getPlayer(), chosenGame);
+					        		
+						        	//check
+					        		if(leave && join){
+					        			startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
+					        		}else{
+					        			Toast.makeText(MainMenu.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
+					        		}
+					    			break;
+					    		case 1:
+					    			startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
+					    			break;
+					    		default:
+					    			break;
+				    		}
+				    	}
+				    	
+				    }
+		        	
+		        	
+		        	
+		            
+		            
+		        }
+		    });
+		    alert = builder.create();
+			alert.show();
 			return false;
+			
+			
 		}		
     };
     
@@ -104,13 +297,7 @@ public class MainMenu extends ListActivity{
 	}
 	
 	
-	/**Calls setListofGames() and notifies list adapter.
-	 * 
-	 */
-	public void updateList(){
-		setListofGames();
-		mSchedule.notifyDataSetChanged();
-	}
+	
 	
 	/**Clears game-list and adds new games to the list.
 	 * Calls integrator getGameList(). Notifies user.
@@ -118,14 +305,12 @@ public class MainMenu extends ListActivity{
 	 */
 	public void setListofGames(){
 		
-		//message to user and load list 
-	    ProgressDialog dialog = ProgressDialog.show(MainMenu.this, "", 
-                "Bitte warten...", true);
-	  
 		//delete list before set new list
 		mylist.clear();
 		
-		//TODO set distance
+		//nicer look - gps
+		DecimalFormat format = new DecimalFormat("#0.00");
+		
 		
 		//for every item: addItemToList
 		//Player player = Integrator.registerPlayer("F1:12:23:34:45:56", "playertest");
@@ -134,7 +319,10 @@ public class MainMenu extends ListActivity{
 		if (games != null){
 			for (Game i : games) {
 				Log.d(LOGTAG, "game: "+i.getName());
-				addItemToList(i.getName(),i.getPlayerCount()+"/"+i.getMaxPlayersCount()+" Spieler","Entfernung zum Spielersteller: 0.8 km");
+				addItemToList(i.getName(),i.getPlayerCount()+"/"+i.getMaxPlayersCount()
+						+" Spieler","Entfernung zum Spielersteller: "
+						+ format.format(p.distFromToPlayer(i.getCreatorLatitude(), i.getCreatorLongitude()))
+						+ " km");
 			}
 		}
 		
@@ -148,8 +336,8 @@ public class MainMenu extends ListActivity{
 		*/
 		
 		
-		
-	    dialog.dismiss();
+		mSchedule.notifyDataSetChanged();
+	    
 	}
 	
 	
@@ -169,7 +357,7 @@ public class MainMenu extends ListActivity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.main_options_menu_update:
-			updateList();
+			setListofGames();
 			return true;
 		case R.id.main_options_menu_new_game:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.NewGame.class),0);	
@@ -184,5 +372,40 @@ public class MainMenu extends ListActivity{
 		return false;
 	}
 	
+	@Override
+	public void onStop(){
+		super.onStop();
+		isAlive=false;
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		ProgressDialog dialog = ProgressDialog.show(this, "", 
+                "Laden. Bitte warten...", true);
+		setListofGames();
+		dialog.dismiss();
+		isAlive = true;
+		// create a thread for updating the player_list
+		backgroundMainMenu = new Thread (new Runnable() {
+	         public void run() {
+	             try {
+	            	 	while(isAlive){
+		                      // wait 
+		                     Thread.sleep(15000);
+	
+		                     // active the update handler
+		                     progressHandlerMainMenu.sendMessage(progressHandlerMainMenu.obtainMessage());
+	            	 	}
+	                 
+	             } catch (java.lang.InterruptedException e) {
+	                 // if something fails do something smart
+	             }
+	         }
+	         
+	      });
+	      
+	    backgroundMainMenu.start();
+	}
 		
 }

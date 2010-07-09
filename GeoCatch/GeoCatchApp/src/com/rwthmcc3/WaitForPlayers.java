@@ -4,95 +4,61 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.AlertDialog;
-import android.app.ListActivity;
-
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 
-public class WaitForPlayers extends ListActivity {
+public class WaitForPlayers extends Activity {
 	
 	private static ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
 	private SimpleAdapter mSchedule;
-	private Player p = Player.getPlayer();
-	private Game chosenGame = p.getMyGame();
+	private Game chosenGame = MainMenu.chosenGame;
+	private  Thread background = null;
+	private boolean isAlive = true;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
-
-	  ListView lv = getListView();
+	  setContentView(R.layout.wait_for_players);
+	 
+	  ListView lv = (ListView)findViewById(R.id.listview_waitforplayers);
 	  lv.setTextFilterEnabled(true);
 	  
 	  mSchedule = new SimpleAdapter(this, mylist, R.layout.listofplayers_item,
               new String[] {"player_name"}, new int[] {R.id.text_listofplayers});
 	  lv.setAdapter(mSchedule);
-	  updateList();
+	 
 	  
-	  
-	  
-	  AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	  builder.setMessage("Warten auf Mitspieler...")
-	         .setCancelable(false)
-	         .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-	             public void onClick(DialogInterface dialog, int id) {
-	                  dialog.cancel();
-	                  Integrator.leaveGame(Player.getPlayer());
-	                  WaitForPlayers.this.finish();
-	             }
-	         });
-	  final AlertDialog waitForPlayers = builder.create();
-	  
-	  
-	  // create a thread for updating the player_list
-      Thread background = new Thread (new Runnable() {
-         public void run() {
-             try {
-                 while (chosenGame.getMaxPlayersCount()!= chosenGame.getPlayerCount()) {
-                     // wait 
-                     Thread.sleep(30000);
-
-                     // active the update handler
-                     progressHandler.sendMessage(progressHandler.obtainMessage());
-                 }
-                 waitForPlayers.cancel();
-                 Thread.sleep(100);
-                 
-                 //TODO start map or wait on started game	
-             } catch (java.lang.InterruptedException e) {
-                 // if something fails do something smart
-             }
-         }
-         
-      });
-      
-      background.start();
-      waitForPlayers.show();
+	  TextView info = (TextView)findViewById(R.id.text_waitforplayers);
+	  info.setText("Warten auf Mitspieler:         "+ chosenGame.getPlayerCount()+"/"+chosenGame.getMaxPlayersCount());
+	  	 	  
+	
+     
 	 }
 	
 	// handler for the background updating
     Handler progressHandler = new Handler() {
         public void handleMessage(Message msg) {
-        	updateList();
+        	updateScreen();
         	
         }
     };
 
 	
 	 /** Clears the playerList and updates playerList from server.
-	  * 
+	  *  Updates counts of players.
 	  */
-	public void updateList(){
+	public void updateScreen(){
 		
 		mylist.clear();
 		
-		List<String> playerNames = Integrator.getPlayerList(p.getMyGame());
+		List<String> playerNames = Integrator.getPlayerList(chosenGame);
 		
 		HashMap<String, String> map = null;
 	    
@@ -104,6 +70,45 @@ public class WaitForPlayers extends ListActivity {
 		}
 	    
 		mSchedule.notifyDataSetChanged();
+		
+		TextView info = (TextView)findViewById(R.id.text_waitforplayers);
+		info.setText("Warten auf Mitspieler:         "+ chosenGame.getPlayerCount()+"/"+chosenGame.getMaxPlayersCount());
+	}
+	
+	@Override
+	public void onStop(){
+		super.onStop();
+		isAlive=false;;
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		ProgressDialog dialog = ProgressDialog.show(this, "", 
+                "Laden. Bitte warten...", true);
+		updateScreen();
+		dialog.dismiss();
+		isAlive=true;
+		// create a thread for updating the player_list
+	    background = new Thread (new Runnable() {
+	         public void run() {
+	             try {
+	            	 	while(isAlive){
+		                      // wait 
+		                     Thread.sleep(15000);
+	
+		                     // active the update handler
+		                     progressHandler.sendMessage(progressHandler.obtainMessage());
+	            	 	}
+	             		
+	             } catch (java.lang.InterruptedException e) {
+	                 // if something fails do something smart
+	             }
+	         }
+	         
+	      });
+	      
+	     background.start();
 	}
 	
 	
