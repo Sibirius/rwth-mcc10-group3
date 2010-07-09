@@ -193,12 +193,12 @@ public class Integrator {
 	        	
 	        	NodeList node = doc.getElementsByTagName("state");
 	        	Element ele = (Element) node.item(0);
-	        	
-	        	player.setTargetLong(Float.parseFloat(ele.getAttribute("lon")));
-	        	player.setTargetLat(Float.parseFloat(ele.getAttribute("lat")));
-	        	player.getMyGame().setMode(Integer.parseInt(ele.getAttribute("mode")));
-	        	player.getMyGame().setState(Integer.parseInt(ele.getAttribute("state")));
-	        	
+	        	if(ele != null){
+		        	player.setTargetLong(Float.parseFloat(ele.getAttribute("lon")));
+		        	player.setTargetLat(Float.parseFloat(ele.getAttribute("lat")));
+		        	player.getMyGame().setMode(Integer.parseInt(ele.getAttribute("mode")));
+		        	player.getMyGame().setState(Integer.parseInt(ele.getAttribute("state")));
+	        	}
 				NodeList nodes = doc.getElementsByTagName("event");
 			    for (int i = 0; i < nodes.getLength(); i++) {
 			    	Log.d(LOGTAG, "parsing element #"+i);
