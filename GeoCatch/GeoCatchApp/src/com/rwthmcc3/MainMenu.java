@@ -8,8 +8,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
@@ -27,7 +25,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 
@@ -41,8 +38,8 @@ public class MainMenu extends Activity{
 	private List<Game> games = null;
 	public static Game chosenGame = null;
 	public static String[] arrayOfPlayers = null;
-	private LocationManager lm;
-	private String provider = "";
+	private LocationManager lmMainMenu;
+	private String providerMainMenu = "";
 	private Player p = Player.getPlayer();
 	private Thread backgroundMainMenu = null;
 	private boolean isAlive = true;
@@ -53,9 +50,7 @@ public class MainMenu extends Activity{
         
         	    
         //create listview
-	    
-		 
-		ListView lv = (ListView)findViewById(R.id.listview_mainmenu);
+	    ListView lv = (ListView)findViewById(R.id.listview_mainmenu);
 	    lv.setTextFilterEnabled(true);
 	    lv.setOnItemLongClickListener(doListItemOnLongClick);
 	    mSchedule = new SimpleAdapter(this, mylist, R.layout.main_menu_list_item,
@@ -64,17 +59,17 @@ public class MainMenu extends Activity{
 	    
 	    
 	    
-	    
-	    lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+	    //create LocationManager for GPS
+	    lmMainMenu = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-		if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-			provider = LocationManager.GPS_PROVIDER;
+		if(lmMainMenu.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+			providerMainMenu = LocationManager.GPS_PROVIDER;
 		} else {
-			provider = LocationManager.NETWORK_PROVIDER;			
+			providerMainMenu = LocationManager.NETWORK_PROVIDER;			
 		}
 		
-		lm.getLastKnownLocation(provider);
-		lm.requestLocationUpdates(provider, 0, 0, locationListener);
+		lmMainMenu.getLastKnownLocation(providerMainMenu);
+		lmMainMenu.requestLocationUpdates(providerMainMenu, 0, 0, locationListenerMainMenu);
 		
 		
 	      
@@ -88,35 +83,31 @@ public class MainMenu extends Activity{
     Handler progressHandlerMainMenu = new Handler() {
         public void handleMessage(Message msg) {
         	setListofGames();
-        	
+        	View layoutMainMenuView = (View)findViewById(R.id.layout2_mainmenu);
+        	View listView = (View)findViewById(R.id.listview_mainmenu);
+        	layoutMainMenuView.setVisibility(View.GONE);
+        	listView.setVisibility(View.VISIBLE);
         }
     };
     
     
-    private final LocationListener locationListener = new LocationListener() {
+    private final LocationListener locationListenerMainMenu = new LocationListener() {
     	@Override
     	public void onLocationChanged(Location location){
            p.setLatitude(location.getLatitude());
            p.setLongitude(location.getLongitude());
         }
 
-
 		@Override
 		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub
-			
 		}
     };
     
@@ -380,21 +371,24 @@ public class MainMenu extends Activity{
 	@Override
 	public void onResume(){
 		super.onResume();
-		ProgressDialog dialog = ProgressDialog.show(this, "", 
-                "Laden. Bitte warten...", true);
-		setListofGames();
-		dialog.dismiss();
 		isAlive = true;
+		View layoutMainMenuView = (View)findViewById(R.id.layout2_mainmenu);
+    	View listView = (View)findViewById(R.id.listview_mainmenu);
+    	layoutMainMenuView.setVisibility(View.VISIBLE);
+    	listView.setVisibility(View.GONE);
 		// create a thread for updating the player_list
 		backgroundMainMenu = new Thread (new Runnable() {
 	         public void run() {
 	             try {
+	            	 	
 	            	 	while(isAlive){
-		                      // wait 
-		                     Thread.sleep(15000);
-	
+	            	 		 // wait 
+		                     Thread.sleep(1000);
 		                     // active the update handler
 		                     progressHandlerMainMenu.sendMessage(progressHandlerMainMenu.obtainMessage());
+		                     
+		                     // wait 
+		                     Thread.sleep(14000);
 	            	 	}
 	                 
 	             } catch (java.lang.InterruptedException e) {

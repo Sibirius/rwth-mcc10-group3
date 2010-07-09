@@ -8,5 +8,27 @@
 <ListView 	android:id="@+id/listview_mainmenu"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
+			android:visibility="gone"
 			/>
+<LinearLayout
+    	android:id="@+id/layout2_mainmenu"	    
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:gravity="center"
+	    >
+	    <ProgressBar 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" 
+	        android:layout_margin="20px"
+	        />
+	        
+		<TextView 	android:text="@string/mainmenu_loading"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center_vertical"
+					android:textSize="16sp"
+					
+					/>
+	</LinearLayout>	
 </LinearLayout>
