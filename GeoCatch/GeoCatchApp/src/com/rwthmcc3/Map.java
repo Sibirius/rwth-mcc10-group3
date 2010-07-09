@@ -1,5 +1,6 @@
 package com.rwthmcc3;
 
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -9,6 +10,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -20,6 +23,8 @@ import com.google.android.maps.OverlayItem;
 
 public class Map extends MapActivity{
 
+	private static String LOGTAG = "Map";
+	
 	private MapView mapView;
 	private MapController mapController;
 	
@@ -40,6 +45,8 @@ public class Map extends MapActivity{
 	
 	private Player player;
 	
+	Handler mHandler;
+	
 	LocationManager lm;	
 	
 	@Override
@@ -51,6 +58,8 @@ public class Map extends MapActivity{
 		mapView.setBuiltInZoomControls(true);
 		mapController = mapView.getController();
 		mapController.setZoom(5);
+		mapView.invalidate();
+		mapOverlays = mapView.getOverlays();
 
 		//Player sample data
 		player = Player.getPlayer();
@@ -83,7 +92,7 @@ public class Map extends MapActivity{
 		} else {
 			provider = LocationManager.NETWORK_PROVIDER;			
 		}
-		
+		mHandler = new Handler();
 		lm.getLastKnownLocation(provider);
 		lm.requestLocationUpdates(provider, 0, 0, new GeoUpdateHandler());
 		if(player != null){
@@ -101,7 +110,7 @@ public class Map extends MapActivity{
 	private void gameLoop(){
 		
 		// create a thread for updating target location
-		Thread background = new Thread (new Runnable() {
+		final Thread background = new Thread (new Runnable() {
 			public void run() {
 				try {
 					 
@@ -129,7 +138,12 @@ public class Map extends MapActivity{
 	         
 		});
 		
-		background.start();
+	    mHandler.post(new Runnable() { // implement the Runnable interface
+            public void run() {
+            	background.start();
+            }
+        }); 
+		
 	    
 	}
 	
@@ -147,19 +161,24 @@ public class Map extends MapActivity{
 	}
 	
 	private void updateTargetPosition(GeoPoint point){
-		mapOverlays = mapView.getOverlays();
-		if(targetOverlay != null) mapOverlays.remove(targetOverlay);
-		targetOverlay = new PositionMarkerOverlay(null, null, targetMarker);
-		targetOverlay.addOverlay(new OverlayItem(point, "", ""));
-		mapOverlays.add(targetOverlay);		
+		Log.d(LOGTAG, "updateTargetPosition()");
+		synchronized (mapOverlays) {
+			if(targetOverlay != null) mapOverlays.remove(targetOverlay);
+			targetOverlay = new PositionMarkerOverlay(null, null, targetMarker);
+			targetOverlay.addOverlay(new OverlayItem(point, "", ""));
+			mapOverlays.add(targetOverlay);
+			mapView.postInvalidate();
+		}
 	}
 	
 	private void updatePowerUpPosition(GeoPoint point){
-		mapOverlays = mapView.getOverlays();
-		if(powerUpOverlay != null) mapOverlays.remove(powerUpOverlay);
-		powerUpOverlay = new PositionMarkerOverlay(null, null, powerUpMarker);
-		powerUpOverlay.addOverlay(new OverlayItem(point, "", ""));
-		mapOverlays.add(powerUpOverlay);		
+		synchronized (mapOverlays) {
+			if(powerUpOverlay != null) mapOverlays.remove(powerUpOverlay);
+			powerUpOverlay = new PositionMarkerOverlay(null, null, powerUpMarker);
+			powerUpOverlay.addOverlay(new OverlayItem(point, "", ""));
+			mapOverlays.add(powerUpOverlay);	
+			mapView.postInvalidate();			
+		}
 	}	
 	
 	public class GeoUpdateHandler implements LocationListener {
@@ -175,25 +194,27 @@ public class Map extends MapActivity{
 				if(player != null) Integrator.playerUpdateState(player);
 				Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
 				
-				mapOverlays = mapView.getOverlays();
-				if(prePoint == null ){
-					itemizedOverlay = new PositionMarkerOverlay(null, null, startMarker);
-				} else {
-					if(prePrePoint != null){
-						if(itemizedOverlay != null) mapOverlays.remove(itemizedOverlay);
-						PositionMarkerOverlay itemizedOverlay2 = new PositionMarkerOverlay(prePrePoint, prePoint, marker);
-						itemizedOverlay2.addOverlay(new OverlayItem(prePoint, "", ""));
-						mapOverlays.add(itemizedOverlay2);
+				synchronized (mapOverlays) {
+					if(prePoint == null ){
+						itemizedOverlay = new PositionMarkerOverlay(null, null, startMarker);
+					} else {
+						if(prePrePoint != null){
+							if(itemizedOverlay != null) mapOverlays.remove(itemizedOverlay);
+							PositionMarkerOverlay itemizedOverlay2 = new PositionMarkerOverlay(prePrePoint, prePoint, marker);
+							itemizedOverlay2.addOverlay(new OverlayItem(prePoint, "", ""));
+							mapOverlays.add(itemizedOverlay2);
+						}
+						itemizedOverlay = new PositionMarkerOverlay(prePoint, point, curPosMarker);
 					}
-					itemizedOverlay = new PositionMarkerOverlay(prePoint, point, curPosMarker);
+					itemizedOverlay.addOverlay(new OverlayItem(point, "", ""));
+					mapOverlays.add(itemizedOverlay);
+					mapView.postInvalidate();
 				}
-				itemizedOverlay.addOverlay(new OverlayItem(point, "", ""));
-				mapOverlays.add(itemizedOverlay);
 				
 				mapController.animateTo(point);		
 				
 				prePrePoint = prePoint;
-				prePoint = point;
+				prePoint = point;			
 			}
 		}
 
