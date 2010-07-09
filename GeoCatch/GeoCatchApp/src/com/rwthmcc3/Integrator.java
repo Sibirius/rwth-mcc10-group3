@@ -182,7 +182,7 @@ public class Integrator {
 	 * @param player
 	 * @return A list of HashMaps. Keys: title, info
 	 */
-	public static List<HashMap<String,String>> playerUpdateState(Player player){
+	public static boolean playerUpdateState(Player player){
 		Log.d(LOGTAG, "playerUpdateState()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
@@ -192,7 +192,6 @@ public class Integrator {
         HttpResponse res = doGet("/update", qparams);
         if(res != null){
 	        try {
-				List<HashMap<String,String>> result = new ArrayList<HashMap<String,String>>();
 	        	
 	        	Log.d(LOGTAG, "start parsing gamestate");
 	        	Document doc = parseXml(res.getEntity().getContent());
@@ -209,15 +208,15 @@ public class Integrator {
 			    for (int i = 0; i < nodes.getLength(); i++) {
 			    	Log.d(LOGTAG, "parsing element #"+i);
 			    	Element element = (Element) nodes.item(i);
-
-			    	HashMap<String,String> hash = new HashMap<String,String>();
-			    	hash.put("title", element.getAttribute("title"));
-			    	hash.put("info", element.getAttribute("info"));
-			    	result.add(hash);
+			    	String info = element.getAttribute("info");
+			    	if(element.getAttribute("title")=="victory"){
+			    		Player.getPlayer().getMyGame().setState(3);
+			    	}
+			    	
 		
 			     }
 			    Log.d(LOGTAG,"playerUpdateState success");
-			    return result;
+			    return true;
 	
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
@@ -228,7 +227,7 @@ public class Integrator {
         	Log.w(LOGTAG, "No Response from Server");
         }
 		Log.e(LOGTAG, "NullPointer, playerUpdateState");
-		return null;
+		return false;
         
 	}
 	
