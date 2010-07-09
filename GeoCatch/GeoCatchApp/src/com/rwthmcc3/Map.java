@@ -2,6 +2,8 @@ package com.rwthmcc3;
 
 import java.util.List;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -37,8 +39,6 @@ public class Map extends MapActivity{
 	private GeoPoint prePrePoint = null;
 	
 	private Player player;
-	private GeoPoint targetPoint;
-	private GeoPoint powerupPoint;
 	
 	LocationManager lm;	
 	
@@ -54,7 +54,20 @@ public class Map extends MapActivity{
 
 		//Player sample data
 		player = Player.getPlayer();
-		player.setKey("asdfghjklö");
+		if (player == null){
+			player.setKey("ahFyd3RoLW1jYzEwLWdyb3VwM3IOCxIGUGxheWVyGMncAww");
+			player.setMac("34:34:34:24:24:24");
+			player.setName("tesspieler");
+			player.setCreator(true);
+			Game myGame = new Game();
+			myGame.setKey("ahFyd3RoLW1jYzEwLWdyb3VwM3IMCxIER2FtZRix5AMM");
+			myGame.setName("tollestestspiel");
+			myGame.setMaxPlayersCount(1);
+			myGame.setVersion(1);
+			myGame.setState(1); //game started
+			myGame.setMode(0); //single player
+			player.setMyGame(myGame);
+		}
 		Toast.makeText(getApplicationContext(), player.getKey(), Toast.LENGTH_LONG).show();
 		
 		startMarker = this.getResources().getDrawable(R.drawable.start);
@@ -83,26 +96,28 @@ public class Map extends MapActivity{
 	
 	private void gameLoop(){
 		
-		  // create a thread for updating the player_list
+		// create a thread for updating target location
 		Thread background = new Thread (new Runnable() {
 			public void run() {
 				try {
-					
-					float count = 54; 
+					 
 					while(true){
-						//TODO: Get target Location from Server
-						targetPoint = new GeoPoint((int) ((count + 0.654321) * 1E6),6654321);
+						if(player != null) Integrator.playerUpdateState(player);
+						GeoPoint targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));
 						updateTargetPosition(targetPoint);
 						
 						//TODO: Get powerup Position (and Type) from Server
-						powerupPoint = new GeoPoint(5454321,654321);
-						updatePowerUpPosition(powerupPoint);
+						//GeoPoint powerupPoint = new GeoPoint(5454321,654321);
+						//updatePowerUpPosition(powerupPoint);
 
+						if(player.getMyGame().getState() == 3){ //game finished
+							winLooseAlert();
+							break;
+						}
+						
 						Thread.sleep(5000); //sleep 5 secs 
-						count -= .1;
 					}
-	                 
-	                 //TODO start map or wait on started game	
+	                 	
 				} catch (java.lang.InterruptedException e) {
 	                 // if something fails do something smart
 				}
@@ -112,6 +127,19 @@ public class Map extends MapActivity{
 		
 		background.start();
 	    
+	}
+	
+	private void winLooseAlert(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		  builder.setMessage("Du hast " + (player.getName().equals("gewonnen") ? "gewonnen" : "verloren"))
+		         .setCancelable(false)
+		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		             public void onClick(DialogInterface dialog, int id) {
+		                  dialog.cancel();
+		                  Map.this.finish();
+		             }
+		         });
+		  final AlertDialog winLooseAlert = builder.create();
 	}
 	
 	private void updateTargetPosition(GeoPoint point){
@@ -140,8 +168,8 @@ public class Map extends MapActivity{
 				GeoPoint point = new GeoPoint(lat, lng);
 				player.setLatitude(lat);
 				player.setLongitude(lng);
+				if(player != null) Integrator.playerUpdateState(player);
 				Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
-				//TODO: Send geo data to server
 				
 				mapOverlays = mapView.getOverlays();
 				if(prePoint == null ){
