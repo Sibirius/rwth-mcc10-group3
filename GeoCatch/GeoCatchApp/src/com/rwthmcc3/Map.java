@@ -86,7 +86,11 @@ public class Map extends MapActivity{
 		
 		lm.getLastKnownLocation(provider);
 		lm.requestLocationUpdates(provider, 0, 0, new GeoUpdateHandler());
-		gameLoop();
+		if(player != null){
+			gameLoop();
+		} else {
+			Map.this.finish();
+		}
 	}	
 	
 	@Override
@@ -110,7 +114,7 @@ public class Map extends MapActivity{
 						//GeoPoint powerupPoint = new GeoPoint(5454321,654321);
 						//updatePowerUpPosition(powerupPoint);
 
-						if(player.getMyGame().getState() == 3){ //game finished
+						if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){ //game finished
 							winLooseAlert();
 							break;
 						}
