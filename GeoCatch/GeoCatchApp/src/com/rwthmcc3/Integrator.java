@@ -71,6 +71,8 @@ public class Integrator {
 			    	game.setCreatorLatitude(Float.parseFloat(creatorLocation[0]));
 			    	game.setCreatorLongitude(Float.parseFloat(creatorLocation[1]));
 			    	game.setMode(Integer.parseInt(element.getAttribute("mode")));
+			    	game.setTimer(Integer.parseInt(element.getAttribute("timer")));
+			    	
 			    	result.add(game);
 		
 			     }
@@ -92,34 +94,38 @@ public class Integrator {
 
 	public static List<String> getPlayerList(Game game){
 		Log.d(LOGTAG, "getPlayerList()");
+		if(game != null){
 		List<String> result = new ArrayList<String>();
-		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-		qparams.add(new BasicNameValuePair("g", game.getKey()));
-        HttpResponse res = doGet("/gamePlayers", qparams);
-        if(res != null){
-	        try {
-				Log.d(LOGTAG, "start parsing playerlist");
-	        	Document doc = parseXml(res.getEntity().getContent());
-				NodeList nodes = doc.getElementsByTagName("player");
-			    for (int i = 0; i < nodes.getLength(); i++) {
-			    	Log.d(LOGTAG, "parsing element #"+i);
-			    	Element element = (Element) nodes.item(i);
-			    	
-			    	result.add(element.getAttribute("name"));
-
-			     }
-			    Log.d(LOGTAG,"getPlayerList success");
-			    game.setPlayerCount(nodes.getLength());
-			    return result;
+			List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+			qparams.add(new BasicNameValuePair("g", game.getKey()));
+	        HttpResponse res = doGet("/gamePlayers", qparams);
+	        if(res != null){
+		        try {
+					Log.d(LOGTAG, "start parsing playerlist");
+		        	Document doc = parseXml(res.getEntity().getContent());
+					NodeList nodes = doc.getElementsByTagName("player");
+				    for (int i = 0; i < nodes.getLength(); i++) {
+				    	Log.d(LOGTAG, "parsing element #"+i);
+				    	Element element = (Element) nodes.item(i);
+				    	
+				    	result.add(element.getAttribute("name"));
 	
-			} catch (IllegalStateException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-        }else{
-        	Log.w(LOGTAG, "No Response from Server");
-        }
+				     }
+				    Log.d(LOGTAG,"getPlayerList success");
+				    game.setPlayerCount(nodes.getLength());
+				    return result;
+		
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	        }else{
+	        	Log.w(LOGTAG, "No Response from Server");
+	        }
+		}else{
+			Log.w(LOGTAG, "Nullpointer Argument game,getPlayerList");
+		}
 		Log.e(LOGTAG, "NullPointer, getPlayerList");
 		return null;
 	}
@@ -244,32 +250,39 @@ public class Integrator {
 
 	}
 	
-	public static Game createGame(Player player, String name, int maxPlayersCount, int version, double d, double e){
+	public static boolean createGame(Player player, String name, int maxPlayersCount, int version, double longitude, double latitude, int timer){
 		Log.d(LOGTAG, "createGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("n", name));
         qparams.add(new BasicNameValuePair("mpc", String.valueOf(maxPlayersCount)));
         qparams.add(new BasicNameValuePair("v", String.valueOf(version)));
-        qparams.add(new BasicNameValuePair("lon", String.valueOf(d)));
-        qparams.add(new BasicNameValuePair("lat", String.valueOf(e)));
+        qparams.add(new BasicNameValuePair("lon", String.valueOf(longitude)));
+        qparams.add(new BasicNameValuePair("lat", String.valueOf(latitude)));
+        qparams.add(new BasicNameValuePair("timer", String.valueOf(timer)));
+        
         
         String key = getResponse(doGet("/create", qparams));
         
-        Game game = new Game();
-        game.setName(name);
-        game.setCreatorLongitude(d);
-        game.setCreatorLatitude(e);
-        game.setVersion(version);
-        game.setKey(key);
-        game.setMaxPlayersCount(maxPlayersCount);
-        game.setPlayerCount(1);
-        
-        player.setCreator(true);
-        player.setMyGame(game);
-        
-        Log.d(LOGTAG, "createGame success");
-        return game;
+        if(key.contains("error"))
+        	return false;
+        else{
+	        Game game = new Game();
+	        game.setName(name);
+	        game.setCreatorLongitude(longitude);
+	        game.setCreatorLatitude(latitude);
+	        game.setVersion(version);
+	        game.setKey(key);
+	        game.setMaxPlayersCount(maxPlayersCount);
+	        game.setPlayerCount(1);
+	        game.setTimer(timer);
+	        
+	        player.setCreator(true);
+	        player.setMyGame(game);
+	        
+	        Log.d(LOGTAG, "createGame success");
+	        return true;
+        }
         
 	}
 	
