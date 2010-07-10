@@ -91,7 +91,7 @@ public class GeoCatch extends Activity {
 		    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
 		         
 		         
-		         while(hasRegister == false){
+		         if(hasRegister == false){
 		         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
 		         	 //register player failed (second time)
 		         	if(hasRegister == false){
@@ -101,6 +101,7 @@ public class GeoCatch extends Activity {
 		 	        	       .setPositiveButton("Wiederholen", new DialogInterface.OnClickListener() {
 		 	        	           public void onClick(DialogInterface dialog, int id) {
 		 	        	        	  dialog.dismiss();
+		 	        	        	  
 		 	        	           }
 		 	        	      });
 		 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
