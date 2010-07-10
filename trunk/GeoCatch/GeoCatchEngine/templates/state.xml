@@ -17,6 +17,7 @@
 	<event 
 		title="{{event.title}}"
 		info="{{event.info}}"
+		extra="{{event.extra}}"
 	/>		
 	{% endfor %}
 </events>

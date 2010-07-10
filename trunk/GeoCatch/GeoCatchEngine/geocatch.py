@@ -13,6 +13,8 @@ from google.appengine.ext import db
 
 from inputcheck import *
 
+import datetime
+
 DEBUG = True
 TEMPLATE_FOLDER = os.path.join(os.path.dirname(__file__), 'templates')
 
@@ -36,6 +38,7 @@ class Player(db.Model):
 	""" player data """
 	lastLocation = db.GeoPtProperty()
 	currentGame = db.ReferenceProperty(Game)
+	playerNumber = db.IntegerProperty()              #starts with 1
     
 	name = db.StringProperty(multiline=False)
 	mac = db.StringProperty(multiline=False)
@@ -67,6 +70,8 @@ class Game(db.Model):
 	creatorLocation = db.GeoPtProperty()
 	date = db.DateTimeProperty(auto_now_add=True)
 	
+	timer = db.IntegerProperty()
+	
 	players = db.ListProperty(db.Key) #TODO: any way to create a list with keys only from players?
 	#how to handle: http://groups.google.com/group/google-appengine/msg/f3139e97ee01ce65
 	#http://www.gomuse.com/google-app-engine-using-the-list-property-dbl
@@ -76,6 +81,9 @@ class Game(db.Model):
 	
 	goal = db.GeoPtProperty()
 	winner = db.ReferenceProperty(Player, collection_name="winner_set")
+	
+	started = db.DateTimeProperty() #when the creator started it
+	starting = db.DateTimeProperty() #when it will really start eg the timer reach zero
 
 class Path(db.Model):
 	""" path points of the way a player has traveled during a game  """
@@ -95,6 +103,8 @@ class MainPage(webapp.RequestHandler):
 class GetGameList(webapp.RequestHandler):
 	""" returns an xml file with all games with vacant slots """
 	def get(self):
+		#TODO: get player key and player location, update player location and give back games close to player!
+		
 		#TODO: limit and sort by distance to requesting person
 		games = Game.all().filter("status = ",0).order('-name')
 		
@@ -104,7 +114,7 @@ class GetGameList(webapp.RequestHandler):
 		self.response.out.write(template.render(template_path, template_values))
 
 class GetGamePlayerList(webapp.RequestHandler):
-	""" returns an xml file with all players in a game """
+	""" returns an xml file with all players in a game, only meant to be called from the lobby """
 	def get(self):
 		try:
 			game_key = checkKey(self.request.get('g'))
@@ -116,7 +126,12 @@ class GetGamePlayerList(webapp.RequestHandler):
 		game = Game.get(game_key)
 		players = []
 		
-		for (i,j) in enumerate(game.players):
+		if game == None:
+			logging.error('Game not existing %s'%game_key)
+			respond(self, "error")
+			return #game not found, should not happen
+		
+		for i,j in enumerate(game.players):
 			player = {}
 			player["number"] = i+1
 			
@@ -131,6 +146,76 @@ class GetGamePlayerList(webapp.RequestHandler):
 		template_path = os.path.join(TEMPLATE_FOLDER, 'players.xml')
 		self.response.out.write(template.render(template_path, template_values))
 
+class GetGameState(webapp.RequestHandler):
+	""" returns an xml file with the player list and game state
+		additionally the player number if a player key is provided
+		this method is used to get lobby updates and be notified if the game is starting/has been started
+      
+		then the time when the game will start will be additionally transmitted #TODO"""
+	def get(self):
+		try:
+			game_key = checkKey(self.request.get('g'))			
+						
+			try:
+				player_key = checkKey(self.request.get('p'))
+				#playerLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon')).split(",") #TODO: update location here?
+			except:
+				player_key = None
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
+			return
+
+		game = Game.get(game_key)
+		players = []
+		
+		if game == None:
+			logging.error('Game not existing %s'%game_key)
+			respond(self, "error")
+			return #game not found, should not happen
+
+		for i,j in enumerate(game.players):
+			player = {}
+			p = Player.get(j)
+			if game.status != 1: #if player numbers not fixed
+				player["number"] = i+1
+			else:
+				player["number"] = p.playerNumber
+			player["name"] = p.name
+			player["creator"] = 1 if (game.creator.key() == j) else 0
+			players.append(player)
+	
+		gameInfo = {}
+		gameInfo["name"] = game.name
+		gameInfo["mode"] = game.mode
+		gameInfo["timer"] = game.timer
+		gameInfo["status"] = game.status
+		gameInfo["mpc"] = game.maxPlayerCount
+						
+		additional = {}
+
+		if player_key != None and game.status == 1:
+			player = Player.get(player_key)
+
+			if player != None:
+				additional["playerNumber"] = player.playerNumber
+				additional["started"] = game.started
+				additional["starting"] = game.starting
+
+				#player.lastLocation = db.GeoPt(playerLocation[0], playerLocation[1])
+				#player.put()
+				
+			else:
+				additional = None #todo: error? player key was provided but wrong
+		else:
+			additional = None
+
+		template_values = {'game': gameInfo, 'players': players, 'additional': additional}
+
+		template_path = os.path.join(TEMPLATE_FOLDER, 'game.xml')
+		self.response.out.write(template.render(template_path, template_values))
+
+
 #############################################		
 		
 class JoinGame(webapp.RequestHandler):
@@ -139,6 +224,7 @@ class JoinGame(webapp.RequestHandler):
 		try:
 			game_key = checkKey(self.request.get('g'))
 			player_key = checkKey(self.request.get('p'))
+			playerLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon')).split(",")
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
 			respond(self, "input error")
@@ -146,10 +232,13 @@ class JoinGame(webapp.RequestHandler):
 		
 		game = Game.get(game_key)
 		player = Player.get(player_key)
-		
+
 		value = "error"
 		
 		if game != None and player != None:
+			player.lastLocation = db.GeoPt(playerLocation[0], playerLocation[1])
+			player.put()
+			
 			if game.playerCount < game.maxPlayerCount:
 				if player.currentGame == None:				
 					if not (player.key() in game.players):
@@ -157,7 +246,7 @@ class JoinGame(webapp.RequestHandler):
 						game.playerCount += 1
 						game.put()
 						
-						player.currentGame = game.key()
+						player.currentGame = game.key()						
 						player.put()
 						
 						logging.info('Player %s joined game %s'%((player_key,game_key))) 
@@ -240,6 +329,13 @@ class StartGame(webapp.RequestHandler):
 		#check if game can be started and user has the right to
 		if game != None and game.creator.key() == player.key() and game.status == 0:
 			if game.playerCount == game.maxPlayerCount:
+
+				for i,j in enumerate(game.players): #set player numbers for each player
+					p = Player.get(j)
+					p.playerNumber = i+1
+					p.put()
+					
+				#gamemode specific settings			
 				if game.playerCount < 3: #"race to the point" game
 					#TODO: any way to make sure the marker is on a walkable place after this?
 					if game.playerCount == 1:
@@ -252,8 +348,9 @@ class StartGame(webapp.RequestHandler):
 						lon = 0.0
 						
 						for i in game.players:
-							lat += i.lastLocation.lat
-							lon += i.lastLocation.lon
+							p = Player.get(i)
+							lat += p.lastLocation.lat
+							lon += p.lastLocation.lon
 							
 						lat /= len(game.players)
 						lon /= len(game.players)
@@ -269,6 +366,12 @@ class StartGame(webapp.RequestHandler):
 						j.prey = game.players[i-1].key()
 						j.put()
 					game.mode = 1 #TODO: don't, you should get the mode and check it, not set it
+
+				# set timer for start and started
+				started = datetime.datetime.now()
+				
+				game.started = started
+				game.starting = started+datetime.timedelta(seconds=game.timer)
 				
 				game.status = 1
 				game.put()
@@ -354,9 +457,10 @@ def leaveGame(game, player): # is also called in register player if THE UNPROBAB
 	return value
 
 class Event: #todo: save events in the database, this is just a testing thing
-	def __init__(self, what, who):
+	def __init__(self, what, who, extra):
 		self.title = what
 		self.info = who
+		self.extra = extra #TODO: wtf are these var names?
 
 class PlayerUpdateState(webapp.RequestHandler):
 	"""updates the player state and provides him with stuff he should know"""
@@ -417,17 +521,17 @@ class PlayerUpdateState(webapp.RequestHandler):
 						# \o/ victory
 						#finish game, save who won
 						game.winner = player.key()
-						game.state = 3
+						game.status = 3
 						game.put()
 				
 				#TODO: return updated game state
 
 				events = []
 				
-				if game.state == 3:
-					events.append(Event("victory", game.winner.name))
+				if game.status == 3:
+					events.append(Event("victory", game.winner.name, game.winner.playerNumber))
 
-				template_values = {'state': game.state, 'mode': game.mode, 'modespecific':modespecific, 'events': events}
+				template_values = {'state': game.status, 'mode': game.mode, 'modespecific':modespecific, 'events': events}
 		
 				template_path = os.path.join(TEMPLATE_FOLDER, 'state.xml')
 				self.response.out.write(template.render(template_path, template_values))		
@@ -445,6 +549,7 @@ class RegisterPlayer(webapp.RequestHandler):
 		try:
 			mac = checkMac(self.request.get('m'))
 			name = checkName(self.request.get('n'))
+			playerLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon')).split(",")
 		except:
 			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
 			respond(self, "input error")
@@ -457,6 +562,7 @@ class RegisterPlayer(webapp.RequestHandler):
 			
 			player.mac = mac
 			player.name = name
+			player.lastLocation = db.GeoPt(playerLocation[0], playerLocation[1])
 			
 			logging.info('Created new Player with name %s and mac %s'%(player.name,player.mac))
 		else:
@@ -469,6 +575,7 @@ class RegisterPlayer(webapp.RequestHandler):
 				player = Player.get(player.key()) #get a new player, otherwise the old one is overwritten and still has a current game
 
 			player.name = name
+			player.lastLocation = db.GeoPt(playerLocation[0], playerLocation[1])
 			logging.info('Changed player name for %s to %s'%(player.key(),player.name))
 
 		player_key = player.put()
@@ -484,6 +591,7 @@ class CreateGame(webapp.RequestHandler):
 			version = checkInt(self.request.get('v'))
 			creatorLocation = checkLocation(self.request.get('lat')+","+self.request.get('lon')).split(",")
 			player_key = checkKey(self.request.get('p'))
+			timer = checkInt(self.request.get('t'))
 			
 			maxPlayerCount = checkInt(self.request.get('mpc'))
 		except:
@@ -505,6 +613,7 @@ class CreateGame(webapp.RequestHandler):
 			game.version = version
 			game.creatorLocation = loc
 			game.playerCount = 1
+			game.timer = timer
 			game.maxPlayerCount = maxPlayerCount
 			game.creator = player.key()
 			game.players = [player.key(), ]
@@ -613,6 +722,7 @@ application = webapp.WSGIApplication(
                                      [('/', MainPage),
                                       ('/games', GetGameList),
                                       ('/gamePlayers', GetGamePlayerList),
+                                      ('/gameState', GetGameState),
                                       
                                       ('/register', RegisterPlayer),
                                       
