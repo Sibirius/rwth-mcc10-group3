@@ -12,7 +12,6 @@ import android.graphics.DrawFilter;
 import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -27,7 +26,6 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
 
 public class Map extends MapActivity{
 
@@ -38,18 +36,48 @@ public class Map extends MapActivity{
 	
 	private String provider = "";
 	
-	private List<Overlay> mapOverlays;
-	
 	private MyOverlay myPositionOverlay = null;
 	private MyOverlay myStartPositionOverlay = null;
 	private MyOverlay myTargetPositionOverlay = null;
 	
 	private GeoPoint prePoint = null;
+	private GeoPoint targetPoint = null;
 	
 	private Player player;
 		
 	private LocationManager lm;	
 	
+    // Need handler for callbacks to the UI thread
+    final Handler mHandler = new Handler();
+
+    // Create runnable for posting
+    final Runnable mUpdateMarkers = new Runnable() {
+        public void run() {
+            updateMarkers();
+        }
+    };
+
+    protected void gameLoop() {
+
+        // Fire off a thread to do some work that we shouldn't do directly in the UI thread
+        Thread t = new Thread() {
+            public void run() {
+            	while(true){
+            		synchronized(player){
+		            	if(player != null) {
+		            		Integrator.playerUpdateState(player); 
+		            		targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));
+		            	}
+            		}
+	                mHandler.post(mUpdateMarkers);
+            		SystemClock.sleep(5000);
+            	}
+            }
+        };
+        t.start();
+        winLooseAlert();
+    }
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,8 +87,6 @@ public class Map extends MapActivity{
 		mapView.setBuiltInZoomControls(true);
 		mapController = mapView.getController();
 		mapController.setZoom(5);
-		mapView.invalidate();
-		mapOverlays = mapView.getOverlays();
 
 		//Player sample data
 		player = Player.getPlayer();
@@ -69,6 +95,8 @@ public class Map extends MapActivity{
 			player.setMac("34:34:34:24:24:24");
 			player.setName("tesspieler");
 			player.setCreator(true);
+			player.setLatitude(6.654321f);
+			player.setLongitude(54.654321f);
 			Game myGame = new Game();
 			myGame.setKey("ahFyd3RoLW1jYzEwLWdyb3VwM3IMCxIER2FtZRix5AMM");
 			myGame.setName("tollestestspiel");
@@ -100,42 +128,7 @@ public class Map extends MapActivity{
 	protected boolean isRouteDisplayed() {
 	    return false;
 	}
-	
-	private void gameLoop(){
 		
-		// create a thread for updating target location
-		final Thread background = new Thread (new Runnable() {
-
-			public void run() {
-					 
-					while(true){
-						if(player != null) Integrator.playerUpdateState(player);
-						GeoPoint targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));
-						updateMarkers(targetPoint);
-						
-						//TODO: Get powerup Position (and Type) from Server
-						//GeoPoint powerupPoint = new GeoPoint(5454321,654321);
-						//updatePowerUpPosition(powerupPoint);
-
-						if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){ //game finished
-							winLooseAlert();
-							break;
-						}
-						
-						SystemClock.sleep(5000);
-
-					}
-					
-
-			}
-	         
-		});
-
-        background.start();
-        winLooseAlert();
-		   
-	}
-	
 	private void winLooseAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		  builder.setMessage("Du hast " + (player.getName().equals("gewonnen") ? "gewonnen" : "verloren"))
@@ -194,94 +187,62 @@ public class Map extends MapActivity{
 	    }		
 	}
 	
-	private void updateMarkers(GeoPoint targetPoint){
+	private void updateMarkers(){
 		Log.d(LOGTAG, "updateMarkers()");
-		GeoPoint point = new GeoPoint((int) player.getLatitude(),(int) player.getLongitude());
 		
-		if(myStartPositionOverlay == null){
-			myStartPositionOverlay = new MyOverlay(point,null,R.drawable.start);
-			mapOverlays.add(myStartPositionOverlay);
-			mapView.postInvalidate();
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		
+		synchronized(player){
+			GeoPoint point = new GeoPoint((int) (player.getLatitude() * 1E6),(int) (player.getLongitude() * 1E6));
 			
-			prePoint = point;
-		} else if(myPositionOverlay == null){
-			//mapOverlays.remove(myStartPositionOverlay);
-			mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.start));
-			myPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
-			mapOverlays.add(myPositionOverlay);
-			mapView.postInvalidate();
-			
-			prePoint = point;
-		} else {
-			//mapOverlays.remove(myPositionOverlay);
-			mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.point));
-			myPositionOverlay = new MyOverlay(prePoint,null,R.drawable.point_blue);
-			mapOverlays.add(myPositionOverlay);
-			mapView.postInvalidate();
-			
-			prePoint = point;						
-		}
-		
-		//if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
-		myPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_yellow);
-				
-		/*
-		if(targetOverlay != null) {
-			mapOverlays.remove(targetOverlay);
-			mapView.postInvalidate();
-		}
-		
-		targetOverlay = new PositionMarkerOverlay(null, null, targetMarker);
-		targetOverlay.addOverlay(new OverlayItem(targetPoint, "", ""));
-		mapOverlays.add(targetOverlay);
-		mapView.postInvalidate();
-		
-		GeoPoint point = new GeoPoint((int) player.getLatitude(),(int) player.getLongitude());
-		
-		if(prePoint == null ){
-			itemizedOverlay = new PositionMarkerOverlay(null, null, startMarker);
-		} else {
-			if(prePrePoint != null){
-				if(itemizedOverlay != null) {
-					mapOverlays.remove(itemizedOverlay);
-					mapView.postInvalidate();
+			if(point != prePoint){
+				if(myStartPositionOverlay == null){
+					Log.d(LOGTAG, "updateMarkers() - 1");
+					myStartPositionOverlay = new MyOverlay(point,null,R.drawable.start);
+					mapOverlays.add(myStartPositionOverlay);
+					
+					prePoint = point;
+				} else if(myPositionOverlay == null){
+					Log.d(LOGTAG, "updateMarkers() - 2");
+					mapOverlays.remove(myStartPositionOverlay);
+					mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.start));
+					myPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
+					mapOverlays.add(myPositionOverlay);
+					
+					prePoint = point;
+				} else {
+					Log.d(LOGTAG, "updateMarkers() - 3");
+					mapOverlays.remove(myPositionOverlay);
+					mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.point));
+					myPositionOverlay = new MyOverlay(prePoint,null,R.drawable.point_blue);
+					mapOverlays.add(myPositionOverlay);	
+					
+					prePoint = point;						
 				}
-				PositionMarkerOverlay itemizedOverlay2 = new PositionMarkerOverlay(prePrePoint, prePoint, marker);
-				itemizedOverlay2.addOverlay(new OverlayItem(prePoint, "", ""));
-				mapOverlays.add(itemizedOverlay2);
+				
+				mapView.getController().animateTo(point);
+				
+				if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
+				myTargetPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_yellow);
+				mapOverlays.add(myTargetPositionOverlay);	
+				
 				mapView.postInvalidate();
+				
 			}
-			itemizedOverlay = new PositionMarkerOverlay(prePoint, point, curPosMarker);
 		}
-		itemizedOverlay.addOverlay(new OverlayItem(point, "", ""));
-		mapOverlays.add(itemizedOverlay);
-		mapView.postInvalidate();	
-		
-		//mapController.animateTo(point);		
-		
-		prePrePoint = prePoint;
-		prePoint = point;			
-		*/		
 	}
-	
-	/*private void updatePowerUpPosition(GeoPoint point){
-		//if(powerUpOverlay != null) mapOverlays.remove(powerUpOverlay);
-		powerUpOverlay = new PositionMarkerOverlay(null, null, powerUpMarker);
-		powerUpOverlay.addOverlay(new OverlayItem(point, "", ""));
-		mapOverlays.add(powerUpOverlay);	
-		mapView.postInvalidate();			
-	}*/	
 	
 	public class GeoUpdateHandler implements LocationListener {
 
 		public void onLocationChanged(Location location) {
 			if(location != null){
-				int lat = (int) (location.getLatitude() * 1E6);
-				int lng = (int) (location.getLongitude() * 1E6);		
-				
-				player.setLatitude(lat);
-				player.setLongitude(lng);
-				Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
+				float lat = (float) (location.getLatitude());
+				float lng = (float) (location.getLongitude());		
+				synchronized (player){
+					player.setLatitude(lat);
+					player.setLongitude(lng);
+					Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 	
@@ -295,6 +256,5 @@ public class Map extends MapActivity{
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 		}
 	}
-
 	
 }
