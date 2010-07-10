@@ -6,14 +6,17 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class WaitForPlayers extends Activity {
@@ -44,6 +47,21 @@ public class WaitForPlayers extends Activity {
 	
      
 	 }
+	
+	OnClickListener doStartGameButtonOnClick = new OnClickListener() {		
+		public void onClick(View view) {
+			boolean start = Integrator.startGame(Player.getPlayer());
+			//check
+    		if(start){
+    			Toast.makeText(WaitForPlayers.this,"Spiel wurde gestartet!", Toast.LENGTH_SHORT).show();
+    			
+    			startActivityForResult(new Intent(WaitForPlayers.this, com.rwthmcc3.ShowTimer.class),0);
+    		}else{
+    			Toast.makeText(WaitForPlayers.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
+    		}
+			
+		}
+	};
 	
 	// handler for the background updating
     Handler progressHandler = new Handler() {

@@ -83,7 +83,7 @@ public class GeoCatch extends Activity {
 	    //register player
 	   
 	   // if(p.getKey()!= null){
-		    /*if(mBluetoothAdapter.isEnabled()){
+		    if(mBluetoothAdapter.isEnabled()){
 		    	 //set mac
 			     mac = mBluetoothAdapter.getAddress();
 			     p.setMac(mac);
@@ -107,7 +107,7 @@ public class GeoCatch extends Activity {
 		 	        	alertRegisterFailed.show();
 		         	}
 		         }
-		    }*/
+		    }
 	   // }
 	}
 	

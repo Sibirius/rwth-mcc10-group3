@@ -26,6 +26,8 @@
    					android:screenOrientation="portrait"></activity>
    		<activity android:name=".ListOfPlayers"
    					android:screenOrientation="portrait"></activity>
+   		<activity android:name=".ShowTimer"
+   					android:screenOrientation="portrait"></activity>			
 
 </application>
 	<uses-permission android:name="android.permission.INTERNET" />
