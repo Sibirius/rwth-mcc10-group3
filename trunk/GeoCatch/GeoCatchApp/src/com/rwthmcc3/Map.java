@@ -1,5 +1,6 @@
 package com.rwthmcc3;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -46,6 +47,9 @@ public class Map extends MapActivity{
 	private Player player;
 		
 	private LocationManager lm;	
+	private GeoUpdateHandler geoUpdater;
+	
+	private ArrayList<GeoPoint> pointList; 
 	
     // Need handler for callbacks to the UI thread
     final Handler mHandler = new Handler();
@@ -54,6 +58,12 @@ public class Map extends MapActivity{
     final Runnable mUpdateMarkers = new Runnable() {
         public void run() {
             updateMarkers();
+        }
+    };
+    
+    final Runnable mClose = new Runnable() {
+        public void run() {
+            winLooseAlert();
         }
     };
 
@@ -70,12 +80,16 @@ public class Map extends MapActivity{
 		            	}
             		}
 	                mHandler.post(mUpdateMarkers);
-            		SystemClock.sleep(5000);
+            		SystemClock.sleep(10000);
+            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){ //game has finished
+            			break;
+            		}
             	}
+            	mHandler.post(mClose);
             }
         };
         t.start();
-        winLooseAlert();
+        
     }
     
 	@Override
@@ -108,16 +122,17 @@ public class Map extends MapActivity{
 		}
 		Toast.makeText(getApplicationContext(), player.getKey(), Toast.LENGTH_LONG).show();
 		
-		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-		if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-			provider = LocationManager.GPS_PROVIDER;
-		} else {
-			provider = LocationManager.NETWORK_PROVIDER;			
-		}
-		lm.getLastKnownLocation(provider);
-		lm.requestLocationUpdates(provider, 0, 0, new GeoUpdateHandler());
 		if(player != null){
+			lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+			if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+				provider = LocationManager.GPS_PROVIDER;
+			} else {
+				provider = LocationManager.NETWORK_PROVIDER;			
+			}
+			geoUpdater = new GeoUpdateHandler();
+			lm.getLastKnownLocation(provider);
+			lm.requestLocationUpdates(provider, 0, 0, geoUpdater);
 			gameLoop();
 		} else {
 			Map.this.finish();
@@ -131,11 +146,14 @@ public class Map extends MapActivity{
 		
 	private void winLooseAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		  builder.setMessage("Du hast " + (player.getName().equals("gewonnen") ? "gewonnen" : "verloren"))
+		  //TODO: change the following condition
+		  builder.setMessage("Du hast " + (!player.getName().equals("gewonnen") ? "gewonnen" : "verloren"))
 		         .setCancelable(false)
 		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 		             public void onClick(DialogInterface dialog, int id) {
 		                  dialog.cancel();
+		                  lm.removeUpdates(geoUpdater);
+		                  Map.this.finish();
 		             }
 		         });
 		  final AlertDialog winLooseAlert = builder.create();
@@ -195,6 +213,14 @@ public class Map extends MapActivity{
 		synchronized(player){
 			GeoPoint point = new GeoPoint((int) (player.getLatitude() * 1E6),(int) (player.getLongitude() * 1E6));
 			
+			if(pointList.size() == 0){
+				pointList.add(point);
+			} else {
+				if(pointList.get(pointList.size()-1) != point){
+					pointList.add(point);
+				}
+			}
+				
 			if(point != prePoint){
 				if(myStartPositionOverlay == null){
 					Log.d(LOGTAG, "updateMarkers() - 1");
