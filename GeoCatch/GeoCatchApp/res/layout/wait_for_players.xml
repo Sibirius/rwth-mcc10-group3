@@ -9,11 +9,13 @@
 	    android:orientation="horizontal"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
+	    android:layout_weight="1.0"
 	    >
 	    <ProgressBar android:id="@+android:id/progress_waitforplayers"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content" 
 	        android:layout_margin="20px"
+	        android:layout_weight="1.0"
 	        />
 	        
 		<TextView 	android:id="@+id/text_waitforplayers"
@@ -21,6 +23,7 @@
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_vertical"
 					android:textSize="16sp"
+					android:layout_weight="1.0"
 					
 					/>
 	</LinearLayout>	
@@ -28,13 +31,15 @@
 <View	android:id="@+id/line_waitforplayers"
 		android:layout_width="fill_parent"
         android:layout_height="3dip"
-        android:background="#FF909090" />
+        android:background="#FF909090"
+        android:layout_weight="1.0" />
         
         
 <ListView 	android:id="@+id/listview_waitforplayers"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
 			android:visibility="gone"
+			android:layout_weight="1.0"
 			/>
 <LinearLayout
     	android:id="@+id/layout3_waitforplayers"	    
@@ -54,7 +59,14 @@
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_vertical"
 					android:textSize="16sp"
-					
 					/>
-	</LinearLayout>	
+			
+</LinearLayout>
+<Button     android:layout_height="wrap_content" 
+			android:layout_width="fill_parent" 
+			android:text="Spiel starten!"
+			android:id="@+id/button_start_game_waitforplayers"
+			android:visibility="gone"
+			/>
+			
 </LinearLayout>

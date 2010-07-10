@@ -43,6 +43,7 @@ public class MainMenu extends Activity{
 	private Player p = Player.getPlayer();
 	private Thread backgroundMainMenu = null;
 	private boolean isAlive = true;
+	private boolean enoughPlayer = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,10 +84,27 @@ public class MainMenu extends Activity{
     Handler progressHandlerMainMenu = new Handler() {
         public void handleMessage(Message msg) {
         	setListofGames();
+        	
         	View layoutMainMenuView = (View)findViewById(R.id.layout2_mainmenu);
         	View listView = (View)findViewById(R.id.listview_mainmenu);
         	layoutMainMenuView.setVisibility(View.GONE);
         	listView.setVisibility(View.VISIBLE);
+        	
+        	//compare keys
+			boolean sameKey = true;
+			String chosenGameKey = chosenGame.getKey();
+			if(p.getMyGame()== null){
+				sameKey = false;
+			}else{
+				String myGameKey = p.getMyGame().getKey();
+				sameKey = chosenGameKey.equals(myGameKey);
+			}
+			
+			//show start game button
+        	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())){
+        		View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
+        		startButtonView.setVisibility(View.VISIBLE);
+            }	
         }
     };
     
@@ -178,6 +196,13 @@ public class MainMenu extends Activity{
 					        		}
 					    			break;
 					    		case 1:
+					    			boolean stop = Integrator.stopGame(Player.getPlayer());
+					    			//check
+					        		if(stop){
+					        			Toast.makeText(MainMenu.this,"Spiel wurde beendet!", Toast.LENGTH_SHORT).show();
+					        		}else{
+					        			Toast.makeText(MainMenu.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
+					        		}
 					    			break;
 					    		case 2:
 					    			startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.WaitForPlayers.class),0);
@@ -367,11 +392,19 @@ public class MainMenu extends Activity{
 	@Override
 	public void onResume(){
 		super.onResume();
+		
+		//reset handler
 		isAlive = true;
+		
+		//reset view
 		View layoutMainMenuView = (View)findViewById(R.id.layout2_mainmenu);
     	View listView = (View)findViewById(R.id.listview_mainmenu);
     	layoutMainMenuView.setVisibility(View.VISIBLE);
     	listView.setVisibility(View.GONE);
+    	View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
+		startButtonView.setVisibility(View.GONE);
+		
+		
 		// create a thread for updating the player_list
 		backgroundMainMenu = new Thread (new Runnable() {
 	         public void run() {

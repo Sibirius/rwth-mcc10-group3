@@ -4,8 +4,6 @@ package com.rwthmcc3;
 
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,7 +18,6 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 
 
@@ -41,10 +37,10 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
         //spinner timer
         Spinner spinner = (Spinner) findViewById(R.id.spinner_new_game);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.times_array, android.R.layout.simple_spinner_item);
+                this, R.array.array_times, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
+        
         
         //button next
     	Button buttoNext = (Button)findViewById(R.id.button_next);
@@ -61,13 +57,20 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 			String gameName = gameNameField.toString();
 			SeekBar maxPlayerSeekbar = (SeekBar)findViewById(R.id.seekbar_player_count);
 	        int maxPlayersCount = maxPlayerSeekbar.getProgress()+1;
+	        Spinner timerSpinner = (Spinner)findViewById(R.id.spinner_new_game);
+	        int timerPosition = timerSpinner.getSelectedItemPosition();
+	        int timer = (timerPosition+1)*3; // 0=3min, 1=6min, 2=9min, 3=12min, 4=15min
 			
 			if((!gameName.startsWith(" ")) || (gameName.length()< 3)){
 				//message to user
-			     //TODO catch error  			
-    			Integrator.createGame(Player.getPlayer(),gameName , maxPlayersCount, 1, Player.getPlayer().getLongitude(), Player.getPlayer().getLatitude());
-	        	
-				startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.MainMenu.class),0);
+			    boolean created = true;
+				created = Integrator.createGame(p,gameName , maxPlayersCount, 1, Player.getPlayer().getLongitude(), Player.getPlayer().getLatitude(), timer);
+	        	if(created){
+	        		startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.MainMenu.class),0);
+	        	}else{
+	        		Toast.makeText(NewGame.this, "Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
+	        	}
+				
 			}else{
 								 
 				//message to user
@@ -86,17 +89,7 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
         if(seekBar.getId()== R.id.seekbar_player_count) text_player_count.setText(progress+" Spieler");
     }
 
-    public class MyOnItemSelectedListener implements OnItemSelectedListener {
-
-        public void onItemSelected(AdapterView<?> parent,
-            View view, int pos, long id) {
-          
-        }
-
-        public void onNothingSelected(AdapterView<?> parent) {
-          // Do nothing.
-        }
-    }
+    
     
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -128,12 +121,9 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
     
 	public void onStartTrackingTouch(SeekBar arg0) {
 		// TODO Auto-generated method stub
-		
 	}
-
 	public void onStopTrackingTouch(SeekBar arg0) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	

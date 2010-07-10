@@ -23,6 +23,7 @@ public class WaitForPlayers extends Activity {
 	private Game chosenGame = MainMenu.chosenGame;
 	private  Thread background = null;
 	private boolean isAlive = true;
+	private Player p = Player.getPlayer();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -48,10 +49,27 @@ public class WaitForPlayers extends Activity {
     Handler progressHandler = new Handler() {
         public void handleMessage(Message msg) {
         	updateScreen();
+        	
         	View layoutMainMenuView = (View)findViewById(R.id.layout3_waitforplayers);
         	View listView = (View)findViewById(R.id.listview_waitforplayers);
         	layoutMainMenuView.setVisibility(View.GONE);
         	listView.setVisibility(View.VISIBLE);
+        	
+        	//compare keys
+			boolean sameKey = true;
+			String chosenGameKey = chosenGame.getKey();
+			if(p.getMyGame()== null){
+				sameKey = false;
+			}else{
+				String myGameKey = p.getMyGame().getKey();
+				sameKey = chosenGameKey.equals(myGameKey);
+			}
+			
+			//show start game button
+        	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())){
+        		View startButtonView = (View)findViewById(R.id.button_start_game_waitforplayers);
+        		startButtonView.setVisibility(View.VISIBLE);
+            }	
         	
         }
     };
@@ -90,11 +108,18 @@ public class WaitForPlayers extends Activity {
 	@Override
 	public void onResume(){
 		super.onResume();
+		
+		//reset view 
 		View layoutMainMenuView = (View)findViewById(R.id.layout3_waitforplayers);
     	View listView = (View)findViewById(R.id.listview_waitforplayers);
     	layoutMainMenuView.setVisibility(View.VISIBLE);
     	listView.setVisibility(View.GONE);
+    	View startButtonView = (View)findViewById(R.id.button_start_game_waitforplayers);
+		startButtonView.setVisibility(View.VISIBLE);
+		
+		//reset handler
 		isAlive=true;
+		
 		// create a thread for updating the player_list
 	    background = new Thread (new Runnable() {
 	         public void run() {
