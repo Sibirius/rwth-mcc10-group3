@@ -23,6 +23,7 @@ public class GeoCatch extends Activity {
 	private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	private  Player p = Player.getPlayer();
 	
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -96,12 +97,12 @@ public class GeoCatch extends Activity {
 		         	 //register player failed (second time)
 		         	if(hasRegister == false){
 		 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);
-		 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! Bitte überprüfen Sie Ihre Internetverbindung! GeoCatch beenden?")
+		 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! Bitte überprüfen Sie Ihre Internetverbindung! Registrierung wiederholen?")
 		 	        	       .setCancelable(false)
 		 	        	       .setPositiveButton("Wiederholen", new DialogInterface.OnClickListener() {
 		 	        	           public void onClick(DialogInterface dialog, int id) {
 		 	        	        	  dialog.dismiss();
-		 	        	        	  
+		 	        	        	  onResume();
 		 	        	           }
 		 	        	      });
 		 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
@@ -123,6 +124,7 @@ public class GeoCatch extends Activity {
 			startActivityForResult(new Intent(GeoCatch.this, com.rwthmcc3.MainMenu.class),0);
 			}
 	};
+	
 	
 	
 	/**
