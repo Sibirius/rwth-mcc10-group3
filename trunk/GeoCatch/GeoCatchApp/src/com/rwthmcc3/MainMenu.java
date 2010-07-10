@@ -21,7 +21,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -58,7 +60,9 @@ public class MainMenu extends Activity{
                 new String[] {"game_name", "player_count", "distance"}, new int[] {R.id.game_name, R.id.player_count_list, R.id.distance});
 	    lv.setAdapter(mSchedule);
 	    
-	    
+	    //set button
+	    Button startGameButton = (Button)findViewById(R.id.button_start_game_mainmenu);
+	    startGameButton.setOnClickListener(doStartGameButtonOnClick);
 	    
 	    //create LocationManager for GPS
 	    lmMainMenu = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -71,14 +75,22 @@ public class MainMenu extends Activity{
 		
 		lmMainMenu.getLastKnownLocation(providerMainMenu);
 		lmMainMenu.requestLocationUpdates(providerMainMenu, 0, 0, locationListenerMainMenu);
-		
-		
-	      
-	     
-		 
-		
-	    
-    };
+	};
+    
+    OnClickListener doStartGameButtonOnClick = new OnClickListener() {		
+		public void onClick(View view) {
+			boolean start = Integrator.startGame(Player.getPlayer());
+			//check
+    		if(start){
+    			Toast.makeText(MainMenu.this,"Spiel wurde gestartet!", Toast.LENGTH_SHORT).show();
+    			
+    			startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.ShowTimer.class),0);
+    		}else{
+    			Toast.makeText(MainMenu.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
+    		}
+			
+		}
+	};
 
 	// handler for the backgroundMainMenu updating
     Handler progressHandlerMainMenu = new Handler() {
