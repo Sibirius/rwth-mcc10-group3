@@ -135,6 +135,8 @@ public class Integrator {
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("g", game.getKey()));
+        qparams.add(new BasicNameValuePair("lon", String.valueOf(player.getLongitude())));
+        qparams.add(new BasicNameValuePair("lat", String.valueOf(player.getLatitude())));
         
         String result = getResponse(doGet("/join", qparams));
         Log.d(LOGTAG, "joinGame: "+result);
@@ -180,7 +182,13 @@ public class Integrator {
 	/**
 	 * 
 	 * @param player
-	 * @return A list of HashMaps. Keys: title, info
+	 * @return true if everthing went fine, false otherwise
+	 * 
+	 * Updates the players longitude and latitude in the database.
+	 * Updates Targetlocation, gamemode and gamestate locally.
+	 * If there is a winner, then the game is finished and the winnerName is saved in the game-instance.
+	 * If the player has won the game, hasWin is set to true.
+	 * 
 	 */
 	public static boolean playerUpdateState(Player player){
 		Log.d(LOGTAG, "playerUpdateState()");
@@ -210,7 +218,10 @@ public class Integrator {
 			    	Element element = (Element) nodes.item(i);
 			    	String info = element.getAttribute("info");
 			    	if(element.getAttribute("title")=="victory"){
-			    		Player.getPlayer().getMyGame().setState(3);
+			    		player.getMyGame().setState(3);
+			    		player.getMyGame().setWinnerName(element.getAttribute("info"));
+			    		if(Integer.parseInt(element.getAttribute("extra"))==player.getNumber())
+			    			player.setHasWin(true);
 			    	}
 			    	
 		
@@ -231,7 +242,7 @@ public class Integrator {
         
 	}
 	
-	public static boolean registerPlayer(String mac, String name){
+	public static boolean registerPlayer(String mac, String name, double longitude, double latitude){
 		Log.d(LOGTAG, "registerPlayer()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("m", mac));
@@ -249,15 +260,15 @@ public class Integrator {
 
 	}
 	
-	public static boolean createGame(Player player, String name, int maxPlayersCount, int version, double longitude, double latitude, int timer){
+	public static boolean createGame(Player player, String name, int maxPlayersCount, int version, int timer){
 		Log.d(LOGTAG, "createGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("n", name));
         qparams.add(new BasicNameValuePair("mpc", String.valueOf(maxPlayersCount)));
         qparams.add(new BasicNameValuePair("v", String.valueOf(version)));
-        qparams.add(new BasicNameValuePair("lon", String.valueOf(longitude)));
-        qparams.add(new BasicNameValuePair("lat", String.valueOf(latitude)));
+        qparams.add(new BasicNameValuePair("lon", String.valueOf(player.getLongitude())));
+        qparams.add(new BasicNameValuePair("lat", String.valueOf(player.getLatitude())));
         qparams.add(new BasicNameValuePair("timer", String.valueOf(timer)));
         
         
@@ -268,8 +279,8 @@ public class Integrator {
         else{
 	        Game game = new Game();
 	        game.setName(name);
-	        game.setCreatorLongitude(longitude);
-	        game.setCreatorLatitude(latitude);
+	        game.setCreatorLongitude(player.getLongitude());
+	        game.setCreatorLatitude(player.getLatitude());
 	        game.setVersion(version);
 	        game.setKey(key);
 	        game.setMaxPlayersCount(maxPlayersCount);

@@ -21,6 +21,7 @@ public class Player {
 	private  int listSize;
 	private  String mac;
 	private boolean hasWin;
+	private int number;
 	
 	private Player(){
 		
@@ -185,6 +186,14 @@ public class Player {
 
 	public boolean isHasWin() {
 		return hasWin;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	public int getNumber() {
+		return number;
 	}
 
 	

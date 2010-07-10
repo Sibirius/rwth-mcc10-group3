@@ -88,11 +88,11 @@ public class GeoCatch extends Activity {
 			     mac = mBluetoothAdapter.getAddress();
 			     p.setMac(mac);
 			     		     
-		    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName());
+		    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
 		         
 		         //register player failed
 		         if(hasRegister == false){
-		         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName());
+		         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
 		         	 //register player failed (second time)
 		         	if(hasRegister == false){
 		 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);

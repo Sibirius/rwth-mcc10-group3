@@ -64,7 +64,7 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 			if((!gameName.startsWith(" ")) || (gameName.length()< 3)){
 				//message to user
 			    boolean created = true;
-				created = Integrator.createGame(p,gameName , maxPlayersCount, 1, Player.getPlayer().getLongitude(), Player.getPlayer().getLatitude(), timer);
+				created = Integrator.createGame(p,gameName , maxPlayersCount, 1, timer);
 	        	if(created){
 	        		startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.MainMenu.class),0);
 	        	}else{
