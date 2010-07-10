@@ -90,17 +90,17 @@ public class GeoCatch extends Activity {
 			     		     
 		    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
 		         
-		         //register player failed
-		         if(hasRegister == false){
+		         
+		         while(hasRegister == false){
 		         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
 		         	 //register player failed (second time)
 		         	if(hasRegister == false){
 		 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);
-		 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! GeoCatch muss neu gestartet werden! Bitte überprüfen Sie Ihre Internetverbindung! GeoCatch beenden?")
+		 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! Bitte überprüfen Sie Ihre Internetverbindung! GeoCatch beenden?")
 		 	        	       .setCancelable(false)
-		 	        	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		 	        	       .setPositiveButton("Wiederholen", new DialogInterface.OnClickListener() {
 		 	        	           public void onClick(DialogInterface dialog, int id) {
-		 	        	                GeoCatch.this.finish();
+		 	        	        	  dialog.dismiss();
 		 	        	           }
 		 	        	      });
 		 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
