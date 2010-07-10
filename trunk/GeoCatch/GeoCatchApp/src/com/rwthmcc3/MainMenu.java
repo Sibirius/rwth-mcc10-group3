@@ -45,7 +45,9 @@ public class MainMenu extends Activity{
 	private Player p = Player.getPlayer();
 	private Thread backgroundMainMenu = null;
 	private boolean isAlive = true;
-	private boolean enoughPlayer = false;
+	private Runnable runnableMainMenu = null;
+	
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +86,12 @@ public class MainMenu extends Activity{
     		if(start){
     			Toast.makeText(MainMenu.this,"Spiel wurde gestartet!", Toast.LENGTH_SHORT).show();
     			
-    			startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.ShowTimer.class),0);
+    			//make button invisible
+    			View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
+        		startButtonView.setVisibility(View.VISIBLE);
+        		
+        		//TODO show timer
+        		
     		}else{
     			Toast.makeText(MainMenu.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
     		}
@@ -96,29 +103,40 @@ public class MainMenu extends Activity{
     Handler progressHandlerMainMenu = new Handler() {
         public void handleMessage(Message msg) {
         	setListofGames();
+        	updateViews();
         	
-        	View layoutMainMenuView = (View)findViewById(R.id.layout2_mainmenu);
-        	View listView = (View)findViewById(R.id.listview_mainmenu);
-        	layoutMainMenuView.setVisibility(View.GONE);
-        	listView.setVisibility(View.VISIBLE);
-        	
-        	//compare keys
-			boolean sameKey = true;
-			String chosenGameKey = chosenGame.getKey();
-			if(p.getMyGame()== null){
-				sameKey = false;
-			}else{
-				String myGameKey = p.getMyGame().getKey();
-				sameKey = chosenGameKey.equals(myGameKey);
-			}
-			
-			//show start game button
-        	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())){
-        		View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
-        		startButtonView.setVisibility(View.VISIBLE);
-            }	
+        	  		
         }
     };
+    
+        
+    public void updateViews(){
+    	View layoutMainMenuView = (View)findViewById(R.id.layout2_mainmenu);
+    	View listView = (View)findViewById(R.id.listview_mainmenu);
+    	layoutMainMenuView.setVisibility(View.GONE);
+    	listView.setVisibility(View.VISIBLE);
+    	
+    	//compare keys
+		boolean sameKey = true;
+		String chosenGameKey = chosenGame.getKey();
+		if(p.getMyGame()== null){
+			sameKey = false;
+		}else{
+			String myGameKey = p.getMyGame().getKey();
+			sameKey = chosenGameKey.equals(myGameKey);
+		}
+		
+		//show start game button
+    	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())){
+    		View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
+    		startButtonView.setVisibility(View.VISIBLE);
+        }
+    	
+    	//shows timer when game is started
+    	Integrator.playerUpdateState(p);
+    	int myGameState = p.getMyGame().getState();
+    	
+    }
     
     
     private final LocationListener locationListenerMainMenu = new LocationListener() {
@@ -381,6 +399,7 @@ public class MainMenu extends Activity{
 		switch (item.getItemId()) {
 		case R.id.main_options_menu_update:
 			setListofGames();
+			updateViews();
 			return true;
 		case R.id.main_options_menu_new_game:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.NewGame.class),0);	
@@ -416,9 +435,7 @@ public class MainMenu extends Activity{
     	View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
 		startButtonView.setVisibility(View.GONE);
 		
-		
-		// create a thread for updating the player_list
-		backgroundMainMenu = new Thread (new Runnable() {
+		runnableMainMenu = new Runnable() {
 	         public void run() {
 	             try {
 	            	 	
@@ -436,8 +453,10 @@ public class MainMenu extends Activity{
 	                 // if something fails do something smart
 	             }
 	         }
-	         
-	      });
+	    };
+	    
+		// create a thread for updating the player_list
+		backgroundMainMenu = new Thread (runnableMainMenu);
 	      
 	    backgroundMainMenu.start();
 	}

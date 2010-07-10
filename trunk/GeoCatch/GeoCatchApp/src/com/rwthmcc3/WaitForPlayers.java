@@ -55,7 +55,11 @@ public class WaitForPlayers extends Activity {
     		if(start){
     			Toast.makeText(WaitForPlayers.this,"Spiel wurde gestartet!", Toast.LENGTH_SHORT).show();
     			
-    			startActivityForResult(new Intent(WaitForPlayers.this, com.rwthmcc3.ShowTimer.class),0);
+    			//make button invisible
+    			View startButtonView = (View)findViewById(R.id.button_start_game_waitforplayers);
+        		startButtonView.setVisibility(View.VISIBLE);
+        		
+        		//TODO show timer
     		}else{
     			Toast.makeText(WaitForPlayers.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
     		}
@@ -66,37 +70,48 @@ public class WaitForPlayers extends Activity {
 	// handler for the background updating
     Handler progressHandler = new Handler() {
         public void handleMessage(Message msg) {
-        	updateScreen();
+        	updatePlayerNames();
+        	updateViews();
         	
-        	View layoutMainMenuView = (View)findViewById(R.id.layout3_waitforplayers);
-        	View listView = (View)findViewById(R.id.listview_waitforplayers);
-        	layoutMainMenuView.setVisibility(View.GONE);
-        	listView.setVisibility(View.VISIBLE);
-        	
-        	//compare keys
-			boolean sameKey = true;
-			String chosenGameKey = chosenGame.getKey();
-			if(p.getMyGame()== null){
-				sameKey = false;
-			}else{
-				String myGameKey = p.getMyGame().getKey();
-				sameKey = chosenGameKey.equals(myGameKey);
-			}
-			
-			//show start game button
-        	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())){
-        		View startButtonView = (View)findViewById(R.id.button_start_game_waitforplayers);
-        		startButtonView.setVisibility(View.VISIBLE);
-            }	
         	
         }
     };
+    
+    public void updateViews(){
+    	View layoutMainMenuView = (View)findViewById(R.id.layout3_waitforplayers);
+    	View listView = (View)findViewById(R.id.listview_waitforplayers);
+    	layoutMainMenuView.setVisibility(View.GONE);
+    	listView.setVisibility(View.VISIBLE);
+    	
+    	//compare keys
+		boolean sameKey = true;
+		String chosenGameKey = chosenGame.getKey();
+		if(p.getMyGame()== null){
+			sameKey = false;
+		}else{
+			String myGameKey = p.getMyGame().getKey();
+			sameKey = chosenGameKey.equals(myGameKey);
+		}
+		
+		//show start game button
+    	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())){
+    		View startButtonView = (View)findViewById(R.id.button_start_game_waitforplayers);
+    		startButtonView.setVisibility(View.VISIBLE);
+        }
+    	
+    	//starts timer
+    	Integrator.playerUpdateState(p);
+    	int myGameState = p.getMyGame().getState();
+    	
+    		//TODO
+    	
+    }
 
 	
 	 /** Clears the playerList and updates playerList from server.
 	  *  Updates counts of players.
 	  */
-	public void updateScreen(){
+	public void updatePlayerNames(){
 		
 		mylist.clear();
 		
