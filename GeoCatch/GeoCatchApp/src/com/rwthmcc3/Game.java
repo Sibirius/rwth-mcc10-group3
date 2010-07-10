@@ -11,6 +11,7 @@ public class Game {
 	private int mode;
 	private int state;
 	private int timer;
+	private String winnerName;
 	
 	// getter and setter
 	
@@ -73,5 +74,11 @@ public class Game {
 	}
 	public int getTimer() {
 		return timer;
+	}
+	public void setWinnerName(String winnerName) {
+		this.winnerName = winnerName;
+	}
+	public String getWinnerName() {
+		return winnerName;
 	}
 }
