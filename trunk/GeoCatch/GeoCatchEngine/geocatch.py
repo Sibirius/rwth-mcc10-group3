@@ -45,6 +45,7 @@ class Player(db.Model):
     
 	hunter = db.SelfReferenceProperty(collection_name="hunter_set")
 	prey = db.SelfReferenceProperty(collection_name="prey_set")
+	aboutToBeCaught = db.BooleanProperty()
     
 	nearlyCaught = db.BooleanProperty()
     
@@ -91,6 +92,15 @@ class Path(db.Model):
 	game = db.ReferenceProperty(Game)
 	date = db.DateTimeProperty(auto_now_add=True)
 	location = db.GeoPtProperty()
+
+##################### functions
+
+def closeTo(pointOne, pointTwo):
+	if abs(pointOne.lat-pointTwo.lat) < 0.0001:
+		if abs(pointOne.lon-pointTwo.lon) < 0.0001:
+			return True
+	return False
+	
 	
 ##########################################################
 #request handlers
@@ -493,6 +503,12 @@ class PlayerUpdateState(webapp.RequestHandler):
 		logging.debug('Player %s sent update for game %s'%(player_key,game_key))			
 
 		if game != None and player != None:
+			if game.status != 1:
+				# no point to update, not started yet, nothing happened yet
+				logging.error('Player %s sent update for game %s, but it is not running yet'%(player_key,game_key))
+				respond(self,"error")
+				return
+			
 			if player.key() in game.players:
 				loc = db.GeoPt(newLocation[0], newLocation[1])
 				
@@ -507,10 +523,44 @@ class PlayerUpdateState(webapp.RequestHandler):
 				player.put()
 				
 				if game.mode == 1: #catch
-					pass
-				#check if someone caught someone else 
-				#check takes 2 refresh states to make sure there are no "lagcatches"
+					modespecific = {}
+					modespecific["lat"] = player.prey.lat #goal lat and lon
+					modespecific["lon"] = player.prey.lon
+
+					
+				#check if someone caught someone else
+				#check should take 2 refresh states to make sure there are no "lagcatches"
 				#the first proximity puts up a flag, the second makes it final 
+					
+					#check if near to prey
+					if closeTo(player.lastLocation,player.prey.lastLocation):
+						if player.prey.aboutToBeCaught: #already has been close:
+							#the player wins the game
+							game.winner = player.key()
+							game.status = 3
+							game.put()
+						else:
+							player.prey.aboutToBeCaught = True
+							player.prey.put()
+					else:
+						player.prey.aboutToBeCaught = False
+						player.prey.put()
+
+						
+					#check if near to hunter
+					if closeTo(player.lastLocation,player.hunter.lastLocation):
+						if player.aboutToBeCaught: #already has been close:
+							#the hunter wins the game
+							game.winner = player.hunter.key()
+							game.status = 3
+							game.put()
+						else:
+							player.aboutToBeCaught = True
+							player.put()
+					else:
+						player.aboutToBeCaught = False
+						player.put()
+				
 				elif game.mode == 0: #race, im moment auf 5 nachkommastellen genau prüfen ob am ziel angekommen
 					modespecific = {}
 					modespecific["lat"] = game.goal.lat #goal lat and lon
