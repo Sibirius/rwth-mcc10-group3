@@ -20,6 +20,7 @@ public class Player {
 	private  Game myGame = null;
 	private  int listSize;
 	private  String mac;
+	private boolean hasWin;
 	
 	private Player(){
 		
@@ -176,6 +177,14 @@ public class Player {
 
 	public String getMac() {
 		return mac;
+	}
+
+	public void setHasWin(boolean hasWin) {
+		this.hasWin = hasWin;
+	}
+
+	public boolean isHasWin() {
+		return hasWin;
 	}
 
 	

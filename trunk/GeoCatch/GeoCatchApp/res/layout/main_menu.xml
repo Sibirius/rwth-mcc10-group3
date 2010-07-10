@@ -7,8 +7,9 @@
     
 <ListView 	android:id="@+id/listview_mainmenu"
 			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
+			android:layout_height="wrap_content"
 			android:visibility="gone"
+			android:layout_weight="1.0"
 			/>
 <LinearLayout
     	android:id="@+id/layout2_mainmenu"	    
@@ -30,5 +31,13 @@
 					android:textSize="16sp"
 					
 					/>
-	</LinearLayout>	
+</LinearLayout>	
+
+<Button     android:layout_height="wrap_content" 
+			android:layout_width="fill_parent" 
+			android:text="Spiel starten!"
+			android:id="@+id/button_start_game_mainmenu"
+			android:visibility="gone"
+			/>
+
 </LinearLayout>

@@ -15,26 +15,33 @@
     
     
     <string name="times">Wartezeit wählen</string>
-    <string-array name="times_array">
+    <string-array name="array_times">
         <item>3  min</item>
         <item>6  min</item>
         <item>9  min</item>
         <item>12 min</item>
         <item>15 min</item>
     </string-array>
+    <string-array name="array_times_values">
+        <item>3</item>
+        <item>6</item>
+        <item>9</item>
+        <item>12</item>
+        <item>15</item>
+    </string-array>
+    
     
     <string-array name="array_listsize">
         <item>10 Spiele</item>
         <item>20 Spiele</item>
         <item>30 Spiele</item>
         <item>50 Spiele</item>
-        
     </string-array>
     <string-array name="array_listsize_values">
         <item>10</item>
         <item>20</item>
         <item>30</item>
         <item>50</item>
-        
     </string-array>
+    
 </resources>
