@@ -340,6 +340,7 @@ public class Integrator {
         if(result.contains("error")){
         	return false;
         }else{
+        	resetPlayer(Player.getPlayer());
         	Player.getPlayer().setKey(result);
         	Player.getPlayer().setPlayerName(name);
         	Player.getPlayer().setLongitude(longitude);
@@ -385,7 +386,6 @@ public class Integrator {
         }
         
 	}
-	
 	
 	// DEBUG FUNCTIONS
 	
