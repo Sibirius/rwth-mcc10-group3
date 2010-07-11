@@ -57,7 +57,8 @@ public class GeoCatch extends Activity {
 		
 		lmGeoCatch.getLastKnownLocation(providerGeoCatch);
 		lmGeoCatch.requestLocationUpdates(providerGeoCatch, 0, 0, locationListenerGeoCatch);
-	           
+	     
+		
 	}
 
 	
