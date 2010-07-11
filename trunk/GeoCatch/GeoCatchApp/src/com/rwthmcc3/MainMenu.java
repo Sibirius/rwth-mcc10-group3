@@ -49,7 +49,7 @@ public class MainMenu extends Activity{
 	private boolean isAlive = true;
 	private Runnable runnableMainMenu = null;
 	
-	//private Handler timeHandler = new Handler();
+	private Handler timeHandler = new Handler();
 	
 	
     @Override
@@ -61,7 +61,7 @@ public class MainMenu extends Activity{
         //create listview
 	    ListView lv = (ListView)findViewById(R.id.listview_mainmenu);
 	    lv.setTextFilterEnabled(true);
-	    //lv.setOnItemLongClickListener(doListItemOnLongClick);
+	    lv.setOnItemLongClickListener(doListItemOnLongClick);
 	    mSchedule = new SimpleAdapter(this, mylist, R.layout.main_menu_list_item,
                 new String[] {"game_name", "player_count", "distance"}, new int[] {R.id.game_name, R.id.player_count_list, R.id.distance});
 	    lv.setAdapter(mSchedule);
@@ -96,10 +96,10 @@ public class MainMenu extends Activity{
         		startButtonView.setVisibility(View.GONE);
         		
         		//show timer and activate
-        		//TextView timerView = (TextView)findViewById(R.id.text_timer_mainmenu);
-        		//timerView.setVisibility(View.VISIBLE);
-        		//timeHandler.removeCallbacks(mUpdateTimeTask);
-                //timeHandler.postDelayed(mUpdateTimeTask, 100);
+        		TextView timerView = (TextView)findViewById(R.id.text_timer_mainmenu);
+        		timerView.setVisibility(View.VISIBLE);
+        		timeHandler.removeCallbacks(mUpdateTimeTask);
+                timeHandler.postDelayed(mUpdateTimeTask, 100);
                 
     		}else{
     			Toast.makeText(MainMenu.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
@@ -125,39 +125,30 @@ public class MainMenu extends Activity{
     	layoutMainMenuView.setVisibility(View.GONE);
     	listView.setVisibility(View.VISIBLE);
     	
-    	//Integrator.playerUpdateState(p);
-    	/*
-    	boolean sameKey = true;
-    	if(chosenGame.getKey()!=null){//compare keys
-			String chosenGameKey = chosenGame.getKey();
-			if(p.getMyGame()== null){
-				sameKey = false;
-			}else{
-				String myGameKey = p.getMyGame().getKey();
-				sameKey = chosenGameKey.equals(myGameKey);
+    	Integrator.playerUpdateState(p);
+    	
+    	if(p.getMyGame()!= null){
 				int myGameState = p.getMyGame().getState();
 				//show start game button when player is creator,enough players and game not started
-		    	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())&&(myGameState==0)){
+		    	if((p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())&&(myGameState==0)){
 		    		View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
 		    		startButtonView.setVisibility(View.VISIBLE);
 		    	}
-		    	
 		    	//shows timer when game is started and timer hasn't counted down
 		    	if((myGameState == 1) && (!p.isCreator()) && p.isTimerHasCountedDown()){
-		    		//TextView timerView = (TextView)findViewById(R.id.text_timer_mainmenu);
-		    		//timerView.setVisibility(View.VISIBLE);
-		    		//timeHandler.removeCallbacks(mUpdateTimeTask);
-		           // timeHandler.postDelayed(mUpdateTimeTask, 100);
+		    		TextView timerView = (TextView)findViewById(R.id.text_timer_mainmenu);
+		    		timerView.setVisibility(View.VISIBLE);
+		    		timeHandler.removeCallbacks(mUpdateTimeTask);
+		            timeHandler.postDelayed(mUpdateTimeTask, 100);
 		    	}
-			}
 		}
-		*/
+		
 	
     }
-    /*
+    
     private Runnable mUpdateTimeTask = new Runnable() {
     	   public void run() {
-    		  // TextView timerView = (TextView)findViewById(R.id.text_timer_mainmenu);
+    		   TextView timerView = (TextView)findViewById(R.id.text_timer_mainmenu);
     	       final long start = SystemClock.uptimeMillis(); //set starttime to milliseconds
     	       long millis = SystemClock.uptimeMillis() - start;
     	       if(p.getMyGame()!=null){
@@ -168,24 +159,23 @@ public class MainMenu extends Activity{
 	    	       
 	    	       if( countDown > 0){
 		    	       if (seconds < 10) {
-		    	    	  // timerView.setText("" + minutes + ":0" + seconds);
+		    	    	   timerView.setText("" + minutes + ":0" + seconds);
 		    	       } else {
-		    	    	   //timerView.setText("" + minutes + ":" + seconds);            
+		    	    	   timerView.setText("" + minutes + ":" + seconds);            
 		    	       }
 		    	     
 		    	       //active for next update
-		    	      // timeHandler.postAtTime(this,
-		    	      //         start + millis+1000);
+		    	       timeHandler.postAtTime(this, start + millis+1000);
 	    	       }else{
 	    	    	   //counted to 0
 	    	    	   p.setTimerHasCountedDown(true);
-	    	    	   //timerView.setVisibility(View.GONE);
+	    	    	   timerView.setVisibility(View.GONE);
 	    	    	   startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.Map.class),0);
 	    	       }
 	    	    }
     	   }
     	};
-    */
+    
     private final LocationListener locationListenerMainMenu = new LocationListener() {
     	public void onLocationChanged(Location location){
            p.setLatitude(location.getLatitude());
@@ -213,7 +203,7 @@ public class MainMenu extends Activity{
 			
 			//compare keys
 			boolean sameKey = true;
-			String chosenGameKey = chosenGame.getKey();
+			String chosenGameKey = "sdfsdsfsfs";//chosenGame.getKey();
 			if(p.getMyGame()== null){
 				sameKey = false;
 			}else{
@@ -401,7 +391,9 @@ public class MainMenu extends Activity{
 		//for every item: addItemToList
 		//Player player = Integrator.registerPlayer("F1:12:23:34:45:56", "playertest");
 		//Integrator.createGame(player, "testgame", 5, 1, 13.37f, 13.337f);
-		//games = Integrator.getGameList();
+		games = Integrator.getGameList();
+		if(games != null) addItemToList("Resident Evil","4/7 Player","Distance to Creator: 4.5 km");
+		
 		if (games != null){
 			for (Game i : games) {
 				Log.d(LOGTAG, "game: "+i.getName());
@@ -411,11 +403,13 @@ public class MainMenu extends Activity{
 						+ " km");
 			}
 		}
-		addItemToList("Unreal Tournament","1/8 Player","Distance to Creator: 0.8 km");
-		addItemToList("Super Mario","4/5 Player","Distance to Creator: 1.5 km");
-		addItemToList("Tekken","3/4 Player","Distance to Creator: 2 km");
-		addItemToList("Halo","1/5 Player","Distance to Creator: 3.5 km");
-		addItemToList("Resident Evil","4/7 Player","Distance to Creator: 4.5 km");
+		
+		//addItemToList("Unreal Tournament","1/8 Player","Distance to Creator: 0.8 km");
+		//addItemToList("Super Mario","4/5 Player","Distance to Creator: 1.5 km");
+		//addItemToList("Tekken","3/4 Player","Distance to Creator: 2 km");
+		//addItemToList("Halo","1/5 Player","Distance to Creator: 3.5 km");
+		
+		
 		mSchedule.notifyDataSetChanged();
 	    
 	}
@@ -438,7 +432,7 @@ public class MainMenu extends Activity{
 		switch (item.getItemId()) {
 		case R.id.main_options_menu_update:
 			setListofGames();
-			//updateViews();
+			updateViews();
 			return true;
 		case R.id.main_options_menu_new_game:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.NewGame.class),0);	
@@ -457,7 +451,7 @@ public class MainMenu extends Activity{
 	public void onStop(){
 		super.onStop();
 		isAlive=false;
-		//timeHandler.removeCallbacks(mUpdateTimeTask);
+		timeHandler.removeCallbacks(mUpdateTimeTask);
 	}
 	
 	@Override
@@ -468,13 +462,14 @@ public class MainMenu extends Activity{
 		isAlive = true;
 		
 		//reset view
-		
 		View layoutMainMenuView = (View)findViewById(R.id.layout2_mainmenu);
     	View listView = (View)findViewById(R.id.listview_mainmenu);
     	layoutMainMenuView.setVisibility(View.VISIBLE);
     	listView.setVisibility(View.GONE);
     	View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
 		startButtonView.setVisibility(View.GONE);
+		TextView timerView = (TextView)findViewById(R.id.text_timer_mainmenu);
+		timerView.setVisibility(View.GONE);
 		
 		runnableMainMenu = new Runnable() {
 	         public void run() {
