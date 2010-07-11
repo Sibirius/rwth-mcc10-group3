@@ -71,7 +71,6 @@ public class Integrator {
 			    	game.setCreatorLatitude(Float.parseFloat(creatorLocation[0]));
 			    	game.setCreatorLongitude(Float.parseFloat(creatorLocation[1]));
 			    	game.setMode(Integer.parseInt(element.getAttribute("mode")));
-			    	game.setTimer(Integer.parseInt(element.getAttribute("timer")));
 			    	
 			    	result.add(game);
 		
