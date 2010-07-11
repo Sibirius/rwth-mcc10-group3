@@ -15,7 +15,7 @@ def checkKey(key):
 
 def checkMac(mac):
 	""" check mac for form xx:xx:xx:xx where x is alphanumeric(?) """
-	if re.match("^[a-zA-Z0-9]{2}(:[a-zA-Z0-9]{2}){5}$", mac) != None:
+	if re.match("^[a-fA-F0-9]{2}(:[a-fA-F0-9]{2}){5}$", mac) != None:
 		return mac
 	else:
 		raise ValueError()
@@ -44,5 +44,5 @@ def checkLocation(loc):
 		raise ValueError()
 		
 if __name__ == "__main__":
-	print checkMac("o4:5r:3r:5r:3r:34")
+	print checkMac("a4:5f:3b:5B:3b:34")
 	print checkLocation("13.23,34.324")
