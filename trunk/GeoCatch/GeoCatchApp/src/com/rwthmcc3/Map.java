@@ -140,6 +140,7 @@ public class Map extends MapActivity{
     protected void gameLoop() {
 
     	startTimeMillis = System.currentTimeMillis();
+    	pointList = new GeoPointList();
     	
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
@@ -153,7 +154,7 @@ public class Map extends MapActivity{
             		}
             		
 	                mHandler.post(mUpdateMarkers);
-            		
+
 	                synchronized(player){
 	            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){ //game has finished
 	            			mHandler.post(mWinLoose);
@@ -167,7 +168,8 @@ public class Map extends MapActivity{
 	                }
             		
             		SystemClock.sleep(10000);
-            		
+            		mHandler.post(mWinLoose);
+            		break;
             	}
             	
             }
@@ -228,18 +230,18 @@ public class Map extends MapActivity{
 	}
 	
 	private String getFormattetTotalGameTime(){
-		int time = (int) (System.currentTimeMillis() - startTimeMillis) * 1000;
+		int time = (int) (System.currentTimeMillis() - startTimeMillis) / 1000;
 		int mins = time / 60;
 		int secs = time % 60;
 		
-		return mins + " Minuten, " + secs + " Sekunden";
+		return mins + " Min, " + secs + " Sek";
 	}
 	
 	private void winLooseAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		  builder.setMessage("Du hast " + (player.isHasWin() ? "gewonnen" : "verloren") + "\n" +
 		  		"\n" +
-		  		"Zurückgelegte Distanz: " + pointList.getDistance() + "\n" +
+		  		"Zurückgelegte Distanz: " + pointList.getDistance() + "m\n" +
 		  		"Spielzeit: " + getFormattetTotalGameTime())
 		         .setCancelable(false)
 		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
