@@ -63,9 +63,14 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 			
 			if((!gameName.startsWith(" ")) || (gameName.length()< 3)){
 				//message to user
+				boolean leave = true;
+    			if(p.getMyGame()!=null){
+    				leave = Integrator.leaveGame(Player.getPlayer());
+    			}
 			    boolean created = true;
+			    
 				created = Integrator.createGame(p,gameName , maxPlayersCount, 1, timer);
-	        	if(created){
+	        	if(created && leave){
 	        		startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.MainMenu.class),0);
 	        	}else{
 	        		Toast.makeText(NewGame.this, "Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
