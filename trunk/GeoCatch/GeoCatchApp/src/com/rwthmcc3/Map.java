@@ -20,6 +20,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -49,54 +52,46 @@ public class Map extends MapActivity{
 	private LocationManager lm;	
 	private GeoUpdateHandler geoUpdater;
 	
-	private ArrayList<GeoPoint> pointList; 
+	private long startTimeMillis;
 	
+	private GeoPointList pointList; 
+	
+	// MapView canvas should be redrawn in the UI thread only
     // Need handler for callbacks to the UI thread
     final Handler mHandler = new Handler();
 
-    // Create runnable for posting
+    // Create runnable for updating markers
     final Runnable mUpdateMarkers = new Runnable() {
         public void run() {
             updateMarkers();
         }
     };
     
-    final Runnable mClose = new Runnable() {
+    // Create runnable for closing mapview when game has finished
+    final Runnable mWinLoose = new Runnable() {
         public void run() {
             winLooseAlert();
         }
     };
-
-    protected void gameLoop() {
-
-        // Fire off a thread to do some work that we shouldn't do directly in the UI thread
-        Thread t = new Thread() {
-            public void run() {
-            	while(true){
-            		synchronized(player){
-		            	if(player != null) {
-		            		Integrator.playerUpdateState(player); 
-		            		targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));
-		            	}
-            		}
-	                mHandler.post(mUpdateMarkers);
-            		SystemClock.sleep(10000);
-            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){ //game has finished
-            			break;
-            		}
-            	}
-            	mHandler.post(mClose);
-            }
-        };
-        t.start();
-        
-    }
     
+    // Create runnable for closing mapview when game has stopped
+    final Runnable mClose = new Runnable(){
+    	public void run(){
+    		gameClosedAlert();
+    	}
+    };
+    
+	@Override
+	protected boolean isRouteDisplayed() {
+	    return false;
+	}
+		    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map);	
-				
+		
+		//init map
 		mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		mapController = mapView.getController();
@@ -109,8 +104,6 @@ public class Map extends MapActivity{
 			player.setMac("34:34:34:24:24:24");
 			player.setName("tesspieler");
 			player.setCreator(true);
-			player.setLatitude(6.654321f);
-			player.setLongitude(54.654321f);
 			Game myGame = new Game();
 			myGame.setKey("ahFyd3RoLW1jYzEwLWdyb3VwM3IMCxIER2FtZRix5AMM");
 			myGame.setName("tollestestspiel");
@@ -123,6 +116,8 @@ public class Map extends MapActivity{
 		Toast.makeText(getApplicationContext(), player.getKey(), Toast.LENGTH_LONG).show();
 		
 		if(player != null){
+			
+			//init LocationManger
 			lm = (LocationManager) getSystemService(LOCATION_SERVICE);
 
 			if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -130,37 +125,215 @@ public class Map extends MapActivity{
 			} else {
 				provider = LocationManager.NETWORK_PROVIDER;			
 			}
+			
 			geoUpdater = new GeoUpdateHandler();
 			lm.getLastKnownLocation(provider);
 			lm.requestLocationUpdates(provider, 0, 0, geoUpdater);
 			gameLoop();
+			
 		} else {
 			Map.this.finish();
 		}
 	}	
 	
-	@Override
-	protected boolean isRouteDisplayed() {
-	    return false;
-	}
+	//background thread updating player/target position
+    protected void gameLoop() {
+
+    	startTimeMillis = System.currentTimeMillis();
+    	
+        // Fire off a thread to do some work that we shouldn't do directly in the UI thread
+        Thread t = new Thread() {
+            public void run() {
+            	while(true){
+            		synchronized(player){
+		            	if(player != null) {
+		            		Integrator.playerUpdateState(player); 
+		            		targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));
+		            	}
+            		}
+            		
+	                mHandler.post(mUpdateMarkers);
+            		
+	                synchronized(player){
+	            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){ //game has finished
+	            			mHandler.post(mWinLoose);
+	            			break;
+	            		}
+	            		
+	            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 2){ //game has stopped
+	            			mHandler.post(mClose);
+	            			break;
+	            		}
+	                }
+            		
+            		SystemClock.sleep(10000);
+            		
+            	}
+            	
+            }
+        };
+        t.start();
+        
+    }
+			
+    //redraw markers on map
+	private void updateMarkers(){
+		Log.d(LOGTAG, "updateMarkers()");
 		
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		
+		synchronized(player){
+			GeoPoint point = new GeoPoint((int) (player.getLatitude() * 1E6),(int) (player.getLongitude() * 1E6));
+			
+			if(pointList.size() == 0){
+				pointList.add(point);
+			} else {
+				if(pointList.get(pointList.size()-1) != point){
+					pointList.add(point);
+				}
+			}
+				
+			if(point != prePoint){
+				if(myStartPositionOverlay == null){
+					myStartPositionOverlay = new MyOverlay(point,null,R.drawable.start);
+					mapOverlays.add(myStartPositionOverlay);
+					
+					prePoint = point;
+				} else if(myPositionOverlay == null){
+					mapOverlays.remove(myStartPositionOverlay);
+					mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.start));
+					myPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
+					mapOverlays.add(myPositionOverlay);
+					
+					prePoint = point;
+				} else {
+					mapOverlays.remove(myPositionOverlay);
+					mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.point));
+					myPositionOverlay = new MyOverlay(prePoint,null,R.drawable.point_blue);
+					mapOverlays.add(myPositionOverlay);	
+					
+					prePoint = point;						
+				}
+				
+				mapView.getController().animateTo(point);
+				
+				if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
+				myTargetPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_yellow);
+				mapOverlays.add(myTargetPositionOverlay);	
+				
+				mapView.postInvalidate();
+				
+			}
+		}
+	}
+	
+	private String getFormattetTotalGameTime(){
+		int time = (int) (System.currentTimeMillis() - startTimeMillis) * 1000;
+		int mins = time / 60;
+		int secs = time % 60;
+		
+		return mins + " Minuten, " + secs + " Sekunden";
+	}
+	
 	private void winLooseAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		  //TODO: change the following condition
-		  builder.setMessage("Du hast " + (!player.getName().equals("gewonnen") ? "gewonnen" : "verloren"))
+		  builder.setMessage("Du hast " + (player.isHasWin() ? "gewonnen" : "verloren") + "\n" +
+		  		"\n" +
+		  		"Zurückgelegte Distanz: " + pointList.getDistance() + "\n" +
+		  		"Spielzeit: " + getFormattetTotalGameTime())
 		         .setCancelable(false)
 		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 		             public void onClick(DialogInterface dialog, int id) {
 		                  dialog.cancel();
-		                  lm.removeUpdates(geoUpdater);
-		                  Map.this.finish();
+		                  closeMapView();
 		             }
 		         });
 		  final AlertDialog winLooseAlert = builder.create();
 		  winLooseAlert.show();
 	}
 	
-	class MyOverlay extends Overlay{
+	private void gameClosedAlert(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		  builder.setMessage("Das Spiel wurde beendet!")
+		         .setCancelable(false)
+		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		             public void onClick(DialogInterface dialog, int id) {
+		                  dialog.cancel();
+		                  closeMapView();
+		             }
+		         });
+		  final AlertDialog winLooseAlert = builder.create();
+		  winLooseAlert.show();
+	}
+	
+	private void closeMapView(){
+        lm.removeUpdates(geoUpdater);
+        Map.this.finish();	
+	}
+	
+	/**********************************************************************/
+	/**                           in game menu                           **/
+	/**********************************************************************/
+	
+	/**
+	 *  Creates the menu items. 
+	 */
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.in_game_options_menu, menu);
+	    return true;
+	}
+
+	/** 
+	 * Handles item selections 
+	 */
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.in_game_options_menu_leave:
+			Integrator.leaveGame(player);
+			Toast.makeText(getApplicationContext(), "Du hast das Spiel verlassen", Toast.LENGTH_LONG).show();
+			closeMapView();
+			return true;						
+		}
+		return false;
+	}
+	
+	/**********************************************************************/
+	/**                         additional classes                       **/
+	/**********************************************************************/
+	
+	/*
+	 * GeoLocation Update Handler
+	 */
+	public class GeoUpdateHandler implements LocationListener {
+
+		public void onLocationChanged(Location location) {
+			if(location != null){
+				float lat = (float) (location.getLatitude());
+				float lng = (float) (location.getLongitude());		
+				synchronized (player){
+					player.setLatitude(lat);
+					player.setLongitude(lng);
+					Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
+				}
+			}
+		}
+	
+
+		public void onProviderDisabled(String provider) {
+		}
+
+		public void onProviderEnabled(String provider) {
+		}
+
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+		}
+	}
+	
+	/*
+	 * custom overlay item class
+	 */
+	private class MyOverlay extends Overlay{
 		int markerId;
 		GeoPoint point1;
 		GeoPoint point2;
@@ -205,82 +378,34 @@ public class Map extends MapActivity{
 	    }		
 	}
 	
-	private void updateMarkers(){
-		Log.d(LOGTAG, "updateMarkers()");
+	/*
+	 * GeoPointList contains all geolocations visited by player
+	 * also calculates distance between first and last location in the List
+	 */
+	private class GeoPointList extends ArrayList<GeoPoint>{
+
+		private static final long serialVersionUID = 1L;
+		private float distance = 0f;
 		
-		List<Overlay> mapOverlays = mapView.getOverlays();
-		
-		synchronized(player){
-			GeoPoint point = new GeoPoint((int) (player.getLatitude() * 1E6),(int) (player.getLongitude() * 1E6));
+		public boolean add(GeoPoint g){
 			
-			if(pointList.size() == 0){
-				pointList.add(point);
+			if(g != null){
+				if(this.size() > 0){
+					float[] results = new float[1];
+					Location.distanceBetween(g.getLatitudeE6(), g.getLongitudeE6(), this.get(this.size()-1).getLatitudeE6(), this.get(this.size()-1).getLongitudeE6(), results);
+					distance += results[0];
+				}
+				return super.add(g);
 			} else {
-				if(pointList.get(pointList.size()-1) != point){
-					pointList.add(point);
-				}
+				return false;
 			}
-				
-			if(point != prePoint){
-				if(myStartPositionOverlay == null){
-					Log.d(LOGTAG, "updateMarkers() - 1");
-					myStartPositionOverlay = new MyOverlay(point,null,R.drawable.start);
-					mapOverlays.add(myStartPositionOverlay);
-					
-					prePoint = point;
-				} else if(myPositionOverlay == null){
-					Log.d(LOGTAG, "updateMarkers() - 2");
-					mapOverlays.remove(myStartPositionOverlay);
-					mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.start));
-					myPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
-					mapOverlays.add(myPositionOverlay);
-					
-					prePoint = point;
-				} else {
-					Log.d(LOGTAG, "updateMarkers() - 3");
-					mapOverlays.remove(myPositionOverlay);
-					mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.point));
-					myPositionOverlay = new MyOverlay(prePoint,null,R.drawable.point_blue);
-					mapOverlays.add(myPositionOverlay);	
-					
-					prePoint = point;						
-				}
-				
-				mapView.getController().animateTo(point);
-				
-				if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
-				myTargetPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_yellow);
-				mapOverlays.add(myTargetPositionOverlay);	
-				
-				mapView.postInvalidate();
-				
-			}
+			
 		}
-	}
-	
-	public class GeoUpdateHandler implements LocationListener {
-
-		public void onLocationChanged(Location location) {
-			if(location != null){
-				float lat = (float) (location.getLatitude());
-				float lng = (float) (location.getLongitude());		
-				synchronized (player){
-					player.setLatitude(lat);
-					player.setLongitude(lng);
-					Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
-				}
-			}
+		
+		public float getDistance(){
+			return distance;
 		}
-	
-
-		public void onProviderDisabled(String provider) {
-		}
-
-		public void onProviderEnabled(String provider) {
-		}
-
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-		}
+		
 	}
 	
 }
