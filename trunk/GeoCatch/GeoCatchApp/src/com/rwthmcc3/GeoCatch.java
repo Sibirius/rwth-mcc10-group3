@@ -8,6 +8,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,13 +18,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 
 
 public class GeoCatch extends Activity {
 	private String mac = null;
 	private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	private  Player p = Player.getPlayer();
+	private LocationManager lmGeoCatch;
+	private String providerGeoCatch = "";
 	
 	
 	/** Called when the activity is first created. */
@@ -40,6 +44,17 @@ public class GeoCatch extends Activity {
 	    p.setName(settings.getString("player_name", "Player 1"));
 	    p.setListSize(settings.getInt("list_size", 10));
 	    
+	    //create LocationManager for GPS
+	    lmGeoCatch = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+		if(lmGeoCatch.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+			providerGeoCatch = LocationManager.GPS_PROVIDER;
+		} else {
+			providerGeoCatch = LocationManager.NETWORK_PROVIDER;			
+		}
+		
+		lmGeoCatch.getLastKnownLocation(providerGeoCatch);
+		lmGeoCatch.requestLocationUpdates(providerGeoCatch, 0, 0, locationListenerGeoCatch);
 	           
 	}
 
@@ -66,13 +81,13 @@ public class GeoCatch extends Activity {
 	    	AlertDialog.Builder builderBluetoothOff = new AlertDialog.Builder(this);
 	    	builderBluetoothOff.setMessage("Bluetooth muss aktiviert sein um dieses Spiel zu spielen! Bluetooth aktivieren?")
 	        	       .setCancelable(false)
-	        	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	        	       .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
 	        	           public void onClick(DialogInterface dialog, int id) {
 	        	        	   	Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 	        	   	        	startActivityForResult(enableBtIntent, RESULT_OK);
 	        	           }
 	        	       })
-	        	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+	        	       .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
 	        	           public void onClick(DialogInterface dialog, int id) {
 	        	        	   GeoCatch.this.finish();
 	        	           }
@@ -82,36 +97,50 @@ public class GeoCatch extends Activity {
 	        
 	    }
 	    //register player
+	    if(mBluetoothAdapter.isEnabled()){
+	    	 //set mac
+		     mac = mBluetoothAdapter.getAddress();
+		     p.setMac(mac);
+		     		     
+	    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
+	    	 if(hasRegister == false){
+	         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
+	         	 //register player failed (second time)
+	         	if(hasRegister == false){
+	 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);
+	 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! Bitte überprüfen Sie Ihre Internetverbindung! Registrierung wiederholen?")
+	 	        	       .setCancelable(false)
+	 	        	       .setPositiveButton("Wiederholen", new DialogInterface.OnClickListener() {
+	 	        	           public void onClick(DialogInterface dialog, int id) {
+	 	        	        	  dialog.dismiss();
+	 	        	        	  onResume();	//restart
+	 	        	           }
+	 	        	      });
+	 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
+	 	        	alertRegisterFailed.show();
+	         	}
+	         }
+	    }
 	   
-	   // if(p.getKey()!= null){
-		    if(mBluetoothAdapter.isEnabled()){
-		    	 //set mac
-			     mac = mBluetoothAdapter.getAddress();
-			     p.setMac(mac);
-			     		     
-		    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
-		         
-		         
-		         if(hasRegister == false){
-		         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
-		         	 //register player failed (second time)
-		         	if(hasRegister == false){
-		 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);
-		 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! Bitte überprüfen Sie Ihre Internetverbindung! Registrierung wiederholen?")
-		 	        	       .setCancelable(false)
-		 	        	       .setPositiveButton("Wiederholen", new DialogInterface.OnClickListener() {
-		 	        	           public void onClick(DialogInterface dialog, int id) {
-		 	        	        	  dialog.dismiss();
-		 	        	        	  onResume();
-		 	        	           }
-		 	        	      });
-		 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
-		 	        	alertRegisterFailed.show();
-		         	}
-		         }
-		    }
-	   // }
+		   
+	    
 	}
+	
+	 private final LocationListener locationListenerGeoCatch = new LocationListener() {
+	    	public void onLocationChanged(Location location){
+	           p.setLatitude(location.getLatitude());
+	           p.setLongitude(location.getLongitude());
+	        }
+
+			public void onProviderDisabled(String provider) {
+			}
+
+			public void onProviderEnabled(String provider) {
+			}
+
+			public void onStatusChanged(String provider, int status, Bundle extras) {
+			}
+	    };
 	
 	OnClickListener doNewGameOnClick = new OnClickListener() {		
 		public void onClick(View view) {
