@@ -152,7 +152,7 @@ public class MainMenu extends Activity{
     	       final long start = SystemClock.uptimeMillis(); //set starttime to milliseconds
     	       long millis = SystemClock.uptimeMillis() - start;
     	       if(p.getMyGame()!=null){
-	    	       long countDown = p.getMyGame().getTimer()*60*1000 - millis;
+	    	       long countDown = p.getMyGame().getTimer()*1000 - millis;
 	    	       int seconds = (int) (countDown / 1000);
 	    	       int minutes = seconds / 60;
 	    	       seconds     = seconds % 60;
@@ -203,7 +203,7 @@ public class MainMenu extends Activity{
 			
 			//compare keys
 			boolean sameKey = true;
-			String chosenGameKey = "sdfsdsfsfs";//chosenGame.getKey();
+			String chosenGameKey = chosenGame.getKey();
 			if(p.getMyGame()== null){
 				sameKey = false;
 			}else{
@@ -392,9 +392,9 @@ public class MainMenu extends Activity{
 		//Player player = Integrator.registerPlayer("F1:12:23:34:45:56", "playertest");
 		//Integrator.createGame(player, "testgame", 5, 1, 13.37f, 13.337f);
 		games = Integrator.getGameList();
-		if(games != null) addItemToList("Resident Evil","4/7 Player","Distance to Creator: 4.5 km");
-		
+				
 		if (games != null){
+			if(games.isEmpty())Toast.makeText(MainMenu.this,"Keine Spiele vorhanden!", Toast.LENGTH_LONG).show();
 			for (Game i : games) {
 				Log.d(LOGTAG, "game: "+i.getName());
 				addItemToList(i.getName(),i.getPlayerCount()+"/"+i.getMaxPlayersCount()
@@ -451,7 +451,7 @@ public class MainMenu extends Activity{
 	public void onStop(){
 		super.onStop();
 		isAlive=false;
-		timeHandler.removeCallbacks(mUpdateTimeTask);
+		//timeHandler.removeCallbacks(mUpdateTimeTask);
 	}
 	
 	@Override
