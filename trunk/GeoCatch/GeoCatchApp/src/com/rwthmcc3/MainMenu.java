@@ -263,7 +263,9 @@ public class MainMenu extends Activity {
 		View listView = (View) findViewById(R.id.listview_mainmenu);
 		layoutMainMenuView.setVisibility(View.GONE);
 		listView.setVisibility(View.VISIBLE);
-
+		View startButtonView = (View) findViewById(R.id.button_start_game_mainmenu);
+		
+		
 		Integrator.playerUpdateState(p);
 
 		if (p.getMyGame() != null) {
@@ -273,7 +275,7 @@ public class MainMenu extends Activity {
 			if ((p.isCreator())
 					&& (p.getMyGame().getPlayerCount() == p.getMyGame()
 							.getMaxPlayersCount()) && (myGameState == 0)) {
-				View startButtonView = (View) findViewById(R.id.button_start_game_mainmenu);
+				
 				startButtonView.setVisibility(View.VISIBLE);
 			}
 			// shows timer when game is started and timer hasn't counted down
@@ -284,6 +286,8 @@ public class MainMenu extends Activity {
 				myUpdateHandler.removeCallbacks(mUpdateTimeTask);
 				myUpdateHandler.postDelayed(mUpdateTimeTask, 100);
 			}
+		}else{
+			startButtonView.setVisibility(View.GONE);
 		}
 
 	}
@@ -449,7 +453,7 @@ public class MainMenu extends Activity {
 										break;
 									case 1:
 										boolean stop = Integrator
-												.stopGame(Player.getPlayer());
+												.leaveGame(Player.getPlayer());
 										// check
 										if (stop) {
 											Toast.makeText(MainMenu.this,

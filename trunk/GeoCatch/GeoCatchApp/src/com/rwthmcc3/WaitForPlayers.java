@@ -163,6 +163,7 @@ public class WaitForPlayers extends Activity {
 		View listView = (View) findViewById(R.id.listview_waitforplayers);
 		layoutWaitForPlayersView.setVisibility(View.GONE);
 		listView.setVisibility(View.VISIBLE);
+		View startButtonView = (View) findViewById(R.id.button_start_game_waitforplayers);
 		
 		Integrator.playerUpdateState(p);
 
@@ -173,7 +174,7 @@ public class WaitForPlayers extends Activity {
 			if ((p.isCreator())
 					&& (p.getMyGame().getPlayerCount() == p.getMyGame()
 							.getMaxPlayersCount()) && (myGameState == 0)) {
-				View startButtonView = (View) findViewById(R.id.button_start_game_waitforplayers);
+				
 				startButtonView.setVisibility(View.VISIBLE);
 			}
 			// shows timer when game is started and timer hasn't counted down
@@ -184,6 +185,8 @@ public class WaitForPlayers extends Activity {
 				myUpdateHandler.removeCallbacks(mUpdateTimeTask);
 				myUpdateHandler.postDelayed(mUpdateTimeTask, 100);
 			}
+		}else{
+			startButtonView.setVisibility(View.GONE);
 		}
 
 	}
