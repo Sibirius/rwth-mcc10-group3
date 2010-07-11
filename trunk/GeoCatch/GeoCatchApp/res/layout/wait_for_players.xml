@@ -68,5 +68,12 @@
 			android:id="@+id/button_start_game_waitforplayers"
 			android:visibility="gone"
 			/>
+<TextView   android:id="@+id/text_timer_waitforplayers"
+			android:layout_height="wrap_content" 
+			android:layout_width="fill_parent" 
+			android:visibility="gone"
+			android:layout_gravity="center"
+			android:padding="20px"
+			/>
 			
 </LinearLayout>

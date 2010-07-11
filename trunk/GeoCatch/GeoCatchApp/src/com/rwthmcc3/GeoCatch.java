@@ -26,6 +26,8 @@ public class GeoCatch extends Activity {
 	private  Player p = Player.getPlayer();
 	private LocationManager lmGeoCatch;
 	private String providerGeoCatch = "";
+	public static boolean debugMode = false;
+	public static String debugMac = "16:66:FF:66:66:65";
 	
 	
 	/** Called when the activity is first created. */
@@ -62,64 +64,68 @@ public class GeoCatch extends Activity {
 	public void onResume(){
 		super.onResume();
 		
-		//check bluetooth
-	    if (mBluetoothAdapter == null) {
-	    	
-	        // Device does not support Bluetooth
-	    	AlertDialog.Builder builderNoBluetooth = new AlertDialog.Builder(this);
-	    	builderNoBluetooth.setMessage("Sie benötigen Bluetooth um dieses Spiel zu spielen! GeoCatch beenden?")
-	        	       .setCancelable(false)
-	        	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-	        	           public void onClick(DialogInterface dialog, int id) {
-	        	                GeoCatch.this.finish();
-	        	           }
-	        	       });
-	        	AlertDialog alertNoBluetooth = builderNoBluetooth.create();;
-	        	alertNoBluetooth.show();
-	    }
-	    if (!mBluetoothAdapter.isEnabled()) {
-	    	AlertDialog.Builder builderBluetoothOff = new AlertDialog.Builder(this);
-	    	builderBluetoothOff.setMessage("Bluetooth muss aktiviert sein um dieses Spiel zu spielen! Bluetooth aktivieren?")
-	        	       .setCancelable(false)
-	        	       .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
-	        	           public void onClick(DialogInterface dialog, int id) {
-	        	        	   	Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-	        	   	        	startActivityForResult(enableBtIntent, RESULT_OK);
-	        	           }
-	        	       })
-	        	       .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
-	        	           public void onClick(DialogInterface dialog, int id) {
-	        	        	   GeoCatch.this.finish();
-	        	           }
-	        	       });
-	        	AlertDialog alertBluetoothOff = builderBluetoothOff.create();;
-	        	alertBluetoothOff.show();
-	        
-	    }
-	    //register player
-	    if(mBluetoothAdapter.isEnabled()){
-	    	 //set mac
-		     mac = mBluetoothAdapter.getAddress();
-		     p.setMac(mac);
-		     		     
-	    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
-	    	 if(hasRegister == false){
-	         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
-	         	 //register player failed (second time)
-	         	if(hasRegister == false){
-	 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);
-	 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! Bitte überprüfen Sie Ihre Internetverbindung! Registrierung wiederholen?")
-	 	        	       .setCancelable(false)
-	 	        	       .setPositiveButton("Wiederholen", new DialogInterface.OnClickListener() {
-	 	        	           public void onClick(DialogInterface dialog, int id) {
-	 	        	        	  dialog.dismiss();
-	 	        	        	  onResume();	//restart
-	 	        	           }
-	 	        	      });
-	 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
-	 	        	alertRegisterFailed.show();
-	         	}
-	         }
+		if(!debugMode){
+			//check bluetooth
+		    if (mBluetoothAdapter == null) {
+		    	
+		        // Device does not support Bluetooth
+		    	AlertDialog.Builder builderNoBluetooth = new AlertDialog.Builder(this);
+		    	builderNoBluetooth.setMessage("Sie benötigen Bluetooth um dieses Spiel zu spielen! GeoCatch beenden?")
+		        	       .setCancelable(false)
+		        	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		        	           public void onClick(DialogInterface dialog, int id) {
+		        	                GeoCatch.this.finish();
+		        	           }
+		        	       });
+		        	AlertDialog alertNoBluetooth = builderNoBluetooth.create();;
+		        	alertNoBluetooth.show();
+		    }
+		    if (!mBluetoothAdapter.isEnabled()) {
+		    	AlertDialog.Builder builderBluetoothOff = new AlertDialog.Builder(this);
+		    	builderBluetoothOff.setMessage("Bluetooth muss aktiviert sein um dieses Spiel zu spielen! Bluetooth aktivieren?")
+		        	       .setCancelable(false)
+		        	       .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+		        	           public void onClick(DialogInterface dialog, int id) {
+		        	        	   	Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+		        	   	        	startActivityForResult(enableBtIntent, RESULT_OK);
+		        	           }
+		        	       })
+		        	       .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+		        	           public void onClick(DialogInterface dialog, int id) {
+		        	        	   GeoCatch.this.finish();
+		        	           }
+		        	       });
+		        	AlertDialog alertBluetoothOff = builderBluetoothOff.create();;
+		        	alertBluetoothOff.show();
+		        
+		    }
+		    //register player
+		    if(mBluetoothAdapter.isEnabled()){
+		    	 //set mac
+			     mac = mBluetoothAdapter.getAddress();
+			     p.setMac(mac);
+			     		     
+		    	 boolean hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
+		    	 if(hasRegister == false){
+		         	hasRegister = Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
+		         	 //register player failed (second time)
+		         	if(hasRegister == false){
+		 	        	AlertDialog.Builder builderRegisterFailed = new AlertDialog.Builder(this);
+		 	        	builderRegisterFailed.setMessage("Registrierung fehlgeschlagen! Bitte überprüfen Sie Ihre Internetverbindung! Registrierung wiederholen?")
+		 	        	       .setCancelable(false)
+		 	        	       .setPositiveButton("Wiederholen", new DialogInterface.OnClickListener() {
+		 	        	           public void onClick(DialogInterface dialog, int id) {
+		 	        	        	  dialog.dismiss();
+		 	        	        	  onResume();	//restart
+		 	        	           }
+		 	        	      });
+		 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
+		 	        	alertRegisterFailed.show();
+		         	}
+		         }
+		    }else{//for debugging
+		    	Integrator.registerPlayer(debugMac, p.getName(), p.getLongitude(), p.getLatitude());
+		    }
 	    }
 	   
 		   
