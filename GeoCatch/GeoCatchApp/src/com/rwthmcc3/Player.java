@@ -22,6 +22,7 @@ public class Player {
 	private  String mac;
 	private boolean hasWin;
 	private int number;
+	private boolean timerHasCountedDown = false;
 	
 	private Player(){
 		
@@ -194,6 +195,14 @@ public class Player {
 
 	public int getNumber() {
 		return number;
+	}
+
+	public void setTimerHasCountedDown(boolean timerHasCountedDown) {
+		this.timerHasCountedDown = timerHasCountedDown;
+	}
+
+	public boolean isTimerHasCountedDown() {
+		return timerHasCountedDown;
 	}
 
 	

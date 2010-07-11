@@ -16,6 +16,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 
@@ -46,6 +48,8 @@ public class MainMenu extends Activity{
 	private Thread backgroundMainMenu = null;
 	private boolean isAlive = true;
 	private Runnable runnableMainMenu = null;
+	private TextView timerView = (TextView)findViewById(R.id.text_timer_mainmenu);
+	private Handler timeHandler = new Handler();
 	
 	
     @Override
@@ -88,10 +92,13 @@ public class MainMenu extends Activity{
     			
     			//make button invisible
     			View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
-        		startButtonView.setVisibility(View.VISIBLE);
+        		startButtonView.setVisibility(View.GONE);
         		
-        		//TODO show timer
-        		
+        		//show timer and activate
+        		timerView.setVisibility(View.VISIBLE);
+        		timeHandler.removeCallbacks(mUpdateTimeTask);
+                timeHandler.postDelayed(mUpdateTimeTask, 100);
+                
     		}else{
     			Toast.makeText(MainMenu.this,"Fehler! Bitte versuchen Sie es erneut!", Toast.LENGTH_SHORT).show();
     		}
@@ -116,6 +123,9 @@ public class MainMenu extends Activity{
     	layoutMainMenuView.setVisibility(View.GONE);
     	listView.setVisibility(View.VISIBLE);
     	
+    	Integrator.playerUpdateState(p);
+    	int myGameState = p.getMyGame().getState();
+    	
     	//compare keys
 		boolean sameKey = true;
 		String chosenGameKey = chosenGame.getKey();
@@ -126,18 +136,48 @@ public class MainMenu extends Activity{
 			sameKey = chosenGameKey.equals(myGameKey);
 		}
 		
-		//show start game button
-    	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())){
+		//show start game button when player is creator,enough players and game not started
+    	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())&&(myGameState==0)){
     		View startButtonView = (View)findViewById(R.id.button_start_game_mainmenu);
     		startButtonView.setVisibility(View.VISIBLE);
-        }
+    	}
     	
-    	//shows timer when game is started
-    	Integrator.playerUpdateState(p);
-    	int myGameState = p.getMyGame().getState();
-    	
+    	//shows timer when game is started and timer hasn't counted down
+    	if((myGameState == 1) && (!p.isCreator()) && p.isTimerHasCountedDown()){
+    		
+    		timerView.setVisibility(View.VISIBLE);
+    		timeHandler.removeCallbacks(mUpdateTimeTask);
+            timeHandler.postDelayed(mUpdateTimeTask, 100);
+    	}
     }
     
+    private Runnable mUpdateTimeTask = new Runnable() {
+    	   public void run() {
+    	       final long start = SystemClock.uptimeMillis(); //set starttime to milliseconds
+    	       long millis = SystemClock.uptimeMillis() - start;
+    	       long countDown = p.getMyGame().getTimer()*60*1000 - millis;
+    	       int seconds = (int) (countDown / 1000);
+    	       int minutes = seconds / 60;
+    	       seconds     = seconds % 60;
+    	       
+    	       if( countDown > 0){
+	    	       if (seconds < 10) {
+	    	    	   timerView.setText("" + minutes + ":0" + seconds);
+	    	       } else {
+	    	    	   timerView.setText("" + minutes + ":" + seconds);            
+	    	       }
+	    	     
+	    	       //active for next update
+	    	       timeHandler.postAtTime(this,
+	    	               start + millis+1000);
+    	       }else{
+    	    	   //counted to 0
+    	    	   p.setTimerHasCountedDown(true);
+    	    	   timerView.setVisibility(View.GONE);
+    	    	   startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.Map.class),0);
+    	       }
+    	   }
+    	};
     
     private final LocationListener locationListenerMainMenu = new LocationListener() {
     	public void onLocationChanged(Location location){
@@ -345,13 +385,11 @@ public class MainMenu extends Activity{
 	 * 
 	 */
 	public void setListofGames(){
-		
 		//delete list before set new list
 		mylist.clear();
 		
 		//nicer look - gps
 		DecimalFormat format = new DecimalFormat("#0.00");
-		
 		
 		//for every item: addItemToList
 		//Player player = Integrator.registerPlayer("F1:12:23:34:45:56", "playertest");
@@ -366,17 +404,6 @@ public class MainMenu extends Activity{
 						+ " km");
 			}
 		}
-		
-		/*
-		//test data
-		addItemToList("Unreal Tournament","1/8 Player","Distance to Creator: 0.8 km");
-		addItemToList("Super Mario","4/5 Player","Distance to Creator: 1.5 km");
-		addItemToList("Tekken","3/4 Player","Distance to Creator: 2 km");
-		addItemToList("Halo","1/5 Player","Distance to Creator: 3.5 km");
-		addItemToList("Resident Evil","4/7 Player","Distance to Creator: 4.5 km");
-		*/
-		
-		
 		mSchedule.notifyDataSetChanged();
 	    
 	}
@@ -418,6 +445,7 @@ public class MainMenu extends Activity{
 	public void onStop(){
 		super.onStop();
 		isAlive=false;
+		timeHandler.removeCallbacks(mUpdateTimeTask);
 	}
 	
 	@Override

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
@@ -27,6 +28,8 @@ public class WaitForPlayers extends Activity {
 	private  Thread background = null;
 	private boolean isAlive = true;
 	private Player p = Player.getPlayer();
+	private TextView timerView = (TextView)findViewById(R.id.text_timer_waitforplayers);
+	private Handler timeHandler = new Handler();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,33 @@ public class WaitForPlayers extends Activity {
 	
      
 	 }
+	private Runnable mUpdateTimeTask = new Runnable() {
+ 	   public void run() {
+ 	       final long start = SystemClock.uptimeMillis(); //set starttime to milliseconds
+ 	       long millis = SystemClock.uptimeMillis() - start;
+ 	       long countDown = p.getMyGame().getTimer()*60*1000 - millis;
+ 	       int seconds = (int) (countDown / 1000);
+ 	       int minutes = seconds / 60;
+ 	       seconds     = seconds % 60;
+ 	       
+ 	       if( countDown > 0){
+	    	       if (seconds < 10) {
+	    	    	   timerView.setText("" + minutes + ":0" + seconds);
+	    	       } else {
+	    	    	   timerView.setText("" + minutes + ":" + seconds);            
+	    	       }
+	    	     
+	    	       //active for next update
+	    	       timeHandler.postAtTime(this,
+	    	               start + millis+1000);
+ 	       }else{
+ 	    	   //counted to 0
+ 	    	   p.setTimerHasCountedDown(true);
+ 	    	   timerView.setVisibility(View.GONE);
+ 	    	   startActivityForResult(new Intent(WaitForPlayers.this, com.rwthmcc3.Map.class),0);
+ 	       }
+ 	   }
+ 	};
 	
 	OnClickListener doStartGameButtonOnClick = new OnClickListener() {		
 		public void onClick(View view) {
@@ -83,6 +113,10 @@ public class WaitForPlayers extends Activity {
     	layoutMainMenuView.setVisibility(View.GONE);
     	listView.setVisibility(View.VISIBLE);
     	
+    	//update state
+    	Integrator.playerUpdateState(p);
+    	int myGameState = p.getMyGame().getState();
+    	
     	//compare keys
 		boolean sameKey = true;
 		String chosenGameKey = chosenGame.getKey();
@@ -93,18 +127,20 @@ public class WaitForPlayers extends Activity {
 			sameKey = chosenGameKey.equals(myGameKey);
 		}
 		
-		//show start game button
-    	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())){
+		
+    	//show start game button when player is creator,enough players and game not started
+    	if((sameKey && p.isCreator())&&(p.getMyGame().getPlayerCount()==p.getMyGame().getMaxPlayersCount())&&(myGameState==0)){
     		View startButtonView = (View)findViewById(R.id.button_start_game_waitforplayers);
     		startButtonView.setVisibility(View.VISIBLE);
-        }
+    	}
     	
-    	//starts timer
-    	Integrator.playerUpdateState(p);
-    	int myGameState = p.getMyGame().getState();
-    	
-    		//TODO
-    	
+    	//shows timer when game is started and timer hasn't counted down
+    	if((myGameState == 1) && (!p.isCreator()) && p.isTimerHasCountedDown()){
+    		
+    		timerView.setVisibility(View.VISIBLE);
+    		timeHandler.removeCallbacks(mUpdateTimeTask);
+            timeHandler.postDelayed(mUpdateTimeTask, 100);
+    	}
     }
 
 	
