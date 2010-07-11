@@ -302,7 +302,7 @@ class StopGame(webapp.RequestHandler):
 			return
 		
 		#check if game can be started and user has the right to
-		if game != None and game.creator.key() == player.key() and game.status == 1:
+		if game != None and game.creator.key() == player.key(): #and game.status == 1:
 			game.status = 2
 			game.put()
 			logging.info('Game %s stopped by player %s'%(game_key,player_key))
@@ -592,7 +592,30 @@ class PlayerUpdateState(webapp.RequestHandler):
 		else:
 			logging.error('Player %s sent update for game %s, game or player not found'%(player_key,game_key))
 			return #TODO: proper error message
+
+class NameChangePlayer(webapp.RequestHandler):
+	"""checks if mac address already in database, registers a new player otherwise""" #TODO: really a good idea? captcha?
+	def get(self):
+		try:
+			player_key = checkKey(self.request.get('p'))
+			name = checkName(self.request.get('n'))
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
+			return
 		
+		player = Player.get(player_key)
+		
+		if player == None:
+			logging.info('Changing playername failed for %s with mac %s'%(player.name,player.mac))
+			respond(self, "error")
+			return
+		else:
+			player.name = name
+			player_key = player.put()
+			logging.info('Changed player name for %s to %s'%(player.key(),player.name))
+			respond(self, "done")		
+				
 class RegisterPlayer(webapp.RequestHandler):
 	"""checks if mac address already in database, registers a new player otherwise""" #TODO: really a good idea? captcha?
 	def get(self):
@@ -775,6 +798,7 @@ application = webapp.WSGIApplication(
                                       ('/gameState', GetGameState),
                                       
                                       ('/register', RegisterPlayer),
+                                      ('/name', NameChangePlayer),
                                       
                                       ('/create', CreateGame),
                                       ('/join', JoinGame),                                      
