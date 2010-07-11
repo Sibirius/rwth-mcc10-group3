@@ -199,10 +199,11 @@ public class Integrator {
         String result = getResponse(doGet("/join", qparams));
         Log.d(LOGTAG, "joinGame: "+result);
         
-        player.setTimerHasCountedDown(false);
-        player.setMyGame(game);
-        game.setPlayerCount(game.getPlayerCount()+1);
-        
+        if(!result.contains("error")){
+	        player.setTimerHasCountedDown(false);
+	        player.setMyGame(game);
+	        game.setPlayerCount(game.getPlayerCount()+1);
+        }
         return !result.contains("error");
 	}
 	
@@ -244,10 +245,11 @@ public class Integrator {
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         
-        resetPlayer(player);
-        
         String result = getResponse(doGet("/leave", qparams));
         Log.d(LOGTAG, "leaveGame: "+result);
+        if(!result.contains("error")){
+        	resetPlayer(player);
+        }
         return !result.contains("error");
 	}
 	
@@ -282,9 +284,11 @@ public class Integrator {
 		        	player.setTargetLong(Float.parseFloat(ele.getAttribute("lon")));
 		        	player.setTargetLat(Float.parseFloat(ele.getAttribute("lat")));
 		        	
-		        	//TODO null?
-		        	player.getMyGame().setMode(Integer.parseInt(ele.getAttribute("mode")));
-		        	player.getMyGame().setState(Integer.parseInt(ele.getAttribute("state")));
+		        	
+		        	if(player.getMyGame()!=null){
+			        	player.getMyGame().setMode(Integer.parseInt(ele.getAttribute("mode")));
+			        	player.getMyGame().setState(Integer.parseInt(ele.getAttribute("state")));
+		        	}
 	        	}
 				NodeList nodes = doc.getElementsByTagName("event");
 			    for (int i = 0; i < nodes.getLength(); i++) {
@@ -296,10 +300,13 @@ public class Integrator {
 			    	String extra = element.getAttribute("extra");
 			    	
 			    	if(title=="victory"){
-			    		player.getMyGame().setState(3);
-			    		player.getMyGame().setWinnerName(info);
+			    		if(player.getMyGame()!=null){
+				    		player.getMyGame().setState(3);
+				    		player.getMyGame().setWinnerName(info);
+			    		}
 			    		if(Integer.parseInt(extra)==player.getNumber())
 			    			player.setHasWin(true);
+			    		
 			    	}
 			    	
 		
