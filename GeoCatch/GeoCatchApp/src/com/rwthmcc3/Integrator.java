@@ -200,6 +200,7 @@ public class Integrator {
         String result = getResponse(doGet("/join", qparams));
         Log.d(LOGTAG, "joinGame: "+result);
         
+        player.setTimerHasCountedDown(false);
         player.setMyGame(game);
         game.setPlayerCount(game.getPlayerCount()+1);
         
@@ -210,12 +211,25 @@ public class Integrator {
 		Log.d(LOGTAG, "stopGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
-        
+                
         String result = getResponse(doGet("/stop", qparams));
         Log.d(LOGTAG, "stopGame: "+result);
-        return !result.contains("error");
+        if(result.contains("error"))
+        	return false;
+        else{
+        	resetPlayer(player);
+        	return true;
+        }
 	}
 	
+	private static void resetPlayer(Player player) {
+		player.setTimerHasCountedDown(false);
+    	player.setMyGame(null);
+    	player.setCreator(false);
+    	player.setHasWin(false);
+	}
+
+
 	public static boolean startGame(Player player){
 		Log.d(LOGTAG, "startGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -231,7 +245,7 @@ public class Integrator {
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         
-        player.setMyGame(null);
+        resetPlayer(player);
         
         String result = getResponse(doGet("/leave", qparams));
         Log.d(LOGTAG, "leaveGame: "+result);
@@ -354,6 +368,7 @@ public class Integrator {
 	        game.setPlayerCount(1);
 	        game.setTimer(timer);
 	        
+	        player.setTimerHasCountedDown(false);
 	        player.setCreator(true);
 	        player.setMyGame(game);
 	        
