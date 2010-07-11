@@ -54,12 +54,12 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 		public void onClick(View view) {
 			
 			EditText gameNameField = (EditText)findViewById(R.id.edit_game_name);
-			String gameName = gameNameField.toString();
+			String gameName = gameNameField.getText().toString();
 			SeekBar maxPlayerSeekbar = (SeekBar)findViewById(R.id.seekbar_player_count);
 	        int maxPlayersCount = maxPlayerSeekbar.getProgress()+1;
 	        Spinner timerSpinner = (Spinner)findViewById(R.id.spinner_new_game);
 	        int timerPosition = timerSpinner.getSelectedItemPosition();
-	        int timer = (timerPosition+1)*3; // 0=3min, 1=6min, 2=9min, 3=12min, 4=15min
+	        int timer = (timerPosition+1)*3*60; // 0=3min, 1=6min, 2=9min, 3=12min, 4=15min
 			
 			if((!gameName.startsWith(" ")) || (gameName.length()< 3)){
 				//message to user
@@ -69,7 +69,7 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
     			}
 			    boolean created = true;
 			    
-				created = Integrator.createGame(p,gameName , maxPlayersCount, 1, timer);
+				created = Integrator.createGame(p, gameName , maxPlayersCount, 1, timer);
 	        	if(created && leave){
 	        		startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.MainMenu.class),0);
 	        	}else{
