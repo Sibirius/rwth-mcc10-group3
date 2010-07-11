@@ -130,6 +130,46 @@ public class Integrator {
 		return null;
 	}
 	
+	public static List<String> getGameState(Player player){
+		Log.d(LOGTAG, "getGameState()");
+		Game game = player.getMyGame();
+		if(game != null){
+		List<String> result = new ArrayList<String>();
+			List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+			qparams.add(new BasicNameValuePair("g", game.getKey()));
+			qparams.add(new BasicNameValuePair("p", player.getKey()));
+	        HttpResponse res = doGet("/gameState", qparams);
+	        if(res != null){
+		        try {
+					Log.d(LOGTAG, "start parsing playerlist");
+		        	Document doc = parseXml(res.getEntity().getContent());
+					NodeList nodes = doc.getElementsByTagName("players");
+				    for (int i = 0; i < nodes.getLength(); i++) {
+				    	Log.d(LOGTAG, "parsing element #"+i);
+				    	Element element = (Element) nodes.item(i);
+				    	
+				    	result.add(element.getAttribute("name"));
+	
+				     }
+				    Log.d(LOGTAG,"getGameState success");
+				    game.setPlayerCount(nodes.getLength());
+				    return result;
+		
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	        }else{
+	        	Log.w(LOGTAG, "No Response from Server");
+	        }
+		}else{
+			Log.w(LOGTAG, "Nullpointer Argument game,getGameState");
+		}
+		Log.e(LOGTAG, "NullPointer, getPlayerList");
+		return null;
+	}
+	
 	public static boolean joinGame(Player player, Game game){
 		Log.d(LOGTAG, "joinGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -216,11 +256,15 @@ public class Integrator {
 			    for (int i = 0; i < nodes.getLength(); i++) {
 			    	Log.d(LOGTAG, "parsing element #"+i);
 			    	Element element = (Element) nodes.item(i);
+			    	
+			    	String title = element.getAttribute("title");
 			    	String info = element.getAttribute("info");
-			    	if(element.getAttribute("title")=="victory"){
+			    	String extra = element.getAttribute("extra");
+			    	
+			    	if(title=="victory"){
 			    		player.getMyGame().setState(3);
-			    		player.getMyGame().setWinnerName(element.getAttribute("info"));
-			    		if(Integer.parseInt(element.getAttribute("extra"))==player.getNumber())
+			    		player.getMyGame().setWinnerName(info);
+			    		if(Integer.parseInt(extra)==player.getNumber())
 			    			player.setHasWin(true);
 			    	}
 			    	
@@ -247,6 +291,8 @@ public class Integrator {
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("m", mac));
         qparams.add(new BasicNameValuePair("n", name));
+        qparams.add(new BasicNameValuePair("lon", String.valueOf(longitude)));
+        qparams.add(new BasicNameValuePair("lat", String.valueOf(latitude)));
        
         String result = getResponse(doGet("/register", qparams));
         Log.d(LOGTAG, "registerPlayer: "+result);
@@ -255,6 +301,8 @@ public class Integrator {
         }else{
         	Player.getPlayer().setKey(result);
         	Player.getPlayer().setPlayerName(name);
+        	Player.getPlayer().setLongitude(longitude);
+        	Player.getPlayer().setLatitude(latitude);
         	return true;
         }
 
