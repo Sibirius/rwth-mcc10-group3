@@ -282,6 +282,8 @@ public class Integrator {
 	        	if(ele != null){
 		        	player.setTargetLong(Float.parseFloat(ele.getAttribute("lon")));
 		        	player.setTargetLat(Float.parseFloat(ele.getAttribute("lat")));
+		        	
+		        	//TODO null?
 		        	player.getMyGame().setMode(Integer.parseInt(ele.getAttribute("mode")));
 		        	player.getMyGame().setState(Integer.parseInt(ele.getAttribute("state")));
 	        	}
