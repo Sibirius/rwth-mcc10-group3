@@ -143,14 +143,33 @@ public class Integrator {
 		        try {
 					Log.d(LOGTAG, "start parsing playerlist");
 		        	Document doc = parseXml(res.getEntity().getContent());
-					NodeList nodes = doc.getElementsByTagName("players");
+					
+		        	NodeList nodes = doc.getElementsByTagName("game");
+					Element element = (Element) nodes.item(0);
+					if(element != null){
+						game.setName(element.getAttribute("name"));
+						game.setMode(Integer.parseInt(element.getAttribute("mode")));
+						game.setTimer(Integer.parseInt(element.getAttribute("name")));
+						game.setState(Integer.parseInt(element.getAttribute("name")));
+						game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("name")));
+					}
+		        	
+					
+		        	nodes = element.getElementsByTagName("player");
 				    for (int i = 0; i < nodes.getLength(); i++) {
 				    	Log.d(LOGTAG, "parsing element #"+i);
-				    	Element element = (Element) nodes.item(i);
+				    	element = (Element) nodes.item(i);
 				    	
 				    	result.add(element.getAttribute("name"));
-	
 				     }
+				    
+				    nodes = doc.getElementsByTagName("additional");
+				    element = (Element) nodes.item(0);
+				    if(element != null){
+				    	player.setNumber(Integer.parseInt(element.getAttribute("playerNumber")));
+				    	
+				    }
+				    
 				    Log.d(LOGTAG,"getGameState success");
 				    game.setPlayerCount(nodes.getLength());
 				    return result;
@@ -317,7 +336,7 @@ public class Integrator {
         qparams.add(new BasicNameValuePair("v", String.valueOf(version)));
         qparams.add(new BasicNameValuePair("lon", String.valueOf(player.getLongitude())));
         qparams.add(new BasicNameValuePair("lat", String.valueOf(player.getLatitude())));
-        qparams.add(new BasicNameValuePair("timer", String.valueOf(timer)));
+        qparams.add(new BasicNameValuePair("t", String.valueOf(timer)));
         
         
         String key = getResponse(doGet("/create", qparams));
@@ -388,7 +407,11 @@ public class Integrator {
 	        	Document doc = parseXml(res.getEntity().getContent());
 	        	NodeList nodes = doc.getElementsByTagName("response");
 	        	Element element = (Element) nodes.item(0);
-	        	String result = element.getAttribute("value");
+	        	String result;
+	        	if(element!=null)
+	        		result = element.getAttribute("value");
+	        	else
+	        		result = "error";
 				Log.d(LOGTAG,"getResponse success");
 				
 		    	return result;
