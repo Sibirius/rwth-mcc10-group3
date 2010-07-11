@@ -61,7 +61,8 @@ public class Map extends MapActivity{
 	//private GeoPoint hunterPoint = null;
 	
 	private Player player;
-		
+	private boolean gameFinished;	
+	
 	private LocationManager lm;	
 	private GeoUpdateHandler geoUpdater;
 	
@@ -95,7 +96,7 @@ public class Map extends MapActivity{
     };
     
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) && !gameFinished) {
         	return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -135,7 +136,7 @@ public class Map extends MapActivity{
 			myGame.setMode(0); //single player
 			player.setMyGame(myGame);
 		}
-		Toast.makeText(getApplicationContext(), player.getKey(), Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(), player.getName(), Toast.LENGTH_LONG).show();
 		
 		if(player != null){
 			
@@ -170,6 +171,7 @@ public class Map extends MapActivity{
 
     	startTimeMillis = System.currentTimeMillis();
     	pointList = new GeoPointList();
+    	gameFinished = false;
     	
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
@@ -312,7 +314,8 @@ public class Map extends MapActivity{
 		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 		             public void onClick(DialogInterface dialog, int id) {
 		                  dialog.cancel();
-		                  closeMapView();
+		                  lm.removeUpdates(geoUpdater);
+		                  gameFinished = true;
 		             }
 		         });
 		  final AlertDialog winLooseAlert = builder.create();
@@ -326,7 +329,8 @@ public class Map extends MapActivity{
 		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 		             public void onClick(DialogInterface dialog, int id) {
 		                  dialog.cancel();
-		                  closeMapView();
+		                  lm.removeUpdates(geoUpdater);
+		                  gameFinished = true;
 		             }
 		         });
 		  final AlertDialog winLooseAlert = builder.create();
@@ -334,7 +338,7 @@ public class Map extends MapActivity{
 	}
 	
 	private void closeMapView(){
-        lm.removeUpdates(geoUpdater);
+		if(!gameFinished) lm.removeUpdates(geoUpdater);
         Map.this.finish();	
 	}
 	
