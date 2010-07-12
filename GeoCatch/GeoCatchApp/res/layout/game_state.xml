@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout	xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:orientation="vertical">
+  				
+  				<!-- Begin: Not visible on start! -->
+  				<LinearLayout  	android:id="@+id/layout_states_gamestate"	    
+							    android:orientation="vertical"
+							    android:layout_width="fill_parent"
+							    android:layout_height="fill_parent"
+							    android:layout_weight="1.0"
+							    
+							    >
+							    
+				  				<ListView		android:id="@+id/listview_gamestates"
+				  								android:layout_width="fill_parent"
+												android:layout_height="wrap_content"
+				  								
+				  				/>
+				  
+				  				<View			android:id="@+id/line_gamestate1"
+												android:layout_width="fill_parent"
+										        android:layout_height="3dip"
+										        android:background="#FF909090"
+										        
+				        		/>
+				        		
+				        		<TextView   android:id="@+id/textview_timer_gamestate"
+											android:layout_height="wrap_content" 
+											android:layout_width="wrap_content" 
+											android:layout_gravity="center_horizontal"
+											android:layout_margin="10px"
+											android:visibility="gone"
+								/>
+								
+								<View			android:id="@+id/line_gamestate2"
+												android:layout_width="fill_parent"
+										        android:layout_height="3dip"
+										        android:background="#FF909090"
+										        
+				        		/>
+				  
+				  				<ListView		android:id="@+id/listview_gamestate_names"
+				  								android:layout_width="fill_parent"
+												android:layout_height="wrap_content"
+												
+				  				/>
+  				</LinearLayout>
+  				<!-- End: Not visible on start! -->
+  				 
+  				 
+  				 
+  				<!-- Begin: Loading on start! -->
+  				
+  				<LinearLayout  	android:id="@+id/layout_load_gamestate"	    
+							    android:orientation="horizontal"
+							    android:layout_width="fill_parent"
+							    android:layout_height="fill_parent"
+							    android:gravity="center"
+							    android:layout_weight="1.0"
+							    android:visibility="gone" 
+							    >
+	    		
+					    		<ProgressBar    android:layout_width="wrap_content"
+										        android:layout_height="wrap_content" 
+										        android:layout_margin="20px"
+					        	/>
+					        
+								<TextView	 	android:text="@string/mainmenu_loading"
+												android:layout_width="wrap_content"
+												android:layout_height="wrap_content"
+												android:layout_gravity="center_vertical"
+												android:textSize="16sp"
+								/>
+				</LinearLayout>
+				
+				<!-- End: Loading on start! -->
+  				
+  				
+  				
+  				
+  				<!-- Begin: Buttons are visible by case! -->
+  				<LinearLayout  	android:orientation="horizontal"
+							    android:layout_width="fill_parent"
+							    android:layout_height="wrap_content"
+							    android:gravity="bottom"
+							    >
+							    
+				  				<Button     android:id="@+id/button_start_game_gamestate"
+				  							android:text="Spiel starten!"
+				  							android:layout_height="wrap_content" 
+											android:layout_width="wrap_content" 
+											android:layout_weight="1"
+											
+								/>
+								
+								<Button     android:id="@+id/button_stop_game_gamestate"
+				  							android:text="Spiel beenden!"
+				  							android:layout_height="wrap_content" 
+											android:layout_width="wrap_content"
+											android:layout_weight="1"
+											
+								/>
+								
+								<Button     android:id="@+id/button_leave_game_gamestate"
+				  							android:text="Verlassen!"
+				  							android:layout_height="wrap_content" 
+											android:layout_width="wrap_content" 
+											android:layout_weight="1"
+											android:visibility="gone"
+								/>
+								
+								<Button     android:id="@+id/button_join_game_gamestate"
+				  							android:text="Beitreten!"
+				  							android:layout_height="wrap_content" 
+											android:layout_width="wrap_content" 
+											android:layout_weight="1"
+											android:visibility="gone"
+								/>
+								
+								
+				</LinearLayout>
+  				<!-- End: Buttons are visible by case! -->
+			
+
+</LinearLayout>
