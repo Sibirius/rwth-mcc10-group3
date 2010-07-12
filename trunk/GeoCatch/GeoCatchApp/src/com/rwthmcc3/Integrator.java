@@ -150,19 +150,22 @@ public class Integrator {
 					if(element != null){
 						game.setName(element.getAttribute("name"));
 						game.setMode(Integer.parseInt(element.getAttribute("mode")));
+						game.setState(Integer.parseInt(element.getAttribute("status")));
+						game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("mpc")));
 						//game just started
-						if(element.getAttribute("status")=="1" && game.getState()==0){
+						if(element.getAttribute("status")=="1"){
 							NodeList nodes2 = doc.getElementsByTagName("additional");
 							Element element2 = (Element) nodes2.item(0);
 							if(element2 != null){
 								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 								Date date = dateFormat.parse(element2.getAttribute("starting"));
 								Date date2 = dateFormat.parse(element2.getAttribute("timeNow"));
-								game.setTimer((int)((date.getTime()-date2.getTime())/1000));
+								long timer = (date.getTime()-date2.getTime())/1000;
+								if(timer < 0) timer = 0;
+								game.setTimer((int)timer);
+								player.setNumber(Integer.parseInt(element2.getAttribute("playerNumber")));
 							}
 						}
-						game.setState(Integer.parseInt(element.getAttribute("status")));
-						game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("mpc")));
 					}
 		        	
 					
@@ -174,12 +177,7 @@ public class Integrator {
 				    	result.add(element.getAttribute("name"));
 				     }
 				    
-				    nodes = doc.getElementsByTagName("additional");
-				    element = (Element) nodes.item(0);
-				    if(element != null){
-				    	player.setNumber(Integer.parseInt(element.getAttribute("playerNumber")));
-				    	
-				    }
+				    game.setPlayerCount(nodes.getLength());
 				    
 				    Log.d(LOGTAG,"getGameState success");
 				    game.setPlayerCount(nodes.getLength());
