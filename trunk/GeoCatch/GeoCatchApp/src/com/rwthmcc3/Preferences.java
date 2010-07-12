@@ -8,8 +8,7 @@ import android.widget.Toast;
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
-	public static final String PREFS_NAME = "MyPrefsFile";
-	
+		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -31,13 +30,19 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         	    editor.commit();
         	    playerName = "Player 1";
         	}
+        	boolean changed = Integrator.changePlayerName(p, playerName);
+        	if(changed){
+        		Toast.makeText(getApplicationContext(), "Name wurde gespeichert" , Toast.LENGTH_LONG).show();
+        		
+        	}else{
+        		Toast.makeText(getApplicationContext(), "Fehler! Bitte versuchen Sie es erneut!" , Toast.LENGTH_LONG).show();
+        		SharedPreferences.Editor editor = sharedPreferences.edit();
+        	    editor.putString("player_name", "Player 1");
+        	    editor.commit();
+        	}
         	
-        	p.setName(playerName);
         }
-        if(key.equals("list_size")){
-        	int listSize = Integer.parseInt(sharedPreferences.getString("list_size", "10"));
-        	p.setListSize(listSize);
-        }
+        
         
     }
 	

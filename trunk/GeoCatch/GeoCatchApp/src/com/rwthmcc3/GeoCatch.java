@@ -12,6 +12,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,7 +29,7 @@ public class GeoCatch extends Activity {
 	private String providerGeoCatch = "";
 	public static boolean debugMode = false;
 	public static String debugMac = "16:66:FF:66:66:65";
-	
+	SharedPreferences preferences;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -41,10 +42,10 @@ public class GeoCatch extends Activity {
 		buttonJoinGame.setOnClickListener(doJoinGameOnClick);
 		
 		//restore player_name and list-size
-		SharedPreferences settings = getSharedPreferences(Preferences.PREFS_NAME, 0);
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		Player p = Player.getPlayer();
-	    p.setName(settings.getString("player_name", "Player 1"));
-	    p.setListSize(settings.getInt("list_size", 10));
+	    p.setName(preferences.getString("player_name", "Player 1"));
+	    
 	    
 	    //create LocationManager for GPS
 	    lmGeoCatch = (LocationManager) getSystemService(LOCATION_SERVICE);
