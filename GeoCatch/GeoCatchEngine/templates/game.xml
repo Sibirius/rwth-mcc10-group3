@@ -21,8 +21,9 @@ mpc = "{{game.mpc}}"
 	{% if additional %}
 	<additional
 		playerNumber = "{{ additional.playerNumber}}"
-    started = "{{ additional.started }}"
-    starting = "{{ additional.starting }}"
+		started = "{{ additional.started }}"
+		timeNow = "{{ additional.timeNow }}"
+		starting = "{{ additional.starting }}"
 	/>
 	{% endif %}
 </game>
