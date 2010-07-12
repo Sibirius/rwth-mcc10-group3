@@ -5,12 +5,6 @@
             android:title="Spielername ändern"
             
             />
-       <ListPreference
-                android:key="list_size"
-                android:title="Listengröße ändern"
-                android:summary="Hier kann die Länge der Spielliste geändert werden."
-                android:entries="@array/array_listsize"
-                android:entryValues="@array/array_listsize_values"
-                android:dialogTitle="Spiellistengröße auswählen:" />
+       
        
 </PreferenceScreen>
