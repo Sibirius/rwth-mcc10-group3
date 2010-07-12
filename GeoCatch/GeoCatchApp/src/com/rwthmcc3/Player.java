@@ -5,7 +5,7 @@ package com.rwthmcc3;
 
 public class Player {
 	
-	private static  Player player = null;
+	private  static  Player player = null;
 	private  boolean isCreator = false;
 	private  String name = null;
 	private  double longitude = 0;
@@ -20,10 +20,10 @@ public class Player {
 	private  Game myGame = null;
 	private  int listSize;
 	private  String mac;
-	private boolean hasWin;
-	private int number;
-	private boolean timerHasCountedDown = false;
-	
+	private  boolean hasWin;
+	private  int number;
+	private  boolean timerHasCountedDown = false;
+	private  String keyOfMyCreatedGame = null;
 	private Player(){
 		
 	}
@@ -203,6 +203,14 @@ public class Player {
 
 	public boolean isTimerHasCountedDown() {
 		return timerHasCountedDown;
+	}
+
+	public void setKeyOfMyCreatedGame(String keyOfMyCreatedGame) {
+		this.keyOfMyCreatedGame = keyOfMyCreatedGame;
+	}
+
+	public String getKeyOfMyCreatedGame() {
+		return keyOfMyCreatedGame;
 	}
 
 	
