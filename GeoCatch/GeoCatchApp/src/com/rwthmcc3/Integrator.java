@@ -387,6 +387,22 @@ public class Integrator {
         
 	}
 	
+	public static boolean changePlayerName(Player player, String name){
+		Log.d(LOGTAG, "registerPlayer()");
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+        qparams.add(new BasicNameValuePair("p", player.getKey()));
+        qparams.add(new BasicNameValuePair("n", name));
+       
+        String result = getResponse(doGet("/name", qparams));
+        if(result.contains("error")){
+        	return false;
+        }else{
+        	player.setPlayerName(name);
+        	return true;
+        }
+
+	}
+	
 	// DEBUG FUNCTIONS
 	
 	public static void fillWithTestData(){
