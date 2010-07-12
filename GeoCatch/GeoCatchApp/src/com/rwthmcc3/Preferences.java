@@ -36,9 +36,9 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         		
         	}else{
         		Toast.makeText(getApplicationContext(), "Fehler! Bitte versuchen Sie es erneut!" , Toast.LENGTH_LONG).show();
-        		SharedPreferences.Editor editor = sharedPreferences.edit();
-        	    editor.putString("player_name", "Player 1");
-        	    editor.commit();
+//        		SharedPreferences.Editor editor = sharedPreferences.edit();
+//        	    editor.putString("player_name", "Player 1");
+//        	    editor.commit();
         	}
         	
         }

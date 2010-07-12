@@ -270,6 +270,10 @@ public class MainMenu extends Activity {
 
 		if (p.getMyGame() != null) {
 			int myGameState = p.getMyGame().getState();
+			//leaves game if it is stopped
+			if(myGameState == 2)
+				Integrator.leaveGame(p);
+			
 			// show start game button when player is creator,enough players and
 			// game not started
 			if ((p.isCreator())
@@ -483,7 +487,7 @@ public class MainMenu extends Activity {
 									switch (item) {
 									case 0:
 										boolean stop = Integrator
-												.stopGame(Player.getPlayer());
+												.leaveGame(Player.getPlayer());
 										// check
 										if (stop) {
 											Toast.makeText(MainMenu.this,

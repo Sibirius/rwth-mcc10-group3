@@ -2,6 +2,8 @@ package com.rwthmcc3;
 
 import java.io.*;
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -129,9 +131,9 @@ public class Integrator {
 		return null;
 	}
 	
-	public static List<String> getGameState(Player player){
+	public static Game getGameState(Game game){
 		Log.d(LOGTAG, "getGameState()");
-		Game game = player.getMyGame();
+		Player player = Player.getPlayer();
 		if(game != null){
 		List<String> result = new ArrayList<String>();
 			List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -148,9 +150,19 @@ public class Integrator {
 					if(element != null){
 						game.setName(element.getAttribute("name"));
 						game.setMode(Integer.parseInt(element.getAttribute("mode")));
-						game.setTimer(Integer.parseInt(element.getAttribute("name")));
-						game.setState(Integer.parseInt(element.getAttribute("name")));
-						game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("name")));
+						//game just started
+						if(element.getAttribute("status")=="1" && game.getState()==0){
+							NodeList nodes2 = doc.getElementsByTagName("additional");
+							Element element2 = (Element) nodes2.item(0);
+							if(element2 != null){
+								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+								Date date = dateFormat.parse(element2.getAttribute("starting"));
+								Date date2 = dateFormat.parse(element2.getAttribute("timeNow"));
+								game.setTimer((int)((date.getTime()-date2.getTime())/1000));
+							}
+						}
+						game.setState(Integer.parseInt(element.getAttribute("status")));
+						game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("mpc")));
 					}
 		        	
 					
@@ -171,11 +183,13 @@ public class Integrator {
 				    
 				    Log.d(LOGTAG,"getGameState success");
 				    game.setPlayerCount(nodes.getLength());
-				    return result;
+				    return game;
 		
 				} catch (IllegalStateException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (ParseException e) {
 					e.printStackTrace();
 				}
 	        }else{
@@ -227,6 +241,7 @@ public class Integrator {
     	player.setMyGame(null);
     	player.setCreator(false);
     	player.setHasWin(false);
+    	player.setKeyOfMyCreatedGame(null);
 	}
 
 
@@ -275,7 +290,7 @@ public class Integrator {
         if(res != null){
 	        try {
 	        	
-	        	Log.d(LOGTAG, "start parsing gamestate");
+	        	Log.d(LOGTAG, "start parsing playerstate");
 	        	Document doc = parseXml(res.getEntity().getContent());
 	        	
 	        	NodeList node = doc.getElementsByTagName("state");
@@ -291,8 +306,9 @@ public class Integrator {
 		        	}
 	        	}
 				NodeList nodes = doc.getElementsByTagName("event");
+				Log.d(LOGTAG, "parsing events");
 			    for (int i = 0; i < nodes.getLength(); i++) {
-			    	Log.d(LOGTAG, "parsing element #"+i);
+			    	Log.d(LOGTAG, "parsing element #"+i+"/"+nodes.getLength());
 			    	Element element = (Element) nodes.item(i);
 			    	
 			    	String title = element.getAttribute("title");
@@ -334,7 +350,7 @@ public class Integrator {
         qparams.add(new BasicNameValuePair("n", name));
         qparams.add(new BasicNameValuePair("lon", String.valueOf(longitude)));
         qparams.add(new BasicNameValuePair("lat", String.valueOf(latitude)));
-       
+        
         String result = getResponse(doGet("/register", qparams));
         Log.d(LOGTAG, "registerPlayer: "+result);
         if(result.contains("error")){
@@ -347,7 +363,7 @@ public class Integrator {
         	Player.getPlayer().setLatitude(latitude);
         	return true;
         }
-
+        
 	}
 	
 	public static boolean createGame(Player player, String name, int maxPlayersCount, int version, int timer){
@@ -377,6 +393,7 @@ public class Integrator {
 	        game.setPlayerCount(1);
 	        game.setTimer(timer);
 	        
+	        player.setKeyOfMyCreatedGame(key);
 	        player.setTimerHasCountedDown(false);
 	        player.setCreator(true);
 	        player.setMyGame(game);
@@ -388,7 +405,7 @@ public class Integrator {
 	}
 	
 	public static boolean changePlayerName(Player player, String name){
-		Log.d(LOGTAG, "registerPlayer()");
+		Log.d(LOGTAG, "changePlayerName()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair("p", player.getKey()));
         qparams.add(new BasicNameValuePair("n", name));

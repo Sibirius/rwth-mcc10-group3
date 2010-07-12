@@ -13,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,8 +28,8 @@ public class GeoCatch extends Activity {
 	private  Player p = Player.getPlayer();
 	private LocationManager lmGeoCatch;
 	private String providerGeoCatch = "";
-	public static boolean debugMode = false;
-	public static String debugMac = "16:66:FF:66:66:65";
+	public static boolean debugMode = true;
+	public static String debugMac = "DE:AD:FF:66:66:66";
 	SharedPreferences preferences;
 	
 	/** Called when the activity is first created. */
@@ -46,6 +47,9 @@ public class GeoCatch extends Activity {
 		Player p = Player.getPlayer();
 	    p.setName(preferences.getString("player_name", "Player 1"));
 	    
+	    //debugging
+	    if(debugMode)
+	    	Integrator.registerPlayer(debugMac, p.getName(), p.getLongitude(), p.getLatitude());
 	    
 	    //create LocationManager for GPS
 	    lmGeoCatch = (LocationManager) getSystemService(LOCATION_SERVICE);
