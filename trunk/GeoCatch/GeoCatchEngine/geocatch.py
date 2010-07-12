@@ -210,6 +210,7 @@ class GetGameState(webapp.RequestHandler):
 			if player != None:
 				additional["playerNumber"] = player.playerNumber
 				additional["started"] = game.started
+				additional["timeNow"] = datetime.datetime.now()
 				additional["starting"] = game.starting
 
 				#player.lastLocation = db.GeoPt(playerLocation[0], playerLocation[1])
