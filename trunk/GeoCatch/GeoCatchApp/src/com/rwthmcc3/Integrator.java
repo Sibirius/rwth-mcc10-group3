@@ -152,20 +152,26 @@ public class Integrator {
 						game.setMode(Integer.parseInt(element.getAttribute("mode")));
 						game.setState(Integer.parseInt(element.getAttribute("status")));
 						game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("mpc")));
+						if(game.getState() == 0)
+							game.setTimer(Integer.parseInt(element.getAttribute("timer")));
 						//game just started
-						if(element.getAttribute("status")=="1"){
+						if(game.getState() == 1){
 							NodeList nodes2 = doc.getElementsByTagName("additional");
 							Element element2 = (Element) nodes2.item(0);
 							if(element2 != null){
 								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 								Date date = dateFormat.parse(element2.getAttribute("starting"));
+								Log.d(LOGTAG, "date: "+dateFormat.format(date));
 								Date date2 = dateFormat.parse(element2.getAttribute("timeNow"));
+								Log.d(LOGTAG, "date2: "+dateFormat.format(date2));
 								long timer = (date.getTime()-date2.getTime())/1000;
+								Log.d(LOGTAG, "Timer: "+timer);
 								if(timer < 0) timer = 0;
 								game.setTimer((int)timer);
 								player.setNumber(Integer.parseInt(element2.getAttribute("playerNumber")));
 							}
 						}
+
 					}
 		        	
 					
