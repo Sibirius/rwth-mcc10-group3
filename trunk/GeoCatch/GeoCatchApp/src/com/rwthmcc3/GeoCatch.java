@@ -29,8 +29,8 @@ public class GeoCatch extends Activity {
 	private  Player p = Player.getPlayer();
 	private LocationManager lmGeoCatch;
 	private String providerGeoCatch = "";
-	public static boolean debugMode = true;
-	public static String debugMac = "FF:AD:FF:6H:66:66";
+	public static boolean debugMode = false;
+	public static String debugMac = "FF:AD:FF:64:66:66";
 	SharedPreferences preferences;
 	
 	/** Called when the activity is first created. */
