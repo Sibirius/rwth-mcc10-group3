@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -48,7 +49,11 @@ public class MainMenu extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main_menu);
+		
+        
+        setContentView(R.layout.main_menu);
+        
+        
 
 		// create listview
 		ListView lv = (ListView) findViewById(R.id.listview_mainmenu);
@@ -127,7 +132,9 @@ public class MainMenu extends Activity {
 	private Runnable mUpdateViewTask = new Runnable() {
 		public void run() {
 			// Back in the UI thread -- update our UI elements
+			
 		    boolean gamesOk = updateListofGames();
+		    
 		    if(gamesOk){
 		    	makeUpdatedViewsVisible();
 		    }else{
@@ -225,6 +232,7 @@ public class MainMenu extends Activity {
 	 * @return boolean: no errors
 	 */
 	public boolean updateListofGames() {
+		
 		// delete list before set new list
 		mylist.clear();
 
@@ -246,8 +254,10 @@ public class MainMenu extends Activity {
 				}
 			}
 			mSchedule.notifyDataSetChanged();
+			
 			return true;
 		}else{
+			
 			return false;
 		}
 

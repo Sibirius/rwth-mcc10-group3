@@ -103,7 +103,7 @@ public class GameState extends Activity {
 		resetViews();
 		
 		//start thread
-		//TODO check if is running
+		
 		runBackgroundThread = true;
 		if(backgroundThread==null){
 			runBackgroundThread = true;
@@ -169,10 +169,11 @@ public class GameState extends Activity {
      * or makes a message to user.
      */
     private void updateViews() {
-
+    	
         // Back in the UI thread -- update our UI elements
     	boolean namesOk = updateNames();
     	boolean statesOk = updateStates();
+    	
     	if(namesOk && statesOk){
     		makeUpdatedViewsVisible();
     	}else{
@@ -256,11 +257,14 @@ public class GameState extends Activity {
     			if((chosenGame.getState()==1) && (player.isTimerHasCountedDown()== true)){
     					textTimerView.setVisibility(View.GONE);
     					//TODO start map
-    					startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
+    					startActivityForResult(new Intent(GameState.this,com.rwthmcc3.Map.class), 0);
         		}
     			
        		}else{//not my Game 
-       			buttonJoinView.setVisibility(View.VISIBLE);
+       			//not enough players and not started?
+       			if(!(chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount()) || !(chosenGame.getState()==0)){
+       				buttonJoinView.setVisibility(View.VISIBLE);
+       			}
        		}
     	}else{
 	    	//i'm not in a game
