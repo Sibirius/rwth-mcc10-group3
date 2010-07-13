@@ -159,15 +159,17 @@ public class Integrator {
 							NodeList nodes2 = doc.getElementsByTagName("additional");
 							Element element2 = (Element) nodes2.item(0);
 							if(element2 != null){
-								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-								Date date = dateFormat.parse(element2.getAttribute("starting"));
-								Log.d(LOGTAG, "date: "+dateFormat.format(date));
-								Date date2 = dateFormat.parse(element2.getAttribute("timeNow"));
-								Log.d(LOGTAG, "date2: "+dateFormat.format(date2));
+								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								String starting = element2.getAttribute("starting").split("\\.")[0];
+								Date date = dateFormat.parse(starting);
+								Log.d(LOGTAG, "date: "+dateFormat.format(date)+", real: "+starting);
+								String timeNow = element2.getAttribute("timeNow").split("\\.")[0];
+								Date date2 = dateFormat.parse(timeNow);
+								Log.d(LOGTAG, "date2: "+dateFormat.format(date2)+", real: "+timeNow);
 								long timer = (date.getTime()-date2.getTime())/1000;
 								Log.d(LOGTAG, "Timer: "+timer);
 								if(timer < 0) timer = 0;
-								game.setTimer((int)timer);
+								//game.setTimer((int)timer);
 								player.setNumber(Integer.parseInt(element2.getAttribute("playerNumber")));
 							}
 						}
