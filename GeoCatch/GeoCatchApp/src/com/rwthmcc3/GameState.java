@@ -194,6 +194,12 @@ public class GameState extends Activity {
     	View buttonJoinView = (View) findViewById(R.id.button_join_game_gamestate);
     	TextView textTimerView = (TextView) findViewById(R.id.textview_timer_gamestate);
     	
+    	//reset buttons
+    	buttonStartView.setVisibility(View.GONE);
+    	buttonStopView.setVisibility(View.GONE);
+    	buttonLeaveView.setVisibility(View.GONE);
+    	buttonJoinView.setVisibility(View.GONE);
+    	
     	//make loading invisible
     	layoutLoadView.setVisibility(View.GONE);
     	//show states
