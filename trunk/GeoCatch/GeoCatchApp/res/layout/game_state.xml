@@ -21,7 +21,7 @@
 				  
 				  				<View			android:id="@+id/line_gamestate1"
 												android:layout_width="fill_parent"
-										        android:layout_height="3dip"
+										        android:layout_height="2dip"
 										        android:background="#FF909090"
 										        
 				        		/>
@@ -36,16 +36,33 @@
 								
 								<View			android:id="@+id/line_gamestate2"
 												android:layout_width="fill_parent"
-										        android:layout_height="3dip"
+										        android:layout_height="2dip"
 										        android:background="#FF909090"
 										        
 				        		/>
-				  
+				  				
+				  				<TextView   android:id="@+id/textview_members_gamestate"
+				  							android:text="@string/members_gamestate"
+											android:layout_height="wrap_content" 
+											android:layout_width="wrap_content" 
+											android:layout_gravity="center_horizontal"
+											android:layout_margin="10px"
+											
+								/>
+				  				
+				  				<View			android:id="@+id/line_gamestate2"
+												android:layout_width="fill_parent"
+										        android:layout_height="2dip"
+										        android:background="#FF909090"
+										        
+				        		/>
+				        		
 				  				<ListView		android:id="@+id/listview_gamestate_names"
 				  								android:layout_width="fill_parent"
 												android:layout_height="wrap_content"
 												
 				  				/>
+				  				
   				</LinearLayout>
   				<!-- End: Not visible on start! -->
   				 

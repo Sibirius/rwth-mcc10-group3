@@ -28,7 +28,7 @@ public class GameState extends Activity {
 	private Player player = Player.getPlayer();
 	private long mStartTime;
 	private boolean timerIsActive = false;
-	private boolean runBackgroundThread = false;
+	private boolean runBackgroundThread = true;
 	private Thread backgroundThread = null;
 	
 	
@@ -79,10 +79,25 @@ public class GameState extends Activity {
 		
 	}	
 	
+	@Override
+	public void onPause(){
+		super.onPause();
+		//destroy thread
+		mHandler.removeCallbacks(mUpdateTimer);
+		mHandler.removeCallbacks(mUpdateGameState);
+		runBackgroundThread = false;
+		
+	}
+	@Override
 	public void onStop(){
 		super.onStop();
+		//destroy thread
+		mHandler.removeCallbacks(mUpdateTimer);
+		mHandler.removeCallbacks(mUpdateGameState);
 		runBackgroundThread = false;
+		
 	}
+
 	
 	public void onResume(){
 		super.onResume();
@@ -92,7 +107,7 @@ public class GameState extends Activity {
 		
 		//start thread
 		//TODO check if is running
-		
+		runBackgroundThread = true;
 		if(backgroundThread==null){
 			runBackgroundThread = true;
 			startLongRunningOperation();
@@ -121,7 +136,7 @@ public class GameState extends Activity {
     // Create runnable for posting
     final Runnable mUpdateTimer = new Runnable() {
         public void run() {
-        	updateViews();
+        	updateTimer();
         }
     };
 
@@ -147,20 +162,27 @@ public class GameState extends Activity {
             		
             		while(i < 15){
             			i++;
-                		try{	
+                		try{
+                			if(!runBackgroundThread)i = 15; //to kill fast
                         	sleep(1000);
                         	
                         	if(myGame!=null){
-	                        	if((myGame.getState()==1) && (!player.isTimerHasCountedDown())){
-	                        		timerIsActive = true;
+                        		Log.d("threadInGameState", String.valueOf(myGame.getState()));
+                            	Log.d("threadInGameState", String.valueOf(player.isTimerHasCountedDown()));
+	                        	if((myGame.getState()== 1) && (!player.isTimerHasCountedDown())){
+	                        		timerIsActive = true; //set mStartTime only one time
+	                        		
 	                        		mHandler.post(mUpdateTimer);
+	                        		Log.d("threadInGameState", "mUpdateTimer posted");
 	                        	}
                         	}
+                        	
                         	
         				} catch (InterruptedException e) {
         					Log.d("threadInGameState", e.toString());
         				}
         			}
+            		Log.d("threadInGameState", "is running");
             		
             	}
                 
@@ -184,11 +206,12 @@ public class GameState extends Activity {
 			long millis = SystemClock.uptimeMillis() - start;
 			
 			if (player.getMyGame() != null) {
+				
 				long countDown = player.getMyGame().getTimer() * 1000 - millis;
 				int seconds = (int) (countDown / 1000);
 				int minutes = seconds / 60;
 				seconds = seconds % 60;
-	
+				Log.d("updateTimer","is running");
 				if (countDown > 0) {
 					if (seconds < 10) {
 						timerView.setText("Zeit bis zum Spielstart:" + "  "
@@ -202,7 +225,10 @@ public class GameState extends Activity {
 					// counted to 0
 					player.setTimerHasCountedDown(true);
 					timerView.setVisibility(View.GONE);
-					startActivityForResult(new Intent(GameState.this,com.rwthmcc3.Map.class), 0);
+					mHandler.removeCallbacks(mUpdateTimer);
+					mHandler.removeCallbacks(mUpdateGameState);
+					runBackgroundThread = false;
+					startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
 				}
 			}
 		
@@ -250,19 +276,25 @@ public class GameState extends Activity {
     	//show states
     	layoutStatesView.setVisibility(View.VISIBLE);
     	
-    	
+    	//chosenGame is actual !!!
     	Game chosenGame = MainMenu.chosenGame;
     	Game myGame = player.getMyGame();
     	
+    	//i'm in a game
     	if((myGame !=null) && (chosenGame!=null)){
     		String chosenGameKey = chosenGame.getKey();
     		String myGameKey = myGame.getKey();
+    		//is game stopped or finished?
+    		if((chosenGame.getState()==2) || (chosenGame.getState()==3) ){
+    			Toast.makeText(GameState.this,"Spiel existiert nicht mehr!",Toast.LENGTH_SHORT).show();
+    			startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
+    		}
     		//is chosenGame my Game ? 
     		if(myGameKey.equals(chosenGameKey)){
     			//i'm creator ?
     			if(chosenGameKey.equals(player.getKeyOfMyCreatedGame())){
     				//enough players ?
-    				if(myGame.getPlayerCount()==myGame.getMaxPlayersCount()){
+    				if(chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount()){
     					buttonStartView.setVisibility(View.VISIBLE);
     					buttonStopView.setVisibility(View.VISIBLE);
     				}else{//not enough players
@@ -272,7 +304,7 @@ public class GameState extends Activity {
     				buttonLeaveView.setVisibility(View.VISIBLE);
        			}
     			//show timer?
-    			if((myGame.getState()==1) && (player.isTimerHasCountedDown()== false)){
+    			if((chosenGame.getState()==1) && (player.isTimerHasCountedDown()== false)){
     				//TODO check, when timer has counted down, timerHasCountedDown set true 
     				if(!timerIsActive){
     					mStartTime = SystemClock.uptimeMillis();
@@ -284,7 +316,17 @@ public class GameState extends Activity {
        		}else{//not my Game 
        			buttonJoinView.setVisibility(View.VISIBLE);
        		}
-    	}	
+    	}else{
+	    	//i'm not in a game
+	    	if(chosenGame != null){
+	    		buttonJoinView.setVisibility(View.VISIBLE);
+	    		//is game stopped or finished?
+	    		if((chosenGame.getState()==2) || (chosenGame.getState()==3) ){
+	    			Toast.makeText(GameState.this,"Spiel existiert nicht mehr!",Toast.LENGTH_SHORT).show();
+	    			startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
+	    		}
+	    	}
+    	}
 	}
 
     
@@ -349,31 +391,40 @@ public class GameState extends Activity {
     	statesList.clear();
 
     	
-    	Game updatedGame= Integrator.getGameState(MainMenu.chosenGame);
+    	updatedGame= Integrator.getGameState(MainMenu.chosenGame);
 		
 		
 		if(updatedGame!=null){
 			addItemToStatesList("Spielname:", updatedGame.getName());
 			addItemToStatesList("Spieleranzahl:", updatedGame.getPlayerCount()+"/"+updatedGame.getMaxPlayersCount());
+			//TODO correct timer
 			addItemToStatesList("Timer:", String.valueOf(updatedGame.getTimer()/60)+" min");
-			switch(updatedGame.getMode()){
+			
+			switch(updatedGame.getState()){
 			case 0:
-				addItemToStatesList("Spielstatus", "nicht gestartet");
+				addItemToStatesList("Spielstatus:", "nicht gestartet");
 				break;
 			case 1:
-				addItemToStatesList("Spielstatus", "gestartet");
+				addItemToStatesList("Spielstatus:", "gestartet");
 				break;
 			case 2:
-				addItemToStatesList("Spielstatus", "unbekannt");
+				addItemToStatesList("Spielstatus:", "gestoppt");
 				break;
 			case 3:
-				addItemToStatesList("Spielstatus", "beendet");
+				addItemToStatesList("Spielstatus:", "beendet");
 				break;
 			default:
-				addItemToStatesList("Spielstatus", "unbekannt");
+				addItemToStatesList("Spielstatus:", "unbekannt");
 				break;
 			}
-				addItemToStatesList("Spielname", updatedGame.getName());
+			
+			//if updatedGame is my Game, then update my Game
+			if(player.getMyGame()!=null){
+				if(updatedGame.getKey().equals(player.getMyGame().getKey())){
+					player.setMyGame(updatedGame);
+				}
+			}
+				
 		}else{
 			ok=false;
 		}
@@ -428,9 +479,10 @@ public class GameState extends Activity {
 	
 	OnClickListener doStopButtonOnClick = new OnClickListener() {
 		public void onClick(View view) {
-			boolean stop = Integrator.stopGame(Player.getPlayer());
+			boolean leave = Integrator.leaveGame(Player.getPlayer());
+
 			// check
-			if (stop) {
+			if (leave) {
 				Toast.makeText(GameState.this,"Spiel wurde beendet!",Toast.LENGTH_SHORT).show();
 				startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
 			} else {

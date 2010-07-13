@@ -37,7 +37,7 @@ public class MainMenu extends Activity {
 	private LocationManager lmMainMenu;
 	private String providerMainMenu = "";
 	private Player player = Player.getPlayer();
-	private Thread backgroundThread = null;
+	private Thread backgroundThreadGameState = null;
 	private boolean runBackgroundThread = true;
 	
 
@@ -81,6 +81,7 @@ public class MainMenu extends Activity {
 		super.onPause();
 		//destroy thread
 		runBackgroundThread = false;
+		mHandler.removeCallbacks(mUpdateViewTask);
 		
 	}
 	@Override
@@ -88,6 +89,8 @@ public class MainMenu extends Activity {
 		super.onStop();
 		//destroy thread
 		runBackgroundThread = false;
+		mHandler.removeCallbacks(mUpdateViewTask);
+		
 		
 	}
 
@@ -98,13 +101,13 @@ public class MainMenu extends Activity {
 		
 		// reset view
 		resetViews();
-		
+		runBackgroundThread = true;
 		//TODO check if is running
-		if(backgroundThread==null){
+		if(backgroundThreadGameState==null){
 			runBackgroundThread = true;
 			startLongRunningOperation();
 		}else{
-			if(!backgroundThread.isAlive()){
+			if(!backgroundThreadGameState.isAlive()){
 				runBackgroundThread = true;
 				startLongRunningOperation();
 			}
@@ -145,23 +148,25 @@ public class MainMenu extends Activity {
     protected void startLongRunningOperation() {
 
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
-    	backgroundThread = new Thread() {
+    	backgroundThreadGameState = new Thread() {
             public void run() {
             	
             	while(runBackgroundThread){//restart
             		//update all 15 seconds
                 	mHandler.post(mUpdateViewTask);
             		try{	
-                        if(runBackgroundThread)sleep(15000);
+                        if(runBackgroundThread){//to kill fast
+                        	sleep(15000);
+                        }
                     }catch(InterruptedException e){
         					Log.d("threadInMainMenu", e.toString());
         			}
-                    
+                    Log.d("threadInMainMenu", "is running");
         		}
             	
             }
         };
-        backgroundThread.start();
+        backgroundThreadGameState.start();
     }
     
 	// *******************************************************************************************************
