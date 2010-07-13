@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 public class GeoCatch extends Activity {
@@ -28,8 +29,8 @@ public class GeoCatch extends Activity {
 	private  Player p = Player.getPlayer();
 	private LocationManager lmGeoCatch;
 	private String providerGeoCatch = "";
-	public static boolean debugMode = true;
-	public static String debugMac = "DE:AD:FF:66:66:66";
+	public static boolean debugMode = false;
+	public static String debugMac = "FF:AD:FF:6H:66:66";
 	SharedPreferences preferences;
 	
 	/** Called when the activity is first created. */
@@ -130,7 +131,9 @@ public class GeoCatch extends Activity {
 		         	}
 		         }
 		    }else{//for debugging
-		    	Integrator.registerPlayer(debugMac, p.getName(), p.getLongitude(), p.getLatitude());
+		    	p.setMac(debugMac);
+		    	boolean register=Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
+		    	if(!register)Toast.makeText(getApplicationContext(), "Registrierung fehlgeschlagen", Toast.LENGTH_SHORT);
 		    }
 	    }
 	   

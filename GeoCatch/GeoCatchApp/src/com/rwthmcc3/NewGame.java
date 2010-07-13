@@ -61,8 +61,9 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 	        Spinner timerSpinner = (Spinner)findViewById(R.id.spinner_new_game);
 	        int timerPosition = timerSpinner.getSelectedItemPosition();
 	        int timer = (timerPosition+1)*3*60; // 0=3min, 1=6min, 2=9min, 3=12min, 4=15min
-			
-			if((!gameName.startsWith(" ")) || (gameName.length()< 3)){
+	        
+	        
+			if((!gameName.startsWith(" ")) && (!(gameName.length()< 3)) && (gameName != null)){
 				//message to user
 				boolean leave = true;
     			if(p.getMyGame()!=null){
@@ -70,11 +71,16 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
     				leave = Integrator.leaveGame(Player.getPlayer());
     				Log.d("LeaveInNewGame", String.valueOf(leave));
     			}
+    	    			
 			    boolean created = true;
-			    
+			    //inconsistency
+        		Integrator.leaveGame(Player.getPlayer());
+        		
 				created = Integrator.createGame(p, gameName , maxPlayersCount, 1, timer);
 				Log.d("CreatedInNewGame", String.valueOf(created));
+				
 	        	if(created && leave){
+	        		//new game created
 	        		startActivityForResult(new Intent(NewGame.this, com.rwthmcc3.MainMenu.class),0);
 	        	}else{
 	        		
