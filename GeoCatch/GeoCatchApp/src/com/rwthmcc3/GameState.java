@@ -398,7 +398,7 @@ public class GameState extends Activity {
 			addItemToStatesList("Spielname:", updatedGame.getName());
 			addItemToStatesList("Spieleranzahl:", updatedGame.getPlayerCount()+"/"+updatedGame.getMaxPlayersCount());
 			//TODO correct timer
-			addItemToStatesList("Timer:", String.valueOf(updatedGame.getTimer()/60)+" min");
+			//addItemToStatesList("Timer:", String.valueOf(updatedGame.getTimer()/60)+" min");
 			
 			switch(updatedGame.getState()){
 			case 0:
@@ -466,10 +466,12 @@ public class GameState extends Activity {
 
 				// show timer and activate
 				TextView timerView = (TextView) findViewById(R.id.textview_timer_gamestate);
-				timerView.setVisibility(View.VISIBLE);
+				
 				mStartTime = SystemClock.uptimeMillis();
 				//TODO check if it works
+				mHandler.post(mUpdateGameState);
 				mHandler.post(mUpdateTimer);
+				timerView.setVisibility(View.VISIBLE);
 			} else {
 				Toast.makeText(GameState.this,"Fehler! Bitte versuchen Sie es erneut!",Toast.LENGTH_SHORT).show();
 			}
@@ -497,6 +499,7 @@ public class GameState extends Activity {
 
 			// check
 			if (leave) {
+				mHandler.post(mUpdateGameState);
 				Toast.makeText(GameState.this,"Spiel wurde verlassen!",Toast.LENGTH_SHORT).show();
 				
 			} else {
@@ -519,6 +522,8 @@ public class GameState extends Activity {
 
 			// check
 			if (leave && join) {
+				mHandler.post(mUpdateGameState);
+				
 				Toast.makeText(GameState.this,"Dem Spiel wurde beigetreten!",Toast.LENGTH_SHORT).show();
 			} else {
 				Toast.makeText(GameState.this,"Fehler! Bitte versuchen Sie es erneut!",Toast.LENGTH_SHORT).show();
