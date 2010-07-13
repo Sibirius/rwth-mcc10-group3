@@ -60,8 +60,8 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 	        int maxPlayersCount = maxPlayerSeekbar.getProgress()+1;
 	        Spinner timerSpinner = (Spinner)findViewById(R.id.spinner_new_game);
 	        int timerPosition = timerSpinner.getSelectedItemPosition();
-	        int timer = (timerPosition+1)*3*60; // 0=3min, 1=6min, 2=9min, 3=12min, 4=15min
-	        
+	        int timer = (timerPosition+1)*3*60; 
+	        if(timerPosition==0)timer = 60;
 	        
 			if((!gameName.startsWith(" ")) && (!(gameName.length()< 3)) && (gameName != null)){
 				//message to user

@@ -16,6 +16,7 @@
     
     <string name="times">Wartezeit wählen</string>
     <string-array name="array_times">
+    	<item>1  min</item>
         <item>3  min</item>
         <item>6  min</item>
         <item>9  min</item>

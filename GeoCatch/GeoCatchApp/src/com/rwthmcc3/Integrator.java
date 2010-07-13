@@ -168,8 +168,11 @@ public class Integrator {
 								Log.d(LOGTAG, "date2: "+dateFormat.format(date2)+", real: "+timeNow);
 								long timer = (date.getTime()-date2.getTime())/1000;
 								Log.d(LOGTAG, "Timer: "+timer);
-								if(timer < 0) timer = 0;
-								//game.setTimer((int)timer);
+								if(timer < 0){
+									player.setTimerHasCountedDown(true);
+									timer = 0;
+								}
+								game.setCountDown(((int)timer));
 								player.setNumber(Integer.parseInt(element2.getAttribute("playerNumber")));
 							}
 						}
