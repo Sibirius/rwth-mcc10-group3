@@ -30,7 +30,7 @@ public class GeoCatch extends Activity {
 	private LocationManager lmGeoCatch;
 	private String providerGeoCatch = "";
 	public static boolean debugMode = false;
-	public static String debugMac = "FF:AD:FF:64:66:66";
+	public static String debugMac = "AF:AD:FF:64:66:66";
 	SharedPreferences preferences;
 	
 	/** Called when the activity is first created. */

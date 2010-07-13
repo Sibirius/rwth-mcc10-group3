@@ -12,6 +12,7 @@ public class Game {
 	private int state;
 	private int timer;
 	private String winnerName;
+	private int countDown = 0;
 	
 	// getter and setter
 	
@@ -80,5 +81,11 @@ public class Game {
 	}
 	public String getWinnerName() {
 		return winnerName;
+	}
+	public void setCountDown(int countDown) {
+		this.countDown = countDown;
+	}
+	public int getCountDown() {
+		return countDown;
 	}
 }
