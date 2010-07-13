@@ -28,6 +28,8 @@ public class GameState extends Activity {
 	private Player player = Player.getPlayer();
 	private long mStartTime;
 	private boolean timerIsActive = false;
+	private boolean runBackgroundThread = false;
+	private Thread backgroundThread = null;
 	
 	
 	
@@ -79,7 +81,7 @@ public class GameState extends Activity {
 	
 	public void onStop(){
 		super.onStop();
-		//TODO destroy thread
+		runBackgroundThread = false;
 	}
 	
 	public void onResume(){
@@ -90,7 +92,16 @@ public class GameState extends Activity {
 		
 		//start thread
 		//TODO check if is running
-		startLongRunningOperation();
+		
+		if(backgroundThread==null){
+			runBackgroundThread = true;
+			startLongRunningOperation();
+		}else{
+			if(!backgroundThread.isAlive()){
+				runBackgroundThread = true;
+				startLongRunningOperation();
+			}
+		}
 	}
 	
 	//**********************************************************************
@@ -124,13 +135,13 @@ public class GameState extends Activity {
     protected void startLongRunningOperation() {
 
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
-        Thread t = new Thread() {
+    	backgroundThread = new Thread() {
             public void run() {
             	//update all 15 seconds
         		mHandler.post(mUpdateGameState);
             	Game myGame = player.getMyGame();
             	int i;
-            	while(true){
+            	while(runBackgroundThread){
             		//restart
             		i = 0;
             		
@@ -155,7 +166,7 @@ public class GameState extends Activity {
                 
             }
         };
-        t.start();
+        backgroundThread.start();
     }
     
 

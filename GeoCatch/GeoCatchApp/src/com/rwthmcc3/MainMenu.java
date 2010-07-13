@@ -38,7 +38,7 @@ public class MainMenu extends Activity {
 	private String providerMainMenu = "";
 	private Player player = Player.getPlayer();
 	private Thread backgroundThread = null;
-	
+	private boolean runBackgroundThread = true;
 	
 
 	// *******************************************************************************************************
@@ -80,7 +80,14 @@ public class MainMenu extends Activity {
 	public void onPause(){
 		super.onPause();
 		//destroy thread
-		if(backgroundThread!=null)backgroundThread.stop();
+		runBackgroundThread = false;
+		
+	}
+	@Override
+	public void onStop(){
+		super.onStop();
+		//destroy thread
+		runBackgroundThread = false;
 		
 	}
 
@@ -94,9 +101,13 @@ public class MainMenu extends Activity {
 		
 		//TODO check if is running
 		if(backgroundThread==null){
+			runBackgroundThread = true;
 			startLongRunningOperation();
 		}else{
-			if(!backgroundThread.isAlive()) startLongRunningOperation();
+			if(!backgroundThread.isAlive()){
+				runBackgroundThread = true;
+				startLongRunningOperation();
+			}
 		}
 		
 
@@ -137,11 +148,11 @@ public class MainMenu extends Activity {
     	backgroundThread = new Thread() {
             public void run() {
             	
-            	while(true){//restart
+            	while(runBackgroundThread){//restart
             		//update all 15 seconds
                 	mHandler.post(mUpdateViewTask);
             		try{	
-                        sleep(15000);
+                        if(runBackgroundThread)sleep(15000);
                     }catch(InterruptedException e){
         					Log.d("threadInMainMenu", e.toString());
         			}
