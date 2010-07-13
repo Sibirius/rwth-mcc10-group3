@@ -136,7 +136,7 @@ public class Map extends MapActivity{
 			myGame.setMode(0); //single player
 			player.setMyGame(myGame);
 		}
-		Toast.makeText(getApplicationContext(), player.getName(), Toast.LENGTH_LONG).show();
+		//Toast.makeText(getApplicationContext(), player.getName(), Toast.LENGTH_LONG).show();
 		
 		if(player != null){
 			
@@ -170,6 +170,7 @@ public class Map extends MapActivity{
     protected void gameLoop() {
 
     	startTimeMillis = System.currentTimeMillis();
+    	welcomeAlert();
     	pointList = new GeoPointList();
     	gameFinished = false;
     	
@@ -252,7 +253,7 @@ public class Map extends MapActivity{
 				
 			if(prePoint == null || point.getLatitudeE6() != prePoint.getLatitudeE6() || point.getLongitudeE6() != prePoint.getLongitudeE6()){
 				if(myStartPositionOverlay == null || prePoint == null){
-					myStartPositionOverlay = new MyOverlay(point,null,R.drawable.start);
+					myStartPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
 					mapOverlays.add(myStartPositionOverlay);
 					
 					prePoint = point;
@@ -302,6 +303,25 @@ public class Map extends MapActivity{
 		int secs = time % 60;
 		
 		return mins + " Min, " + secs + " Sek";
+	}
+	
+	private void welcomeAlert(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		  builder.setMessage("Hallo " + player.getName() + "!\n" +
+		  		"Willkommen im Spiel!\n\n" +
+		  		"Der >blaue< Punkt auf der Karte ist deine aktuelle Position. " +
+		  		"Diese wird laufend aktualisiert! Deine Aufgabe ist es nun, die Person, die " +
+		  		"sich hinter dem >roten< Punkt auf der Karte verbirgt, zu fangen!\n" +
+		  		"Aber Achtung:\n" +
+		  		"Auch du wirst gejagt!")
+		         .setCancelable(false)
+		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		             public void onClick(DialogInterface dialog, int id) {
+		                  dialog.cancel();
+		             }
+		         });
+		  final AlertDialog welcomeAlert = builder.create();
+		  welcomeAlert.show();
 	}
 	
 	private void winLooseAlert(){
@@ -385,7 +405,7 @@ public class Map extends MapActivity{
 				synchronized (player){
 					player.setLatitude(lat);
 					player.setLongitude(lng);
-					Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
+					//Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
 				}
 			}
 		}
