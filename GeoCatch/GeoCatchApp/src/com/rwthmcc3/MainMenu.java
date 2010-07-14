@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
+
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -40,6 +43,7 @@ public class MainMenu extends Activity {
 	private Player player = Player.getPlayer();
 	private Thread backgroundThreadGameState = null;
 	private boolean runBackgroundThread = true;
+	private int testBar = 0;
 	
 
 	// *******************************************************************************************************
@@ -49,8 +53,8 @@ public class MainMenu extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-        
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		setProgressBarIndeterminateVisibility(false);
         setContentView(R.layout.main_menu);
         
         
@@ -132,7 +136,7 @@ public class MainMenu extends Activity {
 	private Runnable mUpdateViewTask = new Runnable() {
 		public void run() {
 			// Back in the UI thread -- update our UI elements
-			
+			setProgressBarIndeterminateVisibility(true);
 		    boolean gamesOk = updateListofGames();
 		    
 		    if(gamesOk){
@@ -159,11 +163,15 @@ public class MainMenu extends Activity {
             public void run() {
             	
             	while(runBackgroundThread){//restart
-            		//update all 15 seconds
-                	mHandler.post(mUpdateViewTask);
-            		try{	
+            		
+            		try{
+            			//update all 15 seconds
+            			if(runBackgroundThread){//to kill fast
+            				sleep(1000);
+                        }
+            			mHandler.post(mUpdateViewTask);
                         if(runBackgroundThread){//to kill fast
-                        	sleep(15000);
+                        	sleep(13000);
                         }
                     }catch(InterruptedException e){
         					Log.d("threadInMainMenu", e.toString());
@@ -275,7 +283,8 @@ public class MainMenu extends Activity {
 		View listView = (View) findViewById(R.id.listview_mainmenu);
 		layoutMainMenuView.setVisibility(View.GONE);
 		listView.setVisibility(View.VISIBLE);
-
+		
+		setProgressBarIndeterminateVisibility(false);
 
 	
 	}
@@ -301,19 +310,23 @@ public class MainMenu extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.main_options_menu_update:
+			setProgressBarIndeterminateVisibility(true);
 			mHandler.post(mUpdateViewTask);
 			return true;
 		case R.id.main_options_menu_new_game:
 			startActivityForResult(new Intent(this.getApplicationContext(),
 					com.rwthmcc3.NewGame.class), 0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
 		case R.id.main_options_menu_view_map:
 			startActivityForResult(new Intent(this.getApplicationContext(),
 					com.rwthmcc3.Map.class), 0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
 		case R.id.main_options_menu_prefs:
 			startActivityForResult(new Intent(this.getApplicationContext(),
 					com.rwthmcc3.Preferences.class), 0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
 		}
 		return false;
@@ -339,6 +352,7 @@ public class MainMenu extends Activity {
 						public void onClick(DialogInterface dialog, int item) {
 							if(item == 0){
 								startActivityForResult(new Intent(MainMenu.this, com.rwthmcc3.GameState.class), 0);
+								overridePendingTransition(R.anim.fade, R.anim.hold);
 							}else{
 								
 								//create input

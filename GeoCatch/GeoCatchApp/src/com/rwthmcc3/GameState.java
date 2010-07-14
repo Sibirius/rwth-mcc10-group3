@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
@@ -37,10 +40,12 @@ public class GameState extends Activity {
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		setProgressBarIndeterminateVisibility(false);
 		setContentView(R.layout.game_state);
 		
 		
-		
+	
 		// create listview for states
 		ListView listViewStates = (ListView) findViewById(R.id.listview_gamestates);
 		listViewStates.setTextFilterEnabled(true);
@@ -144,8 +149,13 @@ public class GameState extends Activity {
     	backgroundThread = new Thread() {
             public void run() {
             	while(runBackgroundThread){//restart
-            		mHandler.post(mUpdateGameState);
+            		
+            		
             		try{
+            			if(runBackgroundThread){//to kill fast
+            				sleep(1000);
+                        }
+            			mHandler.post(mUpdateGameState);
                 		if(runBackgroundThread){//to kill fast
                 			sleep(15000);
                 		}	
@@ -171,6 +181,7 @@ public class GameState extends Activity {
     private void updateViews() {
     	
         // Back in the UI thread -- update our UI elements
+    	setProgressBarIndeterminateVisibility(true);
     	boolean namesOk = updateNames();
     	boolean statesOk = updateStates();
     	
@@ -219,6 +230,7 @@ public class GameState extends Activity {
     		if((chosenGame.getState()==2) || (chosenGame.getState()==3) ){
     			Toast.makeText(GameState.this,"Spiel existiert nicht mehr!",Toast.LENGTH_SHORT).show();
     			startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
+    			overridePendingTransition(R.anim.fade, R.anim.hold);
     		}
     		//is chosenGame my Game ? 
     		if(myGameKey.equals(chosenGameKey)){
@@ -258,6 +270,7 @@ public class GameState extends Activity {
     					textTimerView.setVisibility(View.GONE);
     					//TODO start map
     					startActivityForResult(new Intent(GameState.this,com.rwthmcc3.Map.class), 0);
+    					overridePendingTransition(R.anim.fade, R.anim.hold);
         		}
     			
        		}else{//not my Game 
@@ -274,9 +287,12 @@ public class GameState extends Activity {
 	    		if((chosenGame.getState()==2) || (chosenGame.getState()==3) ){
 	    			Toast.makeText(GameState.this,"Spiel existiert nicht mehr!",Toast.LENGTH_SHORT).show();
 	    			startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
+	    			overridePendingTransition(R.anim.fade, R.anim.hold);
 	    		}
 	    	}
     	}
+    	
+    	setProgressBarIndeterminateVisibility(false);
 	}
 
     
@@ -431,6 +447,7 @@ public class GameState extends Activity {
 			if (leave) {
 				Toast.makeText(GameState.this,"Spiel wurde beendet!",Toast.LENGTH_SHORT).show();
 				startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
+				overridePendingTransition(R.anim.fade, R.anim.hold);
 			} else {
 				Toast.makeText(GameState.this,"Fehler! Bitte versuchen Sie es erneut!",Toast.LENGTH_SHORT).show();
 			}
