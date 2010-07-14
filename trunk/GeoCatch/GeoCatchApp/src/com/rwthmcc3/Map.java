@@ -400,8 +400,8 @@ public class Map extends MapActivity{
 
 		public void onLocationChanged(Location location) {
 			if(location != null){
-				float lat = (float) (location.getLatitude());
-				float lng = (float) (location.getLongitude());		
+				double lat = location.getLatitude();
+				double lng = location.getLongitude();		
 				synchronized (player){
 					player.setLatitude(lat);
 					player.setLongitude(lng);
