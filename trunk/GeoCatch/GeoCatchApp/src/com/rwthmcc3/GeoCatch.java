@@ -160,12 +160,14 @@ public class GeoCatch extends Activity {
 	OnClickListener doNewGameOnClick = new OnClickListener() {		
 		public void onClick(View view) {
 			startActivityForResult(new Intent(GeoCatch.this, com.rwthmcc3.NewGame.class),0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			}
 	};
 	
 	OnClickListener doJoinGameOnClick = new OnClickListener() {		
 		public void onClick(View view) {
 			startActivityForResult(new Intent(GeoCatch.this, com.rwthmcc3.MainMenu.class),0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			}
 	};
 	
@@ -189,18 +191,23 @@ public class GeoCatch extends Activity {
 		switch (item.getItemId()) {
 		case R.id.geocatch_options_menu_new_game:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.NewGame.class),0);	
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
 		case R.id.geocatch_options_menu_join_game:
-			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.MainMenu.class),0);	
+			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.MainMenu.class),0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
 		case R.id.geocatch_options_menu_view_map:
-			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Map.class),0);			
+			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Map.class),0);	
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;			
 		case R.id.geocatch_options_menu_prefs:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Preferences.class),0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
 		case R.id.geocatch_options_menu_help:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Help.class),0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;	
 		}
 		return false;
