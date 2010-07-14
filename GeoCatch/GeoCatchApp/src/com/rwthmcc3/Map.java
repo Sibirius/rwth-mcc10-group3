@@ -178,10 +178,14 @@ public class Map extends MapActivity{
         Thread t = new Thread() {
             public void run() {
             	while(true){
+            		
+            		if(gameFinished) break;
+            		
             		synchronized(player){
 		            	if(player != null) {
 		            		Integrator.playerUpdateState(player); 
 		            		targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));
+		            		Log.d(LOGTAG, player.getTargetLat()+"");
 		            		//powerupPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));
 		            		//hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
 		            		//if(player.getpowerUpCount() > powerUpCount){
@@ -221,10 +225,11 @@ public class Map extends MapActivity{
 	            			break;
 	            		}
 	                }
+	                
 	                //if(powerUpEnabled[2]){
 	                //SystemClock.sleep(15000);
             		//} else {
-            		SystemClock.sleep(60000);
+            		SystemClock.sleep(30000);
             		//}
             	}
             	
@@ -359,6 +364,7 @@ public class Map extends MapActivity{
 	
 	private void closeMapView(){
 		if(!gameFinished) lm.removeUpdates(geoUpdater);
+		gameFinished = true;
         Map.this.finish();	
 	}
 	
@@ -483,7 +489,7 @@ public class Map extends MapActivity{
 			if(g != null){
 				if(this.size() > 0){
 					float[] results = new float[1];
-					Location.distanceBetween(g.getLatitudeE6(), g.getLongitudeE6(), this.get(this.size()-1).getLatitudeE6(), this.get(this.size()-1).getLongitudeE6(), results);
+					Location.distanceBetween(g.getLatitudeE6() / 1E6, g.getLongitudeE6() / 1E6, this.get(this.size()-1).getLatitudeE6() / 1E6, this.get(this.size()-1).getLongitudeE6() / 1E6, results);
 					distance += results[0];
 				}
 				return super.add(g);
