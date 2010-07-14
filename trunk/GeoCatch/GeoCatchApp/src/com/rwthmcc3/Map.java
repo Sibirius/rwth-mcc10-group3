@@ -246,7 +246,7 @@ public class Map extends MapActivity{
 			if(pointList.size() == 0){
 				pointList.add(point);
 			} else {
-				if(pointList.get(pointList.size()-1) != point){
+				if(pointList.get(pointList.size()-1).getLatitudeE6() != point.getLatitudeE6() || pointList.get(pointList.size()-1).getLongitudeE6() != point.getLongitudeE6()){
 					pointList.add(point);
 				}
 			}

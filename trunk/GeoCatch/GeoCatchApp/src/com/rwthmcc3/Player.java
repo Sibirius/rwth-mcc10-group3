@@ -132,7 +132,7 @@ public class Player {
 		return key;
 	}
 
-	public void setHunterLong(float hunterLong) {
+	public void setHunterLong(double hunterLong) {
 		this.hunterLong = hunterLong;
 	}
 
@@ -140,7 +140,7 @@ public class Player {
 		return hunterLong;
 	}
 
-	public void setTargetLong(float targetLong) {
+	public void setTargetLong(double targetLong) {
 		this.targetLong = targetLong;
 	}
 
@@ -148,7 +148,7 @@ public class Player {
 		return targetLong;
 	}
 
-	public void setHunterLat(float hunterLat) {
+	public void setHunterLat(double hunterLat) {
 		this.hunterLat = hunterLat;
 	}
 
@@ -156,7 +156,7 @@ public class Player {
 		return hunterLat;
 	}
 
-	public void setTargetLat(float targetLat) {
+	public void setTargetLat(double targetLat) {
 		this.targetLat = targetLat;
 	}
 
