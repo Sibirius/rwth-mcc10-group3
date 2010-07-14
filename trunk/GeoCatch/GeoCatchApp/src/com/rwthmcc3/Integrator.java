@@ -70,8 +70,8 @@ public class Integrator {
 			    	game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("maxPlayersCount")));
 			    	game.setVersion(Integer.parseInt(element.getAttribute("version")));
 			    	String [] creatorLocation = element.getAttribute("creatorLocation").split(",");
-			    	game.setCreatorLatitude(Float.parseFloat(creatorLocation[0]));
-			    	game.setCreatorLongitude(Float.parseFloat(creatorLocation[1]));
+			    	game.setCreatorLatitude(Double.parseDouble(creatorLocation[0]));
+			    	game.setCreatorLongitude(Double.parseDouble(creatorLocation[1]));
 			    	game.setMode(Integer.parseInt(element.getAttribute("mode")));
 			    	
 			    	result.add(game);
@@ -152,9 +152,8 @@ public class Integrator {
 						game.setMode(Integer.parseInt(element.getAttribute("mode")));
 						game.setState(Integer.parseInt(element.getAttribute("status")));
 						game.setMaxPlayersCount(Integer.parseInt(element.getAttribute("mpc")));
-						if(game.getState() == 0)
-							game.setTimer(Integer.parseInt(element.getAttribute("timer")));
-						//game just started
+						game.setTimer(Integer.parseInt(element.getAttribute("timer")));
+						//game started
 						if(game.getState() == 1){
 							NodeList nodes2 = doc.getElementsByTagName("additional");
 							Element element2 = (Element) nodes2.item(0);
@@ -305,8 +304,10 @@ public class Integrator {
 	        	NodeList node = doc.getElementsByTagName("state");
 	        	Element ele = (Element) node.item(0);
 	        	if(ele != null){
-		        	player.setTargetLong(Float.parseFloat(ele.getAttribute("lon")));
-		        	player.setTargetLat(Float.parseFloat(ele.getAttribute("lat")));
+	        		String lon = ele.getAttribute("lon");
+	        		String lat = ele.getAttribute("lat");
+		        	if(lon != "") player.setTargetLong(Double.parseDouble(lon));
+		        	if(lat != "") player.setTargetLat(Double.parseDouble(lat));
 		        	
 		        	
 		        	if(player.getMyGame()!=null){
@@ -452,7 +453,6 @@ public class Integrator {
 	        		URLEncodedUtils.format(qparams, "UTF-8"), null);
 	        Log.d(LOGTAG, "doGet uri: "+uri.toString());
 	        HttpGet httpget = new HttpGet(uri);
-	        Log.d(LOGTAG, "doGet nearly done");
 	        HttpResponse response = client.execute(httpget);
 	        Log.d(LOGTAG, "doGet success");
 	        return response;
