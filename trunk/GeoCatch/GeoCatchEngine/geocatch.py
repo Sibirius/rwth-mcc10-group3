@@ -49,8 +49,13 @@ class Player(db.Model):
 
 	nearlyCaught = db.BooleanProperty()
 
-	powerUp = db.IntegerProperty()
-	powerUpLocation = db.GeoPtProperty()
+	# 0 is none
+	# 1 is "show hunter" 		#ignore from here
+	# 2 is ???		
+	# 3 is PROFIT
+	powerUpActive = db.IntegerProperty()
+	powerUpActivated = db.DateTimeProperty()
+	powerUpExpires = db.DateTimeProperty()
 
 class Game(db.Model):
 	""" game data """
@@ -155,6 +160,49 @@ class GetGamePlayerList(webapp.RequestHandler):
 
 		template_path = os.path.join(TEMPLATE_FOLDER, 'players.xml')
 		self.response.out.write(template.render(template_path, template_values))
+
+class PlayerActivatePowerup(webapp.RequestHandler):
+	""" activates a powerup """
+	def get(self):
+		try:
+			player_key = checkKey(self.request.get('p'))
+			powerupId = checkInt(self.request.get('pow'))
+		except:
+			logging.error('InputError') #todo: more precise catching and more verbose... debugging will be a nightmare otherwise
+			respond(self, "input error")
+			return
+
+		player = Player.get(player_key)
+
+		if player != None:
+			if player.currentGame != None:
+				game_key = player.currentGame.key()
+				game = Game.get(game_key)
+			else:
+				logging.error('Player %s is in no game'%(player_key))
+				respond(self,"error")
+				return
+		else:
+			logging.error('There is no spoon, eh... player %s'%(player_key))
+			respond(self,"error")
+			return		
+
+		if game != None:
+			if powerupId == 1: #see hunter
+				now = datetime.datetime.now()
+				
+				player.powerUpActive = powerupId
+				player.powerUpActivated = now
+				player.powerUpExpires = now+datetime.timedelta(minutes=3) #todo: variable time for powerups?
+				player.put()
+
+			logging.info('Player %s activated powerup %s'%(player_key, powerupId))
+			respond(self,"done")
+			return		
+		else:
+			logging.error('There is no game %s'%(game_key))
+			respond(self,"error")
+			return
 
 class GetGameState(webapp.RequestHandler):
 	""" returns an xml file with the player list and game state
@@ -350,8 +398,8 @@ class StartGame(webapp.RequestHandler):
 				if game.playerCount < 3: #"race to the point" game
 					#TODO: any way to make sure the marker is on a walkable place after this?
 					if game.playerCount == 1:
-						lat = player.lastLocation.lat+0.0001
-						lon = player.lastLocation.lon+0.0001 #TODO random in a certain radius range, calculating meter to lat/lon dependig on the position will sure be a lot fun
+						lat = player.lastLocation.lat+0.00001
+						lon = player.lastLocation.lon+0.00001 #TODO random in a certain radius range, calculating meter to lat/lon dependig on the position will sure be a lot fun
 					else:
 						#TODO: calculate something fair between the 2 players
 						#right now it's just the average, at least it should be but i doubt it
@@ -511,10 +559,13 @@ class PlayerUpdateState(webapp.RequestHandler):
 		if game != None and player != None:
 			if not player.key() in game.players:
 				logging.error('Player %s sent update for game %s, but he is not in the game at all'%(player_key,game_key))
-				return #TODO: proper error message								
+				return #TODO: proper error message
+			modespecific = {}
+			modespecific["lat"] = 0 #dummy values
+			modespecific["lon"] = 0 #dummy values
+			
 			if game.status == 1: # if game running you can change stuff, otherwise no
 				loc = db.GeoPt(newLocation[0], newLocation[1])
-				modespecific = {}
 				
 				#TODO: deal with update information
 				path = Path()
@@ -582,6 +633,14 @@ class PlayerUpdateState(webapp.RequestHandler):
 
 			if game.status == 3:
 				events.append(Event("victory", game.winner.name, game.winner.playerNumber))
+
+			if player.powerUpActive == 1:
+				if player.powerUpExpires < datetime.datetime.now(): #if powerup expired
+					player.powerUpActive = 0
+					player.put()
+					logging.info('Hunter powerup of player %s expired'%(player_key))
+				else:
+					events.append(Event("hunter", player.hunter.currentLocation.lat, player.hunter.currentLocation.lon))			
 
 			template_values = {'state': game.status, 'mode': game.mode, 'modespecific':modespecific, 'events': events}
 
@@ -707,87 +766,6 @@ class CreateGame(webapp.RequestHandler):
 		#TODO: more detailed and a reason why it can't be created if there are issues?
 		respond(self, value)
 
-####################################stoopid methods
-def clearDatabase():
-	models = ["Player","Game","Path"]
-	base_query = "SELECT __key__ FROM "
-
-	for i in models:
-		q = db.GqlQuery(base_query+i)
-		results = q.fetch(100) #has to be called multiple times maybe
-		#TODO: mind that it only deletes 100 items at once 
-		for r in results:
-			db.delete(r)
-
-class ClearData(webapp.RequestHandler):
-	""" clears the database - as good and shiny as new """
-	def get(self):
-		logging.critical('Database cleared!') #todo: log from where?
-		clearDatabase()
-
-
-class FillWithTestdata(webapp.RequestHandler):
-	""" clears the database and fills it with brand new samples. boring. the implemented classes should be rather used """
-	def get(self):
-		logging.critical('Database cleared and filled with test data!')
-
-		#clear data models
-		clearDatabase()
-
-		#fill with junk
-		player1 = Player()
-		player1.name = "Player 1"
-		player1.mac = "11:11:11:11:11:11"
-		player1.lastLocation = "0,0"
-		player1_key = player1.put()
-
-		player2 = Player()
-		player2.name = "Player 2"
-		player2.mac = "22:22:22:22:22:22"
-		player2.lastLocation = "20,20"
-		player2_key = player2.put()
-
-		player3 = Player()
-		player3.name = "Player 3"
-		player3.mac = "33:33:33:33:33:33"
-		player3.lastLocation = "50,30"		
-		player3_key = player3.put()
-
-		game1 = Game()
-		game1.name = "game1"
-		game1.status = 0
-		game1.mode = 0
-		game1.version = 1
-		game1.creator = player3_key
-		game1.creatorLocation = player3.lastLocation
-		game1.players = [player3_key, player1_key]
-		game1.playerCount = 2
-		game1.maxPlayerCount = 3
-
-		game1.put()
-
-		player1.currentGame = game1.key()
-		player3.currentGame = game1.key()
-
-		game2 = Game()
-		game2.name = "game2"
-		game2.status = 0
-		game2.mode = 0
-		game2.version = 1
-		game2.creator = player2_key
-		game2.creatorLocation = player2.lastLocation
-		game2.players = [player2_key,]
-		game2.playerCount = 1
-		game2.maxPlayerCount = 3
-		game2.put()
-
-		player2.currentGame = game2.key()
-
-		player1.put()
-		player2.put()
-		player3.put()
-
-
 ##########################################################
 application = webapp.WSGIApplication(
 	[('/', MainPage),
@@ -798,6 +776,8 @@ application = webapp.WSGIApplication(
 	 ('/register', RegisterPlayer),
 	 ('/name', NameChangePlayer),
 
+	 ('/activate', PlayerActivatePowerup),
+
 	 ('/create', CreateGame),
 	 ('/join', JoinGame),                                      
 	 ('/start', StartGame),
@@ -806,9 +786,6 @@ application = webapp.WSGIApplication(
 
 	 ('/update', PlayerUpdateState),
 
-	 #DEBUG FUNCTIONS, TODO: mind them
-	 #('/fillWithTestdata', FillWithTestdata),
-	 #('/clearData', ClearData),
 	 ],
 	 debug=DEBUG)
 
