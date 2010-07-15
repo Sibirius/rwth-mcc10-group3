@@ -530,8 +530,8 @@ class PlayerUpdateState(webapp.RequestHandler):
 
 				if game.mode == 1: #catch
 					modespecific = {}
-					modespecific["lat"] = player.prey.lat #goal lat and lon
-					modespecific["lon"] = player.prey.lon
+					modespecific["lat"] = player.prey.lastLocation.lat #goal lat and lon
+					modespecific["lon"] = player.prey.lastLocation.lon
 
 
 				#check if someone caught someone else
