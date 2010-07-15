@@ -315,10 +315,13 @@ public class Map extends MapActivity{
 		  builder.setMessage("Hallo " + player.getName() + "!\n" +
 		  		"Willkommen im Spiel!\n\n" +
 		  		"Der >blaue< Punkt auf der Karte ist deine aktuelle Position. " +
-		  		"Diese wird laufend aktualisiert! Deine Aufgabe ist es nun, die Person, die " +
-		  		"sich hinter dem >roten< Punkt auf der Karte verbirgt, zu fangen!\n" +
+		  		"Diese wird laufend aktualisiert! " +
+		  		((player != null && player.getMyGame() != null && player.getMyGame().getMode() == 1) ?
+		  		"Deine Aufgabe ist es nun, die Person, die " +
+		  		"sich hinter dem >roten< Punkt auf der Karte verbirgt, zu fangen!\n" + 
 		  		"Aber Achtung:\n" +
-		  		"Auch du wirst gejagt!")
+		  		"Auch du wirst gejagt!" : "Deine Aufgabe ist es nun, dich zur Stelle, auf die " +
+		  		"der >rote< Punkt zeigt, zu bewegen!\n"))
 		         .setCancelable(false)
 		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 		             public void onClick(DialogInterface dialog, int id) {
