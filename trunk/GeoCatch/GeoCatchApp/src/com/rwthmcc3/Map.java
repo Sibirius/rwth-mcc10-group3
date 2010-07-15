@@ -2,6 +2,7 @@ package com.rwthmcc3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -45,21 +46,24 @@ public class Map extends MapActivity{
 	private MyOverlay myPositionOverlay = null;
 	private MyOverlay myStartPositionOverlay = null;
 	private MyOverlay myTargetPositionOverlay = null;
-	//private MyOverlay hunterPositionOverlay = null;
+	private MyOverlay myHunterPositionOverlay = null;
+	private MyOverlay myPowerUpPositionOverlay = null;
 	
-	//final int NUMOFPOWERUPS = 4;
-	//private int powerUpCount = 0;
-	//private boolean[] powerUpEnabled = new boolean[NUMOFPOWERUPS]; 
-	// 1 - show hunter
-	// 2 - hide target
-	// 3 - increase update time	
-	// 4 - reset powerUps
-	//private String[] powerUpMessage = new String[NUMOFPOWERUPS];
+	private double powerUpLat = 0.0;
+	private double powerUpLng = 0.0;
+	
+	final int NUMOFPOWERUPS = 4;
+	private boolean[] powerUpEnabled = new boolean[NUMOFPOWERUPS]; 
+	private long[] powerUpTime = new long[NUMOFPOWERUPS]; 
+	// 0 - show hunter
+	// 1 - hide target
+
+	private String[] powerUpMessage = new String[NUMOFPOWERUPS];
 	
 	private GeoPoint prePoint = null;
 	private GeoPoint targetPoint = null;
-	//private GeoPoint powerupPoint = null;
-	//private GeoPoint hunterPoint = null;
+	private GeoPoint powerupPoint = null;
+	private GeoPoint hunterPoint = null;
 	
 	private Player player;
 	private boolean gameFinished;	
@@ -93,6 +97,17 @@ public class Map extends MapActivity{
     final Runnable mClose = new Runnable(){
     	public void run(){
     		gameClosedAlert();
+    	}
+    };
+    
+    // Create runnable for disabling powerUps
+    final Runnable mDisablePowerUp = new Runnable(){
+    	public void run(){
+    		SystemClock.sleep(185000);
+    		long time = System.currentTimeMillis() - 180000;
+    		for(int i = 0; i < NUMOFPOWERUPS; i++){
+    			if(powerUpTime[i] <= time) powerUpEnabled[i] = false;
+    		}
     	}
     };
     
@@ -144,10 +159,8 @@ public class Map extends MapActivity{
 			lm.requestLocationUpdates(provider, 0, 0, geoUpdater);
 			
 			//init powerUps
-			//powerUpMessage[0] = "Du kannst jetzt deinen Jäger in gelb sehen!";
-			//powerUpMessage[1] = "Du kannst dein Ziel nicht mehr sehen!";
-			//powerUpMessage[2] = "Das Update-Interval hat sich erhöht!";
-			//powerUpMessage[3] = "Alle PowerUps wurden zurückgesetzt!";
+			powerUpMessage[0] = "Du kannst jetzt für drei Minuten deinen Jäger in gelb sehen!";
+			powerUpMessage[1] = "Du kannst dein Ziel nicht mehr sehen!";
 			
 			gameLoop();
 			
@@ -175,31 +188,8 @@ public class Map extends MapActivity{
             		synchronized(player){
 		            	if(player != null) {
 		            		Integrator.playerUpdateState(player); 
-		            		targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));
-		            		Log.d(LOGTAG, player.getTargetLat()+"");
-		            		//powerupPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));
-		            		//hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
-		            		//if(player.getpowerUpCount() > powerUpCount){
-		            		//	int selectedPowerUp;
-		            		//	if(powerUpEnabled[1] == true){
-		            		//		selectedPowerUp = 3;
-		            		//	} else {
-		            		//		ArrayList<Integer> intList = new ArrayList<Integer>();
-		            		//		for(int i = 0; i<NUMOFPOWERUPS; i++){
-		            		//			if(powerUpEnabled[i]) intList.add(i); 
-		            		//		}
-		            		//		Random randomGenerator = new Random();
-		            		//		selectedPowerUp = intList.get(randomGenerator.nextInt(intList.size()));	            				
-		            		//	}
-		            		//	powerUpEnabled[selectedPowerUp] = true;	
-	            			//	if(powerUpEnabled[3]){
-	            			//		for(int i = 0; i<NUMOFPOWERUPS; i++){
-	            			//			powerUpEnabled[i] = false;
-	            			//		}
-	            			//	}
-	            			//	Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();
-	            			//	powerUpCount++;
-		            		//}
+		            		targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));		            		
+		            		hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
 		            	}
             		}
             		
@@ -217,11 +207,8 @@ public class Map extends MapActivity{
 	            		}
 	                }
 	                
-	                //if(powerUpEnabled[2]){
-	                //SystemClock.sleep(15000);
-            		//} else {
             		SystemClock.sleep(30000);
-            		//}
+            		
             	}
             	
             }
@@ -271,21 +258,21 @@ public class Map extends MapActivity{
 				
 				mapView.getController().animateTo(point);
 				
-				//if(!powerUpEnabled[1]){
-				if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
-				myTargetPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_red);
-				mapOverlays.add(myTargetPositionOverlay);
-				//}
+				if(!powerUpEnabled[1] && targetPoint != null){
+					if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
+					myTargetPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_red);
+					mapOverlays.add(myTargetPositionOverlay);
+				}
 				
-				//if(myPowerUpPositionOverlay != null) mapOverlays.remove(myPowerUpPositionOverlay);
-				//myPowerUpPositionOverlay = new MyOverlay(powerupPoint,null,R.drawable.point_green);
-				//mapOverlays.add(myPowerUpPositionOverlay);
+				if(myPowerUpPositionOverlay != null && powerupPoint != null) mapOverlays.remove(myPowerUpPositionOverlay);
+					myPowerUpPositionOverlay = new MyOverlay(powerupPoint,null,R.drawable.point_green);
+					mapOverlays.add(myPowerUpPositionOverlay);
 				
-				//if(powerUpEnabled[0]){
-				//if(myHunterPositionOverlay != null) mapOverlays.remove(myHunterPositionOverlay);
-				//myHunterPositionOverlay = new MyOverlay(hunterPoint,null,R.drawable.point_yellow);
-				//mapOverlays.add(myhunterPositionOverlay);
-				//}
+				if(powerUpEnabled[0] && hunterPoint != null){
+					if(myHunterPositionOverlay != null) mapOverlays.remove(myHunterPositionOverlay);
+					myHunterPositionOverlay = new MyOverlay(hunterPoint,null,R.drawable.point_yellow);
+					mapOverlays.add(myHunterPositionOverlay);
+				}
 				
 				mapView.postInvalidate();
 				
@@ -388,6 +375,25 @@ public class Map extends MapActivity{
 		}
 		return false;
 	}
+
+	/**********************************************************************/
+	/**                       powerUp functions                          **/
+	/**********************************************************************/
+	
+	private boolean gotPowerUp(){
+		Log.d(LOGTAG, "gotPowerUP()");
+		if( (int) (powerUpLat * 1E5) == (int) (player.getLatitude() * 1E5) ) {
+			return true;
+		}
+		return false;
+	}
+	
+	private void setNewPowerUp(){
+		Random randomGenerator = new Random();
+		powerUpLat = player.getLatitude() + (randomGenerator.nextDouble() - 0.5) / 1E3;
+		powerUpLng = player.getLongitude() + (randomGenerator.nextDouble() - 0.5) / 1E3;
+		Log.d(LOGTAG, "setNewPowerUP(): " + powerUpLat + " " + powerUpLng);
+	}
 	
 	/**********************************************************************/
 	/**                         additional classes                       **/
@@ -405,7 +411,22 @@ public class Map extends MapActivity{
 				synchronized (player){
 					player.setLatitude(lat);
 					player.setLongitude(lng);
-					//Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
+					if(powerupPoint == null) setNewPowerUp();
+					powerupPoint = new GeoPoint((int) (powerUpLat * 1E6),(int) (powerUpLng * 1E6));
+					
+            		if(gotPowerUp()){
+            			setNewPowerUp();
+            			Random randomGenerator = new Random();
+            			int selectedPowerUp = randomGenerator.nextInt(NUMOFPOWERUPS);	            				
+            			powerUpEnabled[selectedPowerUp] = true;	
+            			powerUpTime[selectedPowerUp] = System.currentTimeMillis();
+            			mHandler.post(mDisablePowerUp);
+            			Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();       				
+            		}
+					
+            		mHandler.post(mUpdateMarkers);
+            		
+            		//Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
 				}
 			}
 		}
