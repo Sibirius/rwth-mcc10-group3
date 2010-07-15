@@ -247,7 +247,7 @@ public class GameState extends Activity {
     		//is game stopped or finished?
     		if((chosenGame.getState()==2) || (chosenGame.getState()==3) ){
     			Toast.makeText(GameState.this,"Spiel existiert nicht mehr!",Toast.LENGTH_SHORT).show();
-    			startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
+    			startActivityForResult(new Intent(GameState.this,com.rwthmcc3.GeoCatch.class), 0);
     			overridePendingTransition(R.anim.fade, R.anim.hold);
     		}
     		//is chosenGame my Game ? 
@@ -306,7 +306,7 @@ public class GameState extends Activity {
 	    		//is game stopped or finished?
 	    		if((chosenGame.getState()==2) || (chosenGame.getState()==3) ){
 	    			Toast.makeText(GameState.this,"Spiel existiert nicht mehr!",Toast.LENGTH_SHORT).show();
-	    			startActivityForResult(new Intent(GameState.this,com.rwthmcc3.MainMenu.class), 0);
+	    			startActivityForResult(new Intent(GameState.this,com.rwthmcc3.GeoCatch.class), 0);
 	    			overridePendingTransition(R.anim.fade, R.anim.hold);
 	    		}
 	    	}
