@@ -313,14 +313,14 @@ public class MainMenu extends Activity {
 			setProgressBarIndeterminateVisibility(true);
 			mHandler.post(mUpdateViewTask);
 			return true;
-		case R.id.main_options_menu_new_game:
+		case R.id.main_options_menu_new:
 			startActivityForResult(new Intent(this.getApplicationContext(),
 					com.rwthmcc3.NewGame.class), 0);
 			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
-		case R.id.main_options_menu_view_map:
+		case R.id.main_options_menu_geocatch:
 			startActivityForResult(new Intent(this.getApplicationContext(),
-					com.rwthmcc3.Map.class), 0);
+					com.rwthmcc3.GeoCatch.class), 0);
 			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
 		case R.id.main_options_menu_prefs:
@@ -328,7 +328,14 @@ public class MainMenu extends Activity {
 					com.rwthmcc3.Preferences.class), 0);
 			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
+		
+		case R.id.main_options_menu_help:
+			startActivityForResult(new Intent(this.getApplicationContext(),
+					com.rwthmcc3.Help.class), 0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
+			return true;
 		}
+	
 		return false;
 	}
 	
