@@ -24,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -122,21 +123,10 @@ public class Map extends MapActivity{
 
 		//Player sample data
 		player = Player.getPlayer();
-		if (player.getKey().equals("")){
-			player.setKey("ahFyd3RoLW1jYzEwLWdyb3VwM3IOCxIGUGxheWVyGMncAww");
-			player.setMac("34:34:34:24:24:24");
-			player.setName("tesspieler");
-			player.setCreator(true);
-			Game myGame = new Game();
-			myGame.setKey("ahFyd3RoLW1jYzEwLWdyb3VwM3IMCxIER2FtZRix5AMM");
-			myGame.setName("tollestestspiel");
-			myGame.setMaxPlayersCount(1);
-			myGame.setVersion(1);
-			myGame.setState(1); //game started
-			myGame.setMode(0); //single player
-			player.setMyGame(myGame);
-		}
+
 		//Toast.makeText(getApplicationContext(), player.getName(), Toast.LENGTH_LONG).show();
+		
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); 
 		
 		if(player != null){
 			
@@ -162,6 +152,7 @@ public class Map extends MapActivity{
 			gameLoop();
 			
 		} else {
+			Toast.makeText(getApplicationContext(), "Übertragung der Spieldaten schlug fehl!", Toast.LENGTH_LONG).show();
 			Map.this.finish();
 		}
 	}	
