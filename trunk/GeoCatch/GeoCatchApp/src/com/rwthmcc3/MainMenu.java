@@ -1,12 +1,11 @@
 package com.rwthmcc3;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-
-
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,13 +18,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 
@@ -111,7 +111,7 @@ public class MainMenu extends Activity {
 		// reset view
 		resetViews();
 		runBackgroundThread = true;
-		//TODO check if is running
+		//check if is running
 		if(backgroundThreadGameState==null){
 			runBackgroundThread = true;
 			startLongRunningOperation();
@@ -140,7 +140,17 @@ public class MainMenu extends Activity {
 		    boolean gamesOk = updateListofGames();
 		    
 		    if(gamesOk){
+		    	TextView updatedView = (TextView)findViewById(R.id.textview_updated_main);
+		    	// Format the current time.
+		    	SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy   HH:mm:ss   a");
+		    	Date currentTime_1 = new Date();
+		    	String dateString = formatter.format(currentTime_1);
+		    	
+		    	
+		    	updatedView.setText("Aktualisiert am:    " + dateString);
+		    	
 		    	makeUpdatedViewsVisible();
+		    	
 		    }else{
 		    	Toast.makeText(getApplicationContext(),"Verbindung zum Server fehlgeschlagen!", Toast.LENGTH_SHORT);
 		    }
@@ -213,8 +223,11 @@ public class MainMenu extends Activity {
 	private void resetViews(){
 		View layoutMainMenuView = (View) findViewById(R.id.layout2_mainmenu);
 		View listView = (View) findViewById(R.id.listview_mainmenu);
+		View layoutUpdatedView = (View) findViewById(R.id.layout_updated_main);
 		layoutMainMenuView.setVisibility(View.VISIBLE);
 		listView.setVisibility(View.GONE);
+		layoutUpdatedView.setVisibility(View.GONE);
+		
 	}
 	
 	/**
@@ -281,8 +294,10 @@ public class MainMenu extends Activity {
 	public void makeUpdatedViewsVisible() {
 		View layoutMainMenuView = (View) findViewById(R.id.layout2_mainmenu);
 		View listView = (View) findViewById(R.id.listview_mainmenu);
+		View layoutUpdatedView = (View) findViewById(R.id.layout_updated_main);
 		layoutMainMenuView.setVisibility(View.GONE);
 		listView.setVisibility(View.VISIBLE);
+		layoutUpdatedView.setVisibility(View.VISIBLE);
 		
 		setProgressBarIndeterminateVisibility(false);
 
@@ -292,15 +307,36 @@ public class MainMenu extends Activity {
 	// *******************************************************************************************************
 	// Menu
 	// *******************************************************************************************************
-
+	
+	
+	private static final int SUBMENU = 1;
+	private static final int UPDATE = 0;
+	private static final int NEW = UPDATE +1;
+	private static final int GEOCATCH = NEW + 1;
+	private static final int PREFERENCES = GEOCATCH + 1;
+	private static final int HELP = PREFERENCES + 1;
+	
+	
 	/**
 	 * Creates the menu items.
 	 * 
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_options_menu, menu);
-		return true;
+		
+		
+		menu.add(0, UPDATE, 0, "Aktualisieren");
+		SubMenu subMenu = menu.addSubMenu("Mehr");
+		subMenu.add(SUBMENU, NEW, 0, "Neues Spiel");
+		subMenu.add(SUBMENU, GEOCATCH, 1, "Startseite");
+		subMenu.add(SUBMENU, PREFERENCES, 2, "Einstellungen");
+		subMenu.add(SUBMENU, HELP, 3, "Hilfe");
+				
+		MenuItem updateItem = menu.getItem(0);
+		MenuItem subItem = menu.getItem(SUBMENU);
+		updateItem.setIcon(R.drawable.ic_menu_refresh);
+		subItem.setIcon(R.drawable.ic_menu_more);
+		
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	/**
@@ -309,27 +345,27 @@ public class MainMenu extends Activity {
 	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.main_options_menu_update:
+		case UPDATE:
 			setProgressBarIndeterminateVisibility(true);
 			mHandler.post(mUpdateViewTask);
 			return true;
-		case R.id.main_options_menu_new:
+		case NEW:
 			startActivityForResult(new Intent(this.getApplicationContext(),
 					com.rwthmcc3.NewGame.class), 0);
 			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
-		case R.id.main_options_menu_geocatch:
+		case GEOCATCH:
 			startActivityForResult(new Intent(this.getApplicationContext(),
 					com.rwthmcc3.GeoCatch.class), 0);
 			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
-		case R.id.main_options_menu_prefs:
+		case PREFERENCES:
 			startActivityForResult(new Intent(this.getApplicationContext(),
 					com.rwthmcc3.Preferences.class), 0);
 			overridePendingTransition(R.anim.fade, R.anim.hold);
 			return true;
 		
-		case R.id.main_options_menu_help:
+		case HELP:
 			startActivityForResult(new Intent(this.getApplicationContext(),
 					com.rwthmcc3.Help.class), 0);
 			overridePendingTransition(R.anim.fade, R.anim.hold);

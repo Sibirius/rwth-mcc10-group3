@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/gamestate_options_menu_update"
-          android:title="Aktualisieren" />
+          android:title="Aktualisieren"
+          android:icon="@drawable/ic_menu_refresh" />
 	<item android:id="@+id/gamestate_options_menu_main"
-          android:title="Hauptmenü" />
+          android:title="Hauptmenü"
+          android:icon="@drawable/globe" />
     <item android:id="@+id/gamestate_options_menu_help"
-          android:title="Hilfe" />
+          android:title="Hilfe"
+          android:icon="@android:drawable/ic_menu_help" />
           
     
 </menu>

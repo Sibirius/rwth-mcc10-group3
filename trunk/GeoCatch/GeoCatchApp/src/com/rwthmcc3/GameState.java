@@ -1,6 +1,8 @@
 package com.rwthmcc3;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -189,6 +191,15 @@ public class GameState extends Activity {
     	boolean statesOk = updateStates();
     	
     	if(namesOk && statesOk){
+    		TextView updatedView = (TextView)findViewById(R.id.textview_updated_gamestate);
+	    	// Format the current time.
+	    	SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy   HH:mm:ss   a");
+	    	Date currentTime_1 = new Date();
+	    	String dateString = formatter.format(currentTime_1);
+	    	
+	    	
+	    	updatedView.setText("Aktualisiert am:    " + dateString);
+	    	
     		makeUpdatedViewsVisible();
     	}else{
     		Toast.makeText(getApplicationContext(),"Verbindung zum Server fehlgeschlagen!", Toast.LENGTH_SHORT);
@@ -208,6 +219,8 @@ public class GameState extends Activity {
     	View buttonLeaveView = (View) findViewById(R.id.button_leave_game_gamestate);
     	View buttonJoinView = (View) findViewById(R.id.button_join_game_gamestate);
     	TextView textTimerView = (TextView) findViewById(R.id.textview_timer_gamestate);
+    	View layoutButtonsView = (View) findViewById(R.id.layout_buttons_gamestate);
+    	View layoutUpdatedView = (View) findViewById(R.id.layout_updated_gamestate);
     	
     	//reset buttons
     	buttonStartView.setVisibility(View.GONE);
@@ -217,8 +230,10 @@ public class GameState extends Activity {
     	
     	//make loading invisible
     	layoutLoadView.setVisibility(View.GONE);
-    	//show states
+    	//show rest
     	layoutStatesView.setVisibility(View.VISIBLE);
+    	layoutButtonsView.setVisibility(View.VISIBLE);
+    	layoutUpdatedView.setVisibility(View.VISIBLE);
     	
     	//chosenGame is actual !!!
     	Game chosenGame = MainMenu.chosenGame;
@@ -271,7 +286,7 @@ public class GameState extends Activity {
     			}
     			if((chosenGame.getState()==1) && (player.isTimerHasCountedDown()== true)){
     					textTimerView.setVisibility(View.GONE);
-    					//TODO start map
+    					
     					startActivityForResult(new Intent(GameState.this,com.rwthmcc3.Map.class), 0);
     					overridePendingTransition(R.anim.fade, R.anim.hold);
         		}
@@ -280,6 +295,8 @@ public class GameState extends Activity {
        			//not enough players and not started?
        			if(!(chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount()) || !(chosenGame.getState()==0)){
        				buttonJoinView.setVisibility(View.VISIBLE);
+       			}else{
+       				layoutButtonsView.setVisibility(View.GONE);
        			}
        		}
     	}else{
@@ -312,6 +329,9 @@ public class GameState extends Activity {
     	View buttonLeaveView = (View) findViewById(R.id.button_leave_game_gamestate);
     	View buttonJoinView = (View) findViewById(R.id.button_join_game_gamestate);
     	View textTimerView = (View) findViewById(R.id.textview_timer_gamestate);
+    	View layoutUpdatedView = (View) findViewById(R.id.layout_updated_gamestate);
+    	View layoutButtonsView = (View) findViewById(R.id.layout_buttons_gamestate);
+    	
     	layoutLoadView.setVisibility(View.VISIBLE);
     	layoutStatesView.setVisibility(View.GONE);
     	buttonStartView.setVisibility(View.GONE);
@@ -319,6 +339,8 @@ public class GameState extends Activity {
     	buttonLeaveView.setVisibility(View.GONE);
     	buttonJoinView.setVisibility(View.GONE);
     	textTimerView.setVisibility(View.GONE);
+    	layoutUpdatedView.setVisibility(View.GONE);
+    	layoutButtonsView.setVisibility(View.GONE);
     }
     
     
