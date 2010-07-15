@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/geocatch_options_menu_prefs"
-          android:title="Einstellungen" />
+          android:title="Einstellungen"
+          android:icon="@android:drawable/ic_menu_preferences" />
     <item android:id="@+id/geocatch_options_menu_help"
-          android:title="Hilfe" />
+          android:title="Hilfe" 
+          android:icon="@android:drawable/ic_menu_help"/>
           
     
 </menu>

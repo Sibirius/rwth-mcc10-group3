@@ -32,4 +32,22 @@
 												/>
 												
 				</LinearLayout>	
+				
+				<LinearLayout  	android:id="@+id/layout_updated_main"
+								android:orientation="vertical"
+								android:layout_width="fill_parent"
+								android:layout_height="wrap_content"
+								android:layout_gravity="bottom" 
+								android:layout_marginTop="5px"
+								android:visibility="gone"
+								
+								>	
+								<TextView 		android:id="@+id/textview_updated_main"
+												android:layout_width="wrap_content"
+												android:textSize="12px"
+												android:layout_gravity="center_horizontal"
+												android:layout_height="wrap_content"
+												android:layout_marginBottom="5px"
+												/>
+				</LinearLayout>
 </LinearLayout>

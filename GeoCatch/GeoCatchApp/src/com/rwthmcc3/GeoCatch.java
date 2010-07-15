@@ -129,6 +129,8 @@ public class GeoCatch extends Activity {
 		 	        	AlertDialog alertRegisterFailed = builderRegisterFailed.create();;
 		 	        	alertRegisterFailed.show();
 		         	}
+		         }else{
+		        	 Toast.makeText(getApplicationContext(), "Registrierung erfolgreich!", Toast.LENGTH_SHORT);
 		         }
 		    }else{//for debugging
 		    	p.setMac(debugMac);

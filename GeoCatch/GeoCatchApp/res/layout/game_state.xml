@@ -96,49 +96,70 @@
   				
   				
   				
-  				
-  				<!-- Begin: Buttons are visible by case! -->
-  				<LinearLayout  	android:orientation="horizontal"
-							    android:layout_width="fill_parent"
-							    android:layout_height="wrap_content"
-							    android:gravity="bottom"
-							    >
-							    
-				  				<Button     android:id="@+id/button_start_game_gamestate"
-				  							android:text="Spiel starten!"
-				  							android:layout_height="wrap_content" 
-											android:layout_width="wrap_content" 
-											android:layout_weight="1"
-											
-								/>
+  				<LinearLayout  	android:id="@+id/layout_updated_gamestate"
+								android:orientation="vertical"
+								android:layout_width="fill_parent"
+								android:layout_height="wrap_content"
+								android:layout_gravity="bottom" 
+								android:layout_marginTop="5px"
+								android:visibility="gone"
 								
-								<Button     android:id="@+id/button_stop_game_gamestate"
-				  							android:text="Spiel beenden!"
-				  							android:layout_height="wrap_content" 
-											android:layout_width="wrap_content"
-											android:layout_weight="1"
-											
-								/>
+								>	
+								<TextView 		android:id="@+id/textview_updated_gamestate"
+												android:layout_width="wrap_content"
+												android:textSize="12px"
+												android:layout_gravity="center_horizontal"
+												android:layout_height="wrap_content"
+												android:layout_marginBottom="5px"
+												/>
 								
-								<Button     android:id="@+id/button_leave_game_gamestate"
-				  							android:text="Verlassen!"
-				  							android:layout_height="wrap_content" 
-											android:layout_width="wrap_content" 
-											android:layout_weight="1"
-											android:visibility="gone"
-								/>
-								
-								<Button     android:id="@+id/button_join_game_gamestate"
-				  							android:text="Beitreten!"
-				  							android:layout_height="wrap_content" 
-											android:layout_width="wrap_content" 
-											android:layout_weight="1"
-											android:visibility="gone"
-								/>
-								
-								
+								<!-- Begin: Buttons are visible by case! -->
+				  				<LinearLayout  	android:id="@+id/layout_buttons_gamestate"
+				  								android:orientation="horizontal"
+											    android:layout_width="fill_parent"
+											    android:layout_height="wrap_content"
+											    android:visibility="gone"
+											    
+											    >
+											    
+								  				<Button     android:id="@+id/button_start_game_gamestate"
+								  							android:text="Spiel starten!"
+								  							android:layout_height="wrap_content" 
+															android:layout_width="wrap_content" 
+															android:layout_weight="1"
+															
+												/>
+												
+												<Button     android:id="@+id/button_stop_game_gamestate"
+								  							android:text="Spiel beenden!"
+								  							android:layout_height="wrap_content" 
+															android:layout_width="wrap_content"
+															android:layout_weight="1"
+															
+												/>
+												
+												<Button     android:id="@+id/button_leave_game_gamestate"
+								  							android:text="Verlassen!"
+								  							android:layout_height="wrap_content" 
+															android:layout_width="wrap_content" 
+															android:layout_weight="1"
+															android:visibility="gone"
+												/>
+												
+												<Button     android:id="@+id/button_join_game_gamestate"
+								  							android:text="Beitreten!"
+								  							android:layout_height="wrap_content" 
+															android:layout_width="wrap_content" 
+															android:layout_weight="1"
+															android:visibility="gone"
+												/>
+												
+												
+								</LinearLayout>
+				  				<!-- End: Buttons are visible by case! -->
 				</LinearLayout>
-  				<!-- End: Buttons are visible by case! -->
+				
+  				
 			
 
 </LinearLayout>
