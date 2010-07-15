@@ -110,7 +110,7 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.new_game_options_menu, menu);
+	    inflater.inflate(R.menu.newgame_options_menu, menu);
 	    
        
 	    return true;
@@ -119,8 +119,8 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 	/* Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.new_game_options_menu_view_map:
-			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Map.class),0);			
+		case R.id.new_game_options_menu_main:
+			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.MainMenu.class),0);			
 			return true;			
 		case R.id.new_game_options_menu_prefs:
 			startActivityForResult(new Intent(this.getApplicationContext(), com.rwthmcc3.Preferences.class),0);

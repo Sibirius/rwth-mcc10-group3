@@ -11,6 +11,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -491,4 +494,44 @@ public class GameState extends Activity {
 			}
 		}
 	};
+	
+	// *******************************************************************************************************
+	// Menu
+	// *******************************************************************************************************
+
+	/**
+	 * Creates the menu items.
+	 * 
+	 */
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.gamestate_options_menu, menu);
+		return true;
+	}
+
+	/**
+	 * Handles item selections
+	 * 
+	 */
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.gamestate_options_menu_update:
+			setProgressBarIndeterminateVisibility(true);
+			mHandler.post(mUpdateGameState);
+			
+		case R.id.gamestate_options_menu_main:
+			startActivityForResult(new Intent(this.getApplicationContext(),
+					com.rwthmcc3.MainMenu.class), 0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
+			return true;
+			
+		case R.id.gamestate_options_menu_help:
+			startActivityForResult(new Intent(this.getApplicationContext(),
+					com.rwthmcc3.Help.class), 0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
+			return true;
+		}
+	
+		return false;
+	}
 }
