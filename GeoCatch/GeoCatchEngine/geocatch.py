@@ -509,15 +509,13 @@ class PlayerUpdateState(webapp.RequestHandler):
 		logging.debug('Player %s sent update for game %s'%(player_key,game_key))			
 
 		if game != None and player != None:
-			if game.status != 1:
-				# no point to update, not started yet, nothing happened yet
-				logging.error('Player %s sent update for game %s, but it is not running yet'%(player_key,game_key))
-				respond(self,"error")
-				return
-
-			if player.key() in game.players:
+			if not player.key() in game.players:
+				logging.error('Player %s sent update for game %s, but he is not in the game at all'%(player_key,game_key))
+				return #TODO: proper error message								
+			if game.status == 1: # if game running you can change stuff, otherwise no
 				loc = db.GeoPt(newLocation[0], newLocation[1])
-
+				modespecific = {}
+				
 				#TODO: deal with update information
 				path = Path()
 				path.player = player.key()
@@ -529,7 +527,7 @@ class PlayerUpdateState(webapp.RequestHandler):
 				player.put()
 
 				if game.mode == 1: #catch
-					modespecific = {}
+					
 					modespecific["lat"] = player.prey.lastLocation.lat #goal lat and lon
 					modespecific["lon"] = player.prey.lastLocation.lon
 
@@ -568,7 +566,7 @@ class PlayerUpdateState(webapp.RequestHandler):
 						player.put()
 
 				elif game.mode == 0: #race, im moment auf 5 nachkommastellen genau prüfen ob am ziel angekommen
-					modespecific = {}
+					
 					modespecific["lat"] = game.goal.lat #goal lat and lon
 					modespecific["lon"] = game.goal.lon
 
@@ -579,22 +577,16 @@ class PlayerUpdateState(webapp.RequestHandler):
 						game.winner = player.key()
 						game.status = 3
 						game.put()
+						
+			events = []
 
-				#TODO: return updated game state
+			if game.status == 3:
+				events.append(Event("victory", game.winner.name, game.winner.playerNumber))
 
-				events = []
+			template_values = {'state': game.status, 'mode': game.mode, 'modespecific':modespecific, 'events': events}
 
-				if game.status == 3:
-					events.append(Event("victory", game.winner.name, game.winner.playerNumber))
-
-				template_values = {'state': game.status, 'mode': game.mode, 'modespecific':modespecific, 'events': events}
-
-				template_path = os.path.join(TEMPLATE_FOLDER, 'state.xml')
-				self.response.out.write(template.render(template_path, template_values))		
-
-			else:
-				logging.error('Player %s sent update for game %s, but he is not in the game at all'%(player_key,game_key))
-				return #TODO: proper error message
+			template_path = os.path.join(TEMPLATE_FOLDER, 'state.xml')
+			self.response.out.write(template.render(template_path, template_values))				
 		else:
 			logging.error('Player %s sent update for game %s, game or player not found'%(player_key,game_key))
 			return #TODO: proper error message
@@ -815,8 +807,8 @@ application = webapp.WSGIApplication(
 	 ('/update', PlayerUpdateState),
 
 	 #DEBUG FUNCTIONS, TODO: mind them
-	 ('/fillWithTestdata', FillWithTestdata),
-	 ('/clearData', ClearData),
+	 #('/fillWithTestdata', FillWithTestdata),
+	 #('/clearData', ClearData),
 	 ],
 	 debug=DEBUG)
 
