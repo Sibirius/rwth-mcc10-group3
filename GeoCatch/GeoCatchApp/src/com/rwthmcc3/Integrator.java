@@ -37,6 +37,7 @@ public class Integrator {
 	
 	private static String AppEngineURL = "rwth-mcc10-group3.appspot.com";
 	private static String LOGTAG = "Integrator";
+	private static boolean[] powerupActive = new boolean[1];
 	
 	public static String mainPage(){
 		Log.d(LOGTAG, "mainPage()");
@@ -134,6 +135,22 @@ public class Integrator {
 		}
 		Log.e(LOGTAG, "NullPointer, getPlayerList");
 		return null;
+	}
+	
+	public static boolean activatePowerup(int powerup){
+		Log.d(LOGTAG, "activatePowerup()");
+		
+		if(powerup > powerupActive.length)
+			return false;
+		
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();		
+		qparams.add(new BasicNameValuePair("p", Player.getPlayer().getKey()));
+        qparams.add(new BasicNameValuePair("pow", String.valueOf(powerup)));
+        
+        String result = getResponse(doGet("/activate", qparams));
+        Log.d(LOGTAG, "activatePowerup: "+result);
+        powerupActive[powerup] = true;
+        return !result.contains("error");
 	}
 	
 	public static Game getGameState(Game game){
@@ -309,35 +326,52 @@ public class Integrator {
 	        	NodeList node = doc.getElementsByTagName("state");
 	        	Element ele = (Element) node.item(0);
 	        	if(ele != null){
-	        		String lon = ele.getAttribute("lon");
-	        		String lat = ele.getAttribute("lat");
-		        	if(lon != "") player.setTargetLong(Double.parseDouble(lon));
-		        	if(lat != "") player.setTargetLat(Double.parseDouble(lat));
-		        	
-		        	
-		        	if(player.getMyGame()!=null){
+	        		if(player.getMyGame()!=null){
 			        	player.getMyGame().setMode(Integer.parseInt(ele.getAttribute("mode")));
 			        	player.getMyGame().setState(Integer.parseInt(ele.getAttribute("state")));
 		        	}
+	        		String lon = ele.getAttribute("lon");
+	        		String lat = ele.getAttribute("lat");
+		        	if(lon != "" && player.getMyGame().getState()==1) player.setTargetLong(Double.parseDouble(lon));
+		        	if(lat != "" && player.getMyGame().getState()==1) player.setTargetLat(Double.parseDouble(lat));
+		        	Log.d(LOGTAG, "update TargetLong: "+player.getTargetLong()+" / "+lon);
+		        	Log.d(LOGTAG, "update TargetLat: "+player.getTargetLat()+" / "+lat);
 	        	}
+	        	
+	        	//reset powerups
+	        	powerupActive[0] = false; //hunter
+	        	
 				NodeList nodes = doc.getElementsByTagName("event");
 				Log.d(LOGTAG, "parsing events");
 			    for (int i = 0; i < nodes.getLength(); i++) {
-			    	Log.d(LOGTAG, "parsing element #"+i+"/"+nodes.getLength());
+			    	Log.d(LOGTAG, "parsing element #"+i+1+"/"+nodes.getLength());
 			    	Element element = (Element) nodes.item(i);
 			    	
 			    	String title = element.getAttribute("title");
+			    	Log.d(LOGTAG, "title: "+title);
 			    	String info = element.getAttribute("info");
+			    	Log.d(LOGTAG, "info: "+info);
 			    	String extra = element.getAttribute("extra");
+			    	Log.d(LOGTAG, "extra: "+extra);
 			    	
-			    	if(title=="victory"){
+			    	// game over
+			    	if(title.equals("victory")){
 			    		if(player.getMyGame()!=null){
 				    		player.getMyGame().setState(3);
 				    		player.getMyGame().setWinnerName(info);
 			    		}
 			    		if(Integer.parseInt(extra)==player.getNumber())
 			    			player.setHasWin(true);
+			    		else
+			    			player.setHasWin(false);
 			    		
+			    	}
+			    	
+			    	// hunter powerup
+			    	if(title.equals("hunter")){
+			    		powerupActive[0] = true;
+			    		player.setHunterLat(Double.parseDouble(info));
+			    		player.setHunterLong(Double.parseDouble(extra));
 			    	}
 			    	
 		
@@ -435,6 +469,10 @@ public class Integrator {
 
 	}
 	
+	public static boolean powerupIsActive(int powerup){
+		return powerupActive[powerup-1];
+	}
+	
 	// DEBUG FUNCTIONS
 	
 	public static void fillWithTestData(){
@@ -473,7 +511,6 @@ public class Integrator {
 		Log.d(LOGTAG, "getResponse()");
 		if(res != null){
 	        try {
-				Log.d(LOGTAG, "parsing response");
 	        	Document doc = parseXml(res.getEntity().getContent());
 	        	NodeList nodes = doc.getElementsByTagName("response");
 	        	Element element = (Element) nodes.item(0);
@@ -482,7 +519,7 @@ public class Integrator {
 	        		result = element.getAttribute("value");
 	        	else
 	        		result = "error";
-				Log.d(LOGTAG,"getResponse success");
+				Log.d(LOGTAG,"getResponse success: "+result);
 				
 		    	return result;
 		    	
