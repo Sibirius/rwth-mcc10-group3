@@ -49,9 +49,6 @@ public class Map extends MapActivity{
 	private MyOverlay myHunterPositionOverlay = null;
 	private MyOverlay myPowerUpPositionOverlay = null;
 	
-	private double powerUpLat = 0.0;
-	private double powerUpLng = 0.0;
-	
 	final int NUMOFPOWERUPS = 4;
 	private boolean[] powerUpEnabled = new boolean[NUMOFPOWERUPS]; 
 	private long[] powerUpTime = new long[NUMOFPOWERUPS]; 
@@ -224,6 +221,8 @@ public class Map extends MapActivity{
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		
 		synchronized(player){
+			if(powerupPoint == null) setNewPowerUp();
+			
 			GeoPoint point = new GeoPoint((int) (player.getLatitude() * 1E6),(int) (player.getLongitude() * 1E6));
 			
 			if(pointList.size() == 0){
@@ -256,7 +255,7 @@ public class Map extends MapActivity{
 					prePoint = point;						
 				}
 				
-				mapView.getController().animateTo(point);
+				//mapView.getController().animateTo(point);
 				
 				if(!powerUpEnabled[1] && targetPoint != null){
 					if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
@@ -264,11 +263,11 @@ public class Map extends MapActivity{
 					mapOverlays.add(myTargetPositionOverlay);
 				}
 				
-				if(myPowerUpPositionOverlay != null && powerupPoint != null) mapOverlays.remove(myPowerUpPositionOverlay);
+				if(powerupPoint != null && myPowerUpPositionOverlay != null) mapOverlays.remove(myPowerUpPositionOverlay);
 					myPowerUpPositionOverlay = new MyOverlay(powerupPoint,null,R.drawable.point_green);
 					mapOverlays.add(myPowerUpPositionOverlay);
 				
-				if(powerUpEnabled[0] && hunterPoint != null){
+				if(hunterPoint != null && powerUpEnabled[0]){
 					if(myHunterPositionOverlay != null) mapOverlays.remove(myHunterPositionOverlay);
 					myHunterPositionOverlay = new MyOverlay(hunterPoint,null,R.drawable.point_yellow);
 					mapOverlays.add(myHunterPositionOverlay);
@@ -382,7 +381,13 @@ public class Map extends MapActivity{
 	
 	private boolean gotPowerUp(){
 		Log.d(LOGTAG, "gotPowerUP()");
-		if( (int) ((powerUpLat + 0.00005) * 1E5) == (int) ((player.getLatitude() + 0.00005) * 1E5) ) {
+		//float[] results = new float[1];
+		//Location.distanceBetween(powerUpLat / 1E6, powerUpLng / 1E6, player.getLatitude() / 1E6, player.getLongitude() / 1E6, results);
+		//if( results[0] < 15f) {
+		//	return true;
+		//}
+		if( (int) ( powerupPoint.getLatitudeE6() / 10) == (int) (player.getLatitude() * 1E5) &&
+			(int) ( powerupPoint.getLongitudeE6() / 10) == (int) (player.getLongitude() * 1E5) ) {
 			return true;
 		}
 		return false;
@@ -390,9 +395,14 @@ public class Map extends MapActivity{
 	
 	private void setNewPowerUp(){
 		Random randomGenerator = new Random();
-		powerUpLat = player.getLatitude() + (randomGenerator.nextDouble() - 0.5) / 100;
-		powerUpLng = player.getLongitude() + (randomGenerator.nextDouble() - 0.5) / 100;
-		Log.d(LOGTAG, "setNewPowerUP(): " + powerUpLat + " " + powerUpLng);
+		double[] res = Integrator.snapToStreet( player.getLatitude()  + (randomGenerator.nextDouble() - 0.5) / 100,
+												player.getLongitude() + (randomGenerator.nextDouble() - 0.5) / 100);
+		if(res != null){
+			powerupPoint = new GeoPoint((int) (res[0] * 1E6),(int) (res[1] * 1E6));
+			Log.d(LOGTAG, "setNewPowerUP(): " + res[0] + " " + res[1]);
+		}
+	
+		
 	}
 	
 	/**********************************************************************/
@@ -411,8 +421,6 @@ public class Map extends MapActivity{
 				synchronized (player){
 					player.setLatitude(lat);
 					player.setLongitude(lng);
-					if(powerupPoint == null) setNewPowerUp();
-					powerupPoint = new GeoPoint((int) (powerUpLat * 1E6),(int) (powerUpLng * 1E6));
 					
             		if(gotPowerUp()){
             			setNewPowerUp();
@@ -424,7 +432,7 @@ public class Map extends MapActivity{
             			Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();       				
             		}
 					
-            		mHandler.post(mUpdateMarkers);
+            		//mHandler.post(mUpdateMarkers);
             		
             		//Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
 				}

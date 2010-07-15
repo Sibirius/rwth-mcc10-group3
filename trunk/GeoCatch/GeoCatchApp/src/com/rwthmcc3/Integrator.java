@@ -1,24 +1,29 @@
 package com.rwthmcc3;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.http.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -517,6 +522,38 @@ public class Integrator {
 			ioe.printStackTrace();
 		}
 		Log.e(LOGTAG, "NullPointer, parseXml");
+		return null;
+	}
+	
+	public static double[] snapToStreet(double lat, double lng){
+		try{
+			List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+			qparams.add(new BasicNameValuePair("sensor", "false"));
+			qparams.add(new BasicNameValuePair("origin", lat + "," + lng ));
+			qparams.add(new BasicNameValuePair("destination", (lat + 0.001) + "," + (lng + 0.001) ));
+			//http://maps.google.com/maps/api/directions/xml?origin=42.3585300,-71.0610700&destination=42.3585300,-71.0610900&sensor=false
+			HttpClient client = new DefaultHttpClient();  	        
+	        URI uri = URIUtils.createURI("http", "maps.google.com", -1, "maps/api/directions/xml", 
+	        		URLEncodedUtils.format(qparams, "UTF-8"), null);
+	        Log.d(LOGTAG, "snapToStreet uri: "+uri.toString());
+	        
+        	Document doc = parseXml(client.execute(new HttpGet(uri)).getEntity().getContent());
+        	
+        	Element ele = (Element) doc.getElementsByTagName("start_location").item(0);
+        	if(ele != null){
+        		String newLat = ((Node) ele.getElementsByTagName("lat").item(0).getChildNodes().item(0)).getNodeValue();
+        		String newLng = ((Node) ele.getElementsByTagName("lng").item(0).getChildNodes().item(0)).getNodeValue();
+        		if(newLat != "" && newLng != ""){
+        			double[] result = new double[2];
+        			result[0] = Double.parseDouble(newLat);
+        			result[1] = Double.parseDouble(newLng);
+        			Log.d(LOGTAG, "snapToStreet res: "+result[0]+","+result[1]);
+        			return result;
+        		}
+        	}
+		} catch (Exception e) {
+            e.printStackTrace();
+        }		
 		return null;
 	}
 
