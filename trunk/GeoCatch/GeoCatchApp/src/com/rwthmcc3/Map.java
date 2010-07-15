@@ -382,7 +382,7 @@ public class Map extends MapActivity{
 	
 	private boolean gotPowerUp(){
 		Log.d(LOGTAG, "gotPowerUP()");
-		if( (int) (powerUpLat * 1E5) == (int) (player.getLatitude() * 1E5) ) {
+		if( (int) ((powerUpLat + 0.00005) * 1E5) == (int) ((player.getLatitude() + 0.00005) * 1E5) ) {
 			return true;
 		}
 		return false;
@@ -390,8 +390,8 @@ public class Map extends MapActivity{
 	
 	private void setNewPowerUp(){
 		Random randomGenerator = new Random();
-		powerUpLat = player.getLatitude() + (randomGenerator.nextDouble() - 0.5) / 1E3;
-		powerUpLng = player.getLongitude() + (randomGenerator.nextDouble() - 0.5) / 1E3;
+		powerUpLat = player.getLatitude() + (randomGenerator.nextDouble() - 0.5) / 100;
+		powerUpLng = player.getLongitude() + (randomGenerator.nextDouble() - 0.5) / 100;
 		Log.d(LOGTAG, "setNewPowerUP(): " + powerUpLat + " " + powerUpLng);
 	}
 	
