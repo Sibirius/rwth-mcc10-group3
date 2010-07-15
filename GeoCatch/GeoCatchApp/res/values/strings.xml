@@ -45,4 +45,14 @@
         <item>50</item>
     </string-array>
     
+     <string name="helps">Hilfe zu:</string>
+     <string-array name="array_helps">
+    	<item>Startseite</item>
+        <item>neues Spiel</item>
+        <item>Spiel beitreten</item>
+        <item>Spielanleitung</item>
+        <item>Spielregeln</item>
+        
+    </string-array>
+    
 </resources>
