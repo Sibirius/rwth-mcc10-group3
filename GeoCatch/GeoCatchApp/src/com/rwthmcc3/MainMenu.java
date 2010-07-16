@@ -72,7 +72,7 @@ public class MainMenu extends Activity {
 		lv.setTextFilterEnabled(true);
 		lv.setOnItemLongClickListener(doListItemOnLongClick);
 		mSchedule = new SimpleAdapter(this, mylist,	R.layout.main_menu_list_item, new String[] { "game_name",
-						"player_count", "distance" }, new int[] {R.id.game_name, R.id.player_count_list, R.id.distance });
+						"player_count", "distance" }, new int[] {R.id.game_name, R.id.textview_listitem_value_count, R.id.textview_listitem_value_distance });
 		lv.setAdapter(mSchedule);
 
 		
@@ -277,8 +277,8 @@ public class MainMenu extends Activity {
 			}else{
 				for (Game i : games) {
 					Log.d(LOGTAG, "game: " + i.getName());
-					addItemToList(i.getName(), i.getPlayerCount() + "/"	+ i.getMaxPlayersCount() + " Spieler",
-							"Entfernung zum Spielersteller: "+ format.format(player.distFromToPlayer(i.getCreatorLatitude(),
+					addItemToList(i.getName(), i.getPlayerCount() + "/"	+ i.getMaxPlayersCount(),
+							format.format(player.distFromToPlayer(i.getCreatorLatitude(),
 									i.getCreatorLongitude())) + " m");
 				}
 			}
