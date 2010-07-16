@@ -136,7 +136,7 @@ public class GeoCatch extends Activity {
 			lmGeoCatch.requestLocationUpdates(providerGeoCatch, 0, 0, locationListenerGeoCatch);
 		    
 		    //register player
-		    if(mBluetoothAdapter.isEnabled()){
+		    if(mBluetoothAdapter.isEnabled() && lmGeoCatch.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 		    	 //set mac
 			     mac = mBluetoothAdapter.getAddress();
 			     p.setMac(mac);
