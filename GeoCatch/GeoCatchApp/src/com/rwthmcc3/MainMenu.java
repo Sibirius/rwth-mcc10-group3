@@ -43,7 +43,7 @@ public class MainMenu extends Activity {
 	private Player player = Player.getPlayer();
 	private Thread backgroundThreadGameState = null;
 	private boolean runBackgroundThread = true;
-	private int testBar = 0;
+	
 	
 
 	// *******************************************************************************************************
@@ -53,12 +53,20 @@ public class MainMenu extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		setProgressBarIndeterminateVisibility(false);
+		
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		
         setContentView(R.layout.main_menu);
         
         
-
+        //set title
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+        TextView leftTitle = (TextView)findViewById(R.id.left_text);
+        TextView rightTitle = (TextView)findViewById(R.id.right_text);
+        leftTitle.setText("GeoCatch");
+        rightTitle.setText("Hauptmenü");
+        
+        
 		// create listview
 		ListView lv = (ListView) findViewById(R.id.listview_mainmenu);
 		lv.setTextFilterEnabled(true);
@@ -136,7 +144,7 @@ public class MainMenu extends Activity {
 	private Runnable mUpdateViewTask = new Runnable() {
 		public void run() {
 			// Back in the UI thread -- update our UI elements
-			setProgressBarIndeterminateVisibility(true);
+			
 		    boolean gamesOk = updateListofGames();
 		    
 		    if(gamesOk){
@@ -299,7 +307,7 @@ public class MainMenu extends Activity {
 		listView.setVisibility(View.VISIBLE);
 		layoutUpdatedView.setVisibility(View.VISIBLE);
 		
-		setProgressBarIndeterminateVisibility(false);
+		
 
 	
 	}
@@ -346,7 +354,7 @@ public class MainMenu extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case UPDATE:
-			setProgressBarIndeterminateVisibility(true);
+			
 			mHandler.post(mUpdateViewTask);
 			return true;
 		case NEW:

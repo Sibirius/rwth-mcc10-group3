@@ -13,15 +13,18 @@
 					         
 					         />
 					         
-					         
-	<TextView 	android:id="@+id/textview_help"
-				android:layout_width="fill_parent"
+	<ScrollView android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:textSize="16sp"
 				android:paddingTop="20px"
 				android:paddingLeft="5px"
 				android:paddingRight="5px"
-				android:paddingBottom="20px"
-				/>				         
-  
+				>
+								         
+				<TextView 	android:id="@+id/textview_help"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content"
+							android:textSize="16sp"
+							
+							/>				         
+  	</ScrollView>
 </LinearLayout>

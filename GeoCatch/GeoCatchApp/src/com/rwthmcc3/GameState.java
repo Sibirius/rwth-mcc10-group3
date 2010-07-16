@@ -48,10 +48,16 @@ public class GameState extends Activity {
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		setProgressBarIndeterminateVisibility(false);
+		
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.game_state);
 		
+		//set title
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+        TextView leftTitle = (TextView)findViewById(R.id.left_text);
+        TextView rightTitle = (TextView)findViewById(R.id.right_text);
+        leftTitle.setText("GeoCatch");
+        rightTitle.setText("Spielübersicht");
 		
 	
 		// create listview for states
@@ -234,7 +240,7 @@ public class GameState extends Activity {
     private void updateViews() {
     	
         // Back in the UI thread -- update our UI elements
-    	setProgressBarIndeterminateVisibility(true);
+    	
     	boolean namesOk = updateNames();
     	boolean statesOk = updateStates();
     	
@@ -353,7 +359,7 @@ public class GameState extends Activity {
 	    	}
     	}
     	
-    	setProgressBarIndeterminateVisibility(false);
+    	
 	}
 
     
@@ -579,7 +585,7 @@ public class GameState extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.gamestate_options_menu_update:
-			setProgressBarIndeterminateVisibility(true);
+			
 			mHandler.post(mUpdateGameState);
 			
 		case R.id.gamestate_options_menu_main:

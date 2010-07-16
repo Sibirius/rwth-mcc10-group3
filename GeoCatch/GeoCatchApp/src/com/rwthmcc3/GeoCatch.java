@@ -13,13 +13,14 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -36,8 +37,19 @@ public class GeoCatch extends Activity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.on_start);
+		
+		//set title
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+        TextView leftTitle = (TextView)findViewById(R.id.left_text);
+        TextView rightTitle = (TextView)findViewById(R.id.right_text);
+        leftTitle.setText("GeoCatch");
+        rightTitle.setText("Startseite");
+		
+		
+		//buttons
 		Button buttoNewGame = (Button)findViewById(R.id.button_new_game);
 		Button buttonJoinGame = (Button)findViewById(R.id.button_join_game);
 		buttoNewGame.setOnClickListener(doNewGameOnClick);

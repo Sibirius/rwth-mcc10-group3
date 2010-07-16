@@ -26,7 +26,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -124,8 +126,16 @@ public class Map extends MapActivity{
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map);	
+		
+		//set title
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+        TextView leftTitle = (TextView)findViewById(R.id.left_text);
+        TextView rightTitle = (TextView)findViewById(R.id.right_text);
+        leftTitle.setText("GeoCatch");
+        rightTitle.setText("Map");
 		
 		//init map
 		mapView = (MapView) findViewById(R.id.mapview);
