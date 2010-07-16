@@ -12,7 +12,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,7 +37,8 @@ public class GameState extends Activity {
 	private Player player = Player.getPlayer();
 	private boolean runBackgroundThread = true;
 	private Thread backgroundThread = null;
-	
+	private long mStartTime = 0;
+	private boolean timerIsAlive = false;
 	
 	
 	
@@ -90,7 +93,7 @@ public class GameState extends Activity {
 	public void onPause(){
 		super.onPause();
 		//destroy thread
-		
+			
 		mHandler.removeCallbacks(mUpdateGameState);
 		runBackgroundThread = false;
 		
@@ -108,6 +111,8 @@ public class GameState extends Activity {
 	
 	public void onResume(){
 		super.onResume();
+		//reset timer
+		if(player.isTimerHasCountedDown())timerIsAlive = false;
 		
 		//reset views to start
 		resetViews();
@@ -124,7 +129,11 @@ public class GameState extends Activity {
 				startLongRunningOperation();
 			}
 		}
+			
+		
 	}
+	
+	
 	
 	//**********************************************************************
 	//		Runnable
@@ -140,6 +149,44 @@ public class GameState extends Activity {
         }
     };
     
+    private Runnable mUpdateTimeTask = new Runnable() {
+    	   public void run() {
+    		   if(player.getMyGame()!= null){
+	    		   TextView textTimerView = (TextView) findViewById(R.id.textview_timer_gamestate);
+	    	       final long start = mStartTime;
+	    	       long millis = SystemClock.uptimeMillis() - start;
+	    	       final long timer = player.getMyGame().getTimer();
+	    	       long countDown = ( timer * 1000) - millis;
+	    	       int seconds = (int) (countDown / 1000);
+	    	       int minutes = seconds / 60;
+	    	       seconds     = seconds % 60;
+	    	       
+	    	       if(countDown >0){
+		    	       if (seconds < 10) {
+		    	    	   textTimerView.setText("ungefähre Zeit bis zum Spielstart:" + "  "
+									+ minutes + ":0" + seconds);
+		    	       } else {
+		    	    	   textTimerView.setText("ungefähre Zeit bis zum Spielstart:" + "  "
+									+ minutes + ":" + seconds);            
+		    	       }
+		    	       Log.d("mUpdateTimeTask", String.valueOf(countDown));
+		    	       mHandler.postAtTime(this, start + millis +1000);
+		    	      
+	    	       }else{
+	    	    	   mHandler.removeCallbacks(mUpdateTimeTask);
+	    	    	   Log.d("mUpdateTimeTask", "timer finished");
+	    	    	   timerIsAlive = false;
+	    	    	   startActivityForResult(new Intent(getApplicationContext(),
+	    						com.rwthmcc3.Map.class), 0);
+	    				overridePendingTransition(R.anim.fade, R.anim.hold);
+	    	    	   
+	    	       }
+    		   }else{
+    			   Log.d("mUpdateTimeTask", "game is null");
+    			   timerIsAlive = false;
+    		   }
+    	   }
+    	};
 
     //**********************************************************************
 	//		Thread
@@ -162,7 +209,7 @@ public class GameState extends Activity {
                         }
             			mHandler.post(mUpdateGameState);
                 		if(runBackgroundThread){//to kill fast
-                			sleep(15000);
+                			sleep(14000);
                 		}	
                     }catch(InterruptedException e) {
         				Log.d("threadInGameState", e.toString());
@@ -264,24 +311,17 @@ public class GameState extends Activity {
     			}else{//i'm not creator, but it is my game
     				buttonLeaveView.setVisibility(View.VISIBLE);
        			}
-    			//show timer?
-    			if((chosenGame.getState()==1) && (player.isTimerHasCountedDown()== false)){
-    				long countDown = chosenGame.getCountDown();
-    				int seconds = (int) (countDown);
-    				int minutes = seconds / 60;
-    				seconds = seconds % 60;
-    				
-    				if (countDown > 0) {
-    					if (seconds < 10) {
-    						Log.d("updateTimer","is running2");
-    						textTimerView.setText("ungefähre Zeit bis zum Spielstart:" + "  "
-    								+ minutes + ":0" + seconds);
-    					} else {
-    						textTimerView.setText("ungefähre Zeit bis zum Spielstart:" + "  "
-    								+ minutes + ":" + seconds);
-    					}
-    				}
-    				
+    			//start timer?
+    			if((chosenGame.getState()==1) && (player.isTimerHasCountedDown()== false) && (!timerIsAlive)){
+    				timerIsAlive = true;
+    				//TODO check
+    				textTimerView.setVisibility(View.VISIBLE);
+    				runBackgroundThread = false;
+    				mStartTime = SystemClock.uptimeMillis();
+    				mHandler.post(mUpdateTimeTask);
+    			}
+    			//show timer when return?
+    			if(timerIsAlive){
     				textTimerView.setVisibility(View.VISIBLE);
     			}
     			if((chosenGame.getState()==1) && (player.isTimerHasCountedDown()== true)){
@@ -556,4 +596,15 @@ public class GameState extends Activity {
 	
 		return false;
 	}
+	// *******************************************************************************************************
+	// something
+	// *******************************************************************************************************
+	
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) && !timerIsAlive) {
+        	return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

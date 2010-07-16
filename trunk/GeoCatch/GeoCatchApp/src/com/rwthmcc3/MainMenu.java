@@ -68,7 +68,35 @@ public class MainMenu extends Activity {
 		lv.setAdapter(mSchedule);
 
 		
+	};
+	
+	
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		lmMainMenu.removeUpdates(locationListenerMainMenu);
+		//destroy thread
+		
+		runBackgroundThread = false;
+		mHandler.removeCallbacks(mUpdateViewTask);
+		
+	}
+	@Override
+	public void onStop(){
+		super.onStop();
+		lmMainMenu.removeUpdates(locationListenerMainMenu);
+		//destroy thread
+		runBackgroundThread = false;
+		mHandler.removeCallbacks(mUpdateViewTask);
+		
+		
+	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		
 		// create LocationManager for GPS
 		lmMainMenu = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -81,33 +109,6 @@ public class MainMenu extends Activity {
 		lmMainMenu.getLastKnownLocation(providerMainMenu);
 		lmMainMenu.requestLocationUpdates(providerMainMenu, 0, 0,locationListenerMainMenu);
 
-	};
-	
-	
-	
-	@Override
-	public void onPause(){
-		super.onPause();
-		//destroy thread
-		runBackgroundThread = false;
-		mHandler.removeCallbacks(mUpdateViewTask);
-		
-	}
-	@Override
-	public void onStop(){
-		super.onStop();
-		//destroy thread
-		runBackgroundThread = false;
-		mHandler.removeCallbacks(mUpdateViewTask);
-		
-		
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		
-		
 		// reset view
 		resetViews();
 		runBackgroundThread = true;

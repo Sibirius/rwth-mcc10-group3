@@ -56,9 +56,22 @@ public class GeoCatch extends Activity {
 	     
 		
 	}
-	/*Intent gpsOptionsIntent = new Intent(
-	android.provider.Settings.ACTION_LOCATION_SOURCE_S ETTINGS);
-	startActivity(gpsOptionsIntent);*/
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		lmGeoCatch.removeUpdates(locationListenerGeoCatch);
+		
+		
+	}
+	@Override
+	public void onStop(){
+		super.onStop();
+		lmGeoCatch.removeUpdates(locationListenerGeoCatch);
+		
+		
+		
+	}
 	
 	public void onResume(){
 		super.onResume();
