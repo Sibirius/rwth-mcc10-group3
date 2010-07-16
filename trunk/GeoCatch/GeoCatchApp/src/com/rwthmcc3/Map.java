@@ -354,7 +354,9 @@ public class Map extends MapActivity{
 	}
 	
 	private void closeMapView(){
-		if(!gameFinished) lm.removeUpdates(geoUpdater);
+		if(!gameFinished) {
+			lm.removeUpdates(geoUpdater);
+		}
 		gameFinished = true;
         Map.this.finish();	
 	}
@@ -447,7 +449,7 @@ public class Map extends MapActivity{
             			powerUpEnabled[selectedPowerUp] = true;	
             			powerUpTime[selectedPowerUp] = System.currentTimeMillis();
             			if(selectedPowerUp == 0){ //show hunter
-            				Integrator.activatePowerup(0);
+            				if(!Integrator.activatePowerup(1)) Toast.makeText(getApplicationContext(), "PowerUp Aktivierung fehlgeschlagen", Toast.LENGTH_LONG).show();
             			}
             			mHandler.post(mDisablePowerUp);
             			Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();       				
