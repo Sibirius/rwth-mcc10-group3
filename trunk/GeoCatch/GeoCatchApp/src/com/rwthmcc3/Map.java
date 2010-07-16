@@ -184,9 +184,14 @@ public class Map extends MapActivity{
             		
             		synchronized(player){
 		            	if(player != null) {
-		            		Integrator.playerUpdateState(player); 
-		            		targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));		            		
-		            		hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
+		            		if(Integrator.playerUpdateState(player)){ 
+			            		if(player.getTargetLat() != 0.0 || player.getTargetLong() != 0.0){
+			            			targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));		            		
+			            		}
+			            		if(player.getHunterLat() != 0.0 || player.getHunterLong() != 0.0){
+			            			hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
+			            		}
+		            		}
 		            	}
             		}
             		
@@ -221,60 +226,65 @@ public class Map extends MapActivity{
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		
 		synchronized(player){
-			if(powerupPoint == null) setNewPowerUp();
 			
-			GeoPoint point = new GeoPoint((int) (player.getLatitude() * 1E6),(int) (player.getLongitude() * 1E6));
-			
-			if(pointList.size() == 0){
-				pointList.add(point);
-			} else {
-				if(pointList.get(pointList.size()-1).getLatitudeE6() != point.getLatitudeE6() || pointList.get(pointList.size()-1).getLongitudeE6() != point.getLongitudeE6()){
+			if(player.getLatitude() != 0.0 || player.getLongitude()!= 0.0){
+				
+				//TODO: if game mode == 1
+				if(powerupPoint == null) setNewPowerUpMarker();
+				
+				GeoPoint point = new GeoPoint((int) (player.getLatitude() * 1E6),(int) (player.getLongitude() * 1E6));
+				
+				if(pointList.size() == 0){
 					pointList.add(point);
-				}
-			}
-				
-			if(prePoint == null || point.getLatitudeE6() != prePoint.getLatitudeE6() || point.getLongitudeE6() != prePoint.getLongitudeE6()){
-				if(myStartPositionOverlay == null || prePoint == null){
-					myStartPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
-					mapOverlays.add(myStartPositionOverlay);
-					
-					prePoint = point;
-				} else if(myPositionOverlay == null){
-					mapOverlays.remove(myStartPositionOverlay);
-					mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.start));
-					myPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
-					mapOverlays.add(myPositionOverlay);
-					
-					prePoint = point;
 				} else {
-					mapOverlays.remove(myPositionOverlay);
-					mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.point));
-					myPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
-					mapOverlays.add(myPositionOverlay);	
+					if(pointList.get(pointList.size()-1).getLatitudeE6() != point.getLatitudeE6() || pointList.get(pointList.size()-1).getLongitudeE6() != point.getLongitudeE6()){
+						pointList.add(point);
+					}
+				}
+				
+				if(prePoint == null || point.getLatitudeE6() != prePoint.getLatitudeE6() || point.getLongitudeE6() != prePoint.getLongitudeE6()){
+					if(myStartPositionOverlay == null || prePoint == null){
+						myStartPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
+						mapOverlays.add(myStartPositionOverlay);
+						
+						prePoint = point;
+					} else if(myPositionOverlay == null){
+						mapOverlays.remove(myStartPositionOverlay);
+						mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.start));
+						myPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
+						mapOverlays.add(myPositionOverlay);
+						
+						prePoint = point;
+					} else {
+						mapOverlays.remove(myPositionOverlay);
+						mapOverlays.add(new MyOverlay(prePoint,point,R.drawable.point));
+						myPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
+						mapOverlays.add(myPositionOverlay);	
+						
+						prePoint = point;						
+					}
 					
-					prePoint = point;						
+					//mapView.getController().animateTo(point);
+					
+					if(!powerUpEnabled[1] && targetPoint != null){
+						if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
+						myTargetPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_red);
+						mapOverlays.add(myTargetPositionOverlay);
+					}
+					
+					if(powerupPoint != null && myPowerUpPositionOverlay != null) mapOverlays.remove(myPowerUpPositionOverlay);
+						myPowerUpPositionOverlay = new MyOverlay(powerupPoint,null,R.drawable.point_green);
+						mapOverlays.add(myPowerUpPositionOverlay);
+					
+					if(hunterPoint != null && powerUpEnabled[0]){
+						if(myHunterPositionOverlay != null) mapOverlays.remove(myHunterPositionOverlay);
+						myHunterPositionOverlay = new MyOverlay(hunterPoint,null,R.drawable.point_yellow);
+						mapOverlays.add(myHunterPositionOverlay);
+					}
+					
+					mapView.postInvalidate();
+					
 				}
-				
-				//mapView.getController().animateTo(point);
-				
-				if(!powerUpEnabled[1] && targetPoint != null){
-					if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
-					myTargetPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_red);
-					mapOverlays.add(myTargetPositionOverlay);
-				}
-				
-				if(powerupPoint != null && myPowerUpPositionOverlay != null) mapOverlays.remove(myPowerUpPositionOverlay);
-					myPowerUpPositionOverlay = new MyOverlay(powerupPoint,null,R.drawable.point_green);
-					mapOverlays.add(myPowerUpPositionOverlay);
-				
-				if(hunterPoint != null && powerUpEnabled[0]){
-					if(myHunterPositionOverlay != null) mapOverlays.remove(myHunterPositionOverlay);
-					myHunterPositionOverlay = new MyOverlay(hunterPoint,null,R.drawable.point_yellow);
-					mapOverlays.add(myHunterPositionOverlay);
-				}
-				
-				mapView.postInvalidate();
-				
 			}
 		}
 	}
@@ -386,14 +396,14 @@ public class Map extends MapActivity{
 		//if( results[0] < 15f) {
 		//	return true;
 		//}
-		if( (int) ( powerupPoint.getLatitudeE6() / 10) == (int) (player.getLatitude() * 1E5) &&
-			(int) ( powerupPoint.getLongitudeE6() / 10) == (int) (player.getLongitude() * 1E5) ) {
+		if( (int) ( powerupPoint.getLatitudeE6()  / 10 + 5) == (int) (player.getLatitude()  * 1E5 + 5) &&
+			(int) ( powerupPoint.getLongitudeE6() / 10 + 5) == (int) (player.getLongitude() * 1E5 + 5) ){
 			return true;
 		}
 		return false;
 	}
 	
-	private void setNewPowerUp(){
+	private void setNewPowerUpMarker(){
 		Random randomGenerator = new Random();
 		double[] res = Integrator.snapToStreet( player.getLatitude()  + (randomGenerator.nextDouble() - 0.5) / 100,
 												player.getLongitude() + (randomGenerator.nextDouble() - 0.5) / 100);
@@ -422,12 +432,16 @@ public class Map extends MapActivity{
 					player.setLatitude(lat);
 					player.setLongitude(lng);
 					
+					//TODO: if game mode == 1 && 
             		if(gotPowerUp()){
-            			setNewPowerUp();
+            			setNewPowerUpMarker();
             			Random randomGenerator = new Random();
             			int selectedPowerUp = randomGenerator.nextInt(NUMOFPOWERUPS);	            				
             			powerUpEnabled[selectedPowerUp] = true;	
             			powerUpTime[selectedPowerUp] = System.currentTimeMillis();
+            			if(selectedPowerUp == 0){ //show hunter
+            				Integrator.activatePowerup(0);
+            			}
             			mHandler.post(mDisablePowerUp);
             			Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();       				
             		}

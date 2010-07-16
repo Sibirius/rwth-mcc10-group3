@@ -140,7 +140,7 @@ public class Integrator {
 	public static boolean activatePowerup(int powerup){
 		Log.d(LOGTAG, "activatePowerup()");
 		
-		if(powerup > powerupActive.length)
+		if(powerup >= powerupActive.length)
 			return false;
 		
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();		
