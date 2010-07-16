@@ -257,6 +257,7 @@ public class Map extends MapActivity{
 					if(myStartPositionOverlay == null || prePoint == null){
 						myStartPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
 						mapOverlays.add(myStartPositionOverlay);
+						mapView.getController().animateTo(point);
 						
 						prePoint = point;
 					} else if(myPositionOverlay == null){
@@ -409,7 +410,6 @@ public class Map extends MapActivity{
 	/**********************************************************************/
 	
 	private boolean gotPowerUp(){
-		Log.d(LOGTAG, "gotPowerUP()");
 		//float[] results = new float[1];
 		//Location.distanceBetween(powerUpLat / 1E6, powerUpLng / 1E6, player.getLatitude() / 1E6, player.getLongitude() / 1E6, results);
 		//if( results[0] < 15f) {
@@ -467,7 +467,7 @@ public class Map extends MapActivity{
             			Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();       				
             		}
 					
-            		//mHandler.post(mUpdateMarkers);
+            		mHandler.post(mUpdateMarkers);
             		
             		//Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
 				}
