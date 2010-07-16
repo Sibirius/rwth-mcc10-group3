@@ -415,9 +415,11 @@ public class Map extends MapActivity{
 		//if( results[0] < 15f) {
 		//	return true;
 		//}
-		if( (int) ( powerupPoint.getLatitudeE6()  / 10 + 5) == (int) (player.getLatitude()  * 1E5 + 5) &&
-			(int) ( powerupPoint.getLongitudeE6() / 10 + 5) == (int) (player.getLongitude() * 1E5 + 5) ){
-			return true;
+		if(powerupPoint != null){
+			if( (int) ( powerupPoint.getLatitudeE6()  / 10 + 5) == (int) (player.getLatitude()  * 1E5 + 5) &&
+				(int) ( powerupPoint.getLongitudeE6() / 10 + 5) == (int) (player.getLongitude() * 1E5 + 5) ){
+				return true;
+			}
 		}
 		return false;
 	}
