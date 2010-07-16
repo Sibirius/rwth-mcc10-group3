@@ -4,4 +4,7 @@
           android:title="Spiel verlassen"
           android:icon="@drawable/ic_menu_block"
           />
+    <item android:id="@+id/in_game_options_menu_help"
+          android:title="Hilfe" 
+          android:icon="@android:drawable/ic_menu_help"/>
 </menu>

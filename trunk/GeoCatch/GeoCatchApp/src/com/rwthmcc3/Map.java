@@ -6,6 +6,7 @@ import java.util.Random;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -381,8 +382,14 @@ public class Map extends MapActivity{
 			Toast.makeText(getApplicationContext(), "Du hast das Spiel verlassen", Toast.LENGTH_LONG).show();
 			closeMapView();
 			return true;						
+		
+		case R.id.in_game_options_menu_help:
+			startActivityForResult(new Intent(this.getApplicationContext(),
+					com.rwthmcc3.Help.class), 0);
+			overridePendingTransition(R.anim.fade, R.anim.hold);
+			return true;
 		}
-		return false;
+		return true;
 	}
 
 	/**********************************************************************/

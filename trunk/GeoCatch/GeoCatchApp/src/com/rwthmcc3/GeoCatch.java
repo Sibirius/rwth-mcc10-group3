@@ -52,21 +52,13 @@ public class GeoCatch extends Activity {
 	    if(debugMode)
 	    	Integrator.registerPlayer(debugMac, p.getName(), p.getLongitude(), p.getLatitude());
 	    
-	    //create LocationManager for GPS
-	    lmGeoCatch = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-		if(lmGeoCatch.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-			providerGeoCatch = LocationManager.GPS_PROVIDER;
-		} else {
-			providerGeoCatch = LocationManager.NETWORK_PROVIDER;			
-		}
-		
-		lmGeoCatch.getLastKnownLocation(providerGeoCatch);
-		lmGeoCatch.requestLocationUpdates(providerGeoCatch, 0, 0, locationListenerGeoCatch);
+	    
 	     
 		
 	}
-
+	/*Intent gpsOptionsIntent = new Intent(
+	android.provider.Settings.ACTION_LOCATION_SOURCE_S ETTINGS);
+	startActivity(gpsOptionsIntent);*/
 	
 	public void onResume(){
 		super.onResume();
@@ -87,6 +79,11 @@ public class GeoCatch extends Activity {
 		        	AlertDialog alertNoBluetooth = builderNoBluetooth.create();;
 		        	alertNoBluetooth.show();
 		    }
+		    
+		    //create LocationManager for GPS
+		    lmGeoCatch = (LocationManager) getSystemService(LOCATION_SERVICE);
+		    
+		    
 		    if (!mBluetoothAdapter.isEnabled()) {
 		    	AlertDialog.Builder builderBluetoothOff = new AlertDialog.Builder(this);
 		    	builderBluetoothOff.setMessage("Bluetooth muss aktiviert sein um dieses Spiel zu spielen! Bluetooth aktivieren?")
@@ -106,6 +103,38 @@ public class GeoCatch extends Activity {
 		        	alertBluetoothOff.show();
 		        
 		    }
+		    
+		    
+		    //at first enable bluetooth then gps
+		    if (!lmGeoCatch.isProviderEnabled(LocationManager.GPS_PROVIDER) && mBluetoothAdapter.isEnabled()) {
+		    	AlertDialog.Builder builderGpsOff = new AlertDialog.Builder(this);
+		    	builderGpsOff.setMessage("GPS muss aktiviert sein um dieses Spiel zu spielen! GPS aktivieren?")
+		        	       .setCancelable(false)
+		        	       .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+		        	           public void onClick(DialogInterface dialog, int id) {
+		        	        	   Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+		        	        			   startActivity(gpsOptionsIntent);
+		        	           }
+		        	       })
+		        	       .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+		        	           public void onClick(DialogInterface dialog, int id) {
+		        	        	   GeoCatch.this.finish();
+		        	           }
+		        	       });
+		        	AlertDialog alertGpsOff = builderGpsOff.create();;
+		        	alertGpsOff.show();
+		        
+		    }
+		    
+			if(lmGeoCatch.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+				providerGeoCatch = LocationManager.GPS_PROVIDER;
+			} else {
+				providerGeoCatch = LocationManager.NETWORK_PROVIDER;			
+			}
+			
+			lmGeoCatch.getLastKnownLocation(providerGeoCatch);
+			lmGeoCatch.requestLocationUpdates(providerGeoCatch, 0, 0, locationListenerGeoCatch);
+		    
 		    //register player
 		    if(mBluetoothAdapter.isEnabled()){
 		    	 //set mac
@@ -136,6 +165,17 @@ public class GeoCatch extends Activity {
 		    	p.setMac(debugMac);
 		    	boolean register=Integrator.registerPlayer(p.getMac(), p.getName(), p.getLongitude(), p.getLatitude());
 		    	if(!register)Toast.makeText(getApplicationContext(), "Registrierung fehlgeschlagen", Toast.LENGTH_SHORT);
+		    	
+		    	lmGeoCatch = (LocationManager) getSystemService(LOCATION_SERVICE);
+		    	
+		    	if(lmGeoCatch.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+					providerGeoCatch = LocationManager.GPS_PROVIDER;
+				} else {
+					providerGeoCatch = LocationManager.NETWORK_PROVIDER;			
+				}
+				
+				lmGeoCatch.getLastKnownLocation(providerGeoCatch);
+				lmGeoCatch.requestLocationUpdates(providerGeoCatch, 0, 0, locationListenerGeoCatch);
 		    }
 	    }
 	   
