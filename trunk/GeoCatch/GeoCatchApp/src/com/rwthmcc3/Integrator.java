@@ -140,7 +140,7 @@ public class Integrator {
 	public static boolean activatePowerup(int powerup){
 		Log.d(LOGTAG, "activatePowerup()");
 		
-		if(powerup >= powerupActive.length)
+		if(powerup > powerupActive.length || powerup < 1)
 			return false;
 		
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();		
@@ -149,7 +149,7 @@ public class Integrator {
         
         String result = getResponse(doGet("/activate", qparams));
         Log.d(LOGTAG, "activatePowerup: "+result);
-        powerupActive[powerup] = true;
+        powerupActive[powerup-1] = true;
         return !result.contains("error");
 	}
 	
@@ -470,6 +470,8 @@ public class Integrator {
 	}
 	
 	public static boolean powerupIsActive(int powerup){
+		if(powerup < 1 || powerup > powerupActive.length )
+			return false;
 		return powerupActive[powerup-1];
 	}
 	
