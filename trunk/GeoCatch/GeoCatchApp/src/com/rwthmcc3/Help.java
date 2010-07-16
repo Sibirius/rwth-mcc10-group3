@@ -3,6 +3,7 @@ package com.rwthmcc3;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -12,10 +13,17 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class Help extends Activity{
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.help);
        
-        
+        //set title
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+        TextView leftTitle = (TextView)findViewById(R.id.left_text);
+        TextView rightTitle = (TextView)findViewById(R.id.right_text);
+        leftTitle.setText("GeoCatch");
+        rightTitle.setText("Hilfe");
         
         //spinner timer
         Spinner spinner = (Spinner) findViewById(R.id.spinner_help);
@@ -35,7 +43,8 @@ public class Help extends Activity{
 		private String startseite = "Wenn Sie die Startseite aufrufen, werden Sie automatisch neu registriert! " +
 				"Aber ACHTUNG: Sie verlassen Ihr betretenes Spiel! Erstellte Spiele werden beendet!";
 		private String neuesSpiel = "Hier sollten Sie einen sinnvollen Spielernamen wählen. " +
-				"Die Spieleranzahl kann zwischen 1 und 15 Spielern gewählt werden. " +
+				"Die Spieleranzahl kann zwischen 1 und 15 Spielern gewählt werden. (Mehr Informationen zur" +
+				" Spielanzahl und dem damit verbundenen Spielmodus erfahren Sie unter >>Spielanleitung<<)" +
 				"Der Timer gibt Ihnen Zeit sich nach Spielstart zu verteilen. In der Regel sollten 6 Minuten reichen. " +
 				"Wenn Sie auf >>Weiter<< klicken, wird ein neues Spiel erstellt. " +
 				"Aber ACHTUNG:	Sie verlassen Ihr betretenes Spiel! Zuvor erstellte Spiele werden beendet! " +
@@ -52,7 +61,9 @@ public class Help extends Activity{
 				" kann losgehen!";
 		private String spielAnleitung = "";
 		private String spielRegeln = "";
-		private String spielVerlassen ="Sie können jeder Zeit Ihr Spiel verlassen! Wenn Sie in der ";
+		private String spielVerlassen ="Sie können jeder Zeit Ihr Spiel verlassen! Wenn Sie sich im Hauptmenu befinden, " +
+				"können Sie, wenn Sie länger auf ein Spiel drücken, das Spiel öffnen. " +
+				"Wenn Sie ein Spiel geöffnet haben, können Sie dieses über den Button >>Verlassen!<< verlassen.";
 		
 		
 		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

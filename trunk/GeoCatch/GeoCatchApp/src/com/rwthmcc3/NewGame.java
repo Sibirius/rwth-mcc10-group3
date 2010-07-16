@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,9 +29,18 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 	private Player p = Player.getPlayer();
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_game);
        
+        
+        //set title
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+        TextView leftTitle = (TextView)findViewById(R.id.left_text);
+        TextView rightTitle = (TextView)findViewById(R.id.right_text);
+        leftTitle.setText("GeoCatch");
+        rightTitle.setText("Neues Spiel");
+        
         //SeekBar
         seekPlayerCount = (SeekBar)findViewById(R.id.seekbar_player_count); 
         seekPlayerCount.setOnSeekBarChangeListener(this);
