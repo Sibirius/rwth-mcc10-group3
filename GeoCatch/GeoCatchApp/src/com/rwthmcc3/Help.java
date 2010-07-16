@@ -55,7 +55,6 @@ public class Help extends Activity{
 		private String spielVerlassen ="Sie können jeder Zeit Ihr Spiel verlassen! Wenn Sie in der ";
 		
 		
-		@Override
 		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 			// TODO 
 			//Startseite, neues Spiel, Spiel beitreten, Spiel verlassen, Spielanleitung, Spielregeln
@@ -88,7 +87,6 @@ public class Help extends Activity{
 			
 		}
 
-		@Override
 		public void onNothingSelected(AdapterView<?> arg0) {
 			TextView myTextView =(TextView)findViewById(R.id.textview_help);
 			myTextView.setText(startseite);
