@@ -29,8 +29,8 @@ public class GeoCatch extends Activity {
 	private  Player p = Player.getPlayer();
 	private LocationManager lmGeoCatch;
 	private String providerGeoCatch = "";
-	public static boolean debugMode = false;
-	public static String debugMac = "AF:AD:FF:64:66:66";
+	public static boolean debugMode = true;
+	public static String debugMac = "AF:AD:AF:64:66:66";
 	SharedPreferences preferences;
 	
 	/** Called when the activity is first created. */
@@ -60,14 +60,17 @@ public class GeoCatch extends Activity {
 	@Override
 	public void onPause(){
 		super.onPause();
-		lmGeoCatch.removeUpdates(locationListenerGeoCatch);
+		
+		if(lmGeoCatch !=null)lmGeoCatch.removeUpdates(locationListenerGeoCatch);
 		
 		
 	}
+	
 	@Override
 	public void onStop(){
 		super.onStop();
-		lmGeoCatch.removeUpdates(locationListenerGeoCatch);
+		
+		if(lmGeoCatch !=null)lmGeoCatch.removeUpdates(locationListenerGeoCatch);
 		
 		
 		

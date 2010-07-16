@@ -98,6 +98,7 @@ public class GameState extends Activity {
 		runBackgroundThread = false;
 		
 	}
+	
 	@Override
 	public void onStop(){
 		super.onStop();

@@ -75,9 +75,8 @@ public class MainMenu extends Activity {
 	@Override
 	public void onPause(){
 		super.onPause();
-		lmMainMenu.removeUpdates(locationListenerMainMenu);
+		if(lmMainMenu !=null)lmMainMenu.removeUpdates(locationListenerMainMenu);
 		//destroy thread
-		
 		runBackgroundThread = false;
 		mHandler.removeCallbacks(mUpdateViewTask);
 		
@@ -85,7 +84,7 @@ public class MainMenu extends Activity {
 	@Override
 	public void onStop(){
 		super.onStop();
-		lmMainMenu.removeUpdates(locationListenerMainMenu);
+		if(lmMainMenu !=null)lmMainMenu.removeUpdates(locationListenerMainMenu);
 		//destroy thread
 		runBackgroundThread = false;
 		mHandler.removeCallbacks(mUpdateViewTask);
