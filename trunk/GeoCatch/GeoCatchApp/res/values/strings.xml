@@ -11,7 +11,8 @@
     <string name="text_change_name">Spielername ändern:</string>
     <string name="mainmenu_loading">Laden...</string>
      <string name="members_gamestate">Mitglieder:</string>
- <string name="rwth">RWTH</string>
+ 	 <string name="description_count">Spieleranzahl:</string>
+ 	  <string name="description_distance">Entfernung zum Spielersteller:</string>
     
     
     <string name="times">Wartezeit wählen</string>
