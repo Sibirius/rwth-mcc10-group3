@@ -163,7 +163,7 @@ public class Map extends MapActivity{
 			}
 			
 			geoUpdater = new GeoUpdateHandler();
-			lm.getLastKnownLocation(provider);
+			//lm.getLastKnownLocation(provider);
 			lm.requestLocationUpdates(provider, 0, 0, geoUpdater);
 			
 			//init powerUps
@@ -360,8 +360,29 @@ public class Map extends MapActivity{
 		                  gameFinished = true;
 		             }
 		         });
-		  final AlertDialog winLooseAlert = builder.create();
-		  winLooseAlert.show();
+		  final AlertDialog gameClosedAlert = builder.create();
+		  gameClosedAlert.show();
+	}
+
+	private void mapCloseAlert(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		  builder.setMessage("Möchtest du das Spiel wirklich verlassen?")
+		         .setCancelable(true)
+		         .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+		             public void onClick(DialogInterface dialog, int id) {
+		                  dialog.cancel();
+		             }
+		         })
+		         .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+		             public void onClick(DialogInterface dialog, int id) {
+		                  dialog.cancel();
+			      		  Integrator.leaveGame(player);
+			    		  Toast.makeText(getApplicationContext(), "Du hast das Spiel verlassen", Toast.LENGTH_LONG).show();
+			    		  closeMapView();
+		             }
+		         });
+		  final AlertDialog mapCloseAlert = builder.create();
+		  mapCloseAlert.show();
 	}
 	
 	private void closeMapView(){
@@ -391,9 +412,7 @@ public class Map extends MapActivity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.in_game_options_menu_leave:
-			Integrator.leaveGame(player);
-			Toast.makeText(getApplicationContext(), "Du hast das Spiel verlassen", Toast.LENGTH_LONG).show();
-			closeMapView();
+			mapCloseAlert();
 			return true;						
 		
 		case R.id.in_game_options_menu_help:
@@ -426,8 +445,8 @@ public class Map extends MapActivity{
 	
 	private void setNewPowerUpMarker(){
 		Random randomGenerator = new Random();
-		double[] res = Integrator.snapToStreet( player.getLatitude()  + (randomGenerator.nextDouble() - 0.5) / 100,
-												player.getLongitude() + (randomGenerator.nextDouble() - 0.5) / 100);
+		double[] res = Integrator.snapToStreet( player.getLatitude()  + (randomGenerator.nextDouble()/2 - 0.25) / 100,
+												player.getLongitude() + (randomGenerator.nextDouble()/2 - 0.25) / 100);
 		if(res != null){
 			powerupPoint = new GeoPoint((int) (res[0] * 1E6),(int) (res[1] * 1E6));
 			Log.d(LOGTAG, "setNewPowerUP(): " + res[0] + " " + res[1]);
