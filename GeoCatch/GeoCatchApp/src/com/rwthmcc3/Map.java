@@ -174,9 +174,6 @@ public class Map extends MapActivity{
 			powerUpMessage[0] = "Du kannst jetzt für drei Minuten deinen Jäger in gelb sehen!";
 			powerUpMessage[1] = "Du kannst dein Ziel nicht mehr sehen!";
 			
-			powerUpEnabled[1] = true;
-			powerUpTime[1] = System.currentTimeMillis();
-			
 			gameLoop();
 			
 		} else {
