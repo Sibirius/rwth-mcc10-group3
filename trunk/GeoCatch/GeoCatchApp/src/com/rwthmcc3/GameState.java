@@ -317,13 +317,13 @@ public class GameState extends Activity {
     				if((chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount())&&chosenGame.getState()==0){
     					buttonStartView.setVisibility(View.VISIBLE);
     					buttonStopView.setVisibility(View.VISIBLE);
-    				}else{//not enough players
-    					progressMembersView.setVisibility(View.VISIBLE);
+    				}else{//not enough players or started
+    					if(chosenGame.getState()==0)progressMembersView.setVisibility(View.VISIBLE);
     					buttonStopView.setVisibility(View.VISIBLE);
     				}
     			}else{//i'm not creator, but it is my game
     				buttonLeaveView.setVisibility(View.VISIBLE);
-    				if((chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount())&&chosenGame.getState()==0){
+    				if(!(chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount())&&(chosenGame.getState()==0)){
     					progressMembersView.setVisibility(View.VISIBLE);
     				}	
        			}
@@ -349,7 +349,7 @@ public class GameState extends Activity {
     			
        		}else{//not my Game 
        			//not enough players and not started?
-       			if(!(chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount()) || !(chosenGame.getState()==0)){
+       			if(!(chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount()) && (chosenGame.getState()==0)){
        				buttonJoinView.setVisibility(View.VISIBLE);
        				progressMembersView.setVisibility(View.VISIBLE);
        			}else{
@@ -360,7 +360,7 @@ public class GameState extends Activity {
 	    	//i'm not in a game
 	    	if(chosenGame != null){
 	    		buttonJoinView.setVisibility(View.VISIBLE);
-	    		if((chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount())&&chosenGame.getState()==0){
+	    		if(!(chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount())&&(chosenGame.getState()==0)){
 					progressMembersView.setVisibility(View.VISIBLE);
 				}
 	    		//is game stopped or finished?

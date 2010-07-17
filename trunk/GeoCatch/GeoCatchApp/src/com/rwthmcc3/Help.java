@@ -42,25 +42,30 @@ public class Help extends Activity{
 		
 		private String startseite = "Wenn Sie die Startseite aufrufen, werden Sie automatisch neu registriert! " +
 				"Aber ACHTUNG: Sie verlassen Ihr betretenes Spiel! Erstellte Spiele werden beendet!";
-		private String neuesSpiel = "Hier sollten Sie einen sinnvollen Spielernamen wählen. " +
+		private String neuesSpiel = "Sie gelangen zur Übersicht >>neues Spiel<< von der Startseite " +
+				"oder von dem Hauptmenü aus. Als erstes sollten Sie einen sinnvollen Spielernamen wählen. " +
 				"Die Spieleranzahl kann zwischen 1 und 15 Spielern gewählt werden. (Mehr Informationen zur" +
-				" Spielanzahl und dem damit verbundenen Spielmodus erfahren Sie unter >>Spielanleitung<<)" +
-				"Der Timer gibt Ihnen Zeit sich nach Spielstart zu verteilen. In der Regel sollten 6 Minuten reichen. " +
+				" Spielanzahl und dem damit verbundenen Spielmodus erfahren Sie unter >>Spielanleitung<<.)" +
+				" Der Timer gibt Ihnen Zeit sich nach Spielstart zu verteilen. In der Regel sollten 6 Minuten reichen. " +
 				"Wenn Sie auf >>Weiter<< klicken, wird ein neues Spiel erstellt. " +
 				"Aber ACHTUNG:	Sie verlassen Ihr betretenes Spiel! Zuvor erstellte Spiele werden beendet! " +
 				"Nachdem Sie ein Spiel erstellt haben, gelangen Sie automatisch ins Hauptmenü. Wenn Sie dort Ihr erstelltes Spiel länger gedrückt halten, können" +
 				" Sie das Spiel öffnen. In der Spielübersicht können Sie Ihr Spiel beenden oder wenn die maximale Spieleranzahl erreicht ist, " +
 				"das Spiel starten. Nachdem Sie das Spiel gestartet haben, fängt der Timer an runter zu zählen. Wenn der Timer bei 0 angelangt ist, " +
 				"wird die Map geöffnet und es kann losgehen!";
-		//TODO
+		
 		private String spielBeitreten = "Wenn Sie sich im Hauptmenu befinden, können Sie, wenn Sie länger auf ein Spiel drücken, das Spiel öffnen. " +
 				"Wenn Sie ein Spiel geöffnet haben, können Sie diesem über den Button >>Beitreten!<< beitreten. Das Beitreten ist nur möglich, wenn das Spiel" +
 				" noch nicht gestartet wurde und die maximale Spieleranzahl noch nicht erreicht ist. Wenn Sie ein Spiel betreten haben, müssen" +
 				" Sie warten bis die maximale Spieleranzahl erreicht ist und der Spielersteller das Spiel gestartet hat. " +
 				"Nachdem der Spielersteller das Spiel gestartet hat, fängt der Timer an runter zu zählen. Wenn dieser bei 0 angelangt ist, startet die Map und es" +
 				" kann losgehen!";
-		private String spielAnleitung = "";
-		private String spielRegeln = "";
+		//TODO check colors in 2-player-mode
+		private String spielAnleitung = "Es gibt drei verschiedene Spielmodi. Der erste Spielmodus ist der Singleplayermodus. " +
+				"Hier ist das Ziel den auf der Karte markierten roten Punkt in möglichst kurzer Zeit zu erreichen. Der blaue Punkt auf der Karte ist Ihre" +
+				" aktuelle Position. Dies gilt für alle Spielmodi. Im Zweispielermodus ist das Ziel den auf der Karte markierten roten Punkt als Erster zu erreichen. " +
+				"Im Mehrspieler";
+		private String spielRegeln = "Es ist nicht erlaubt das GPS-Signal zu unterdrücken.";
 		private String spielVerlassen ="Sie können jeder Zeit Ihr Spiel verlassen! Wenn Sie sich im Hauptmenu befinden, " +
 				"können Sie, wenn Sie länger auf ein Spiel drücken, das Spiel öffnen. " +
 				"Wenn Sie ein Spiel geöffnet haben, können Sie dieses über den Button >>Verlassen!<< verlassen.";
