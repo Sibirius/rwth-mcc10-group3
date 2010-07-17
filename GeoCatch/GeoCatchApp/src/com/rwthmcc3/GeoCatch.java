@@ -211,7 +211,7 @@ public class GeoCatch extends Activity {
 	    
 	}
 	
-	 private final LocationListener locationListenerGeoCatch = new LocationListener() {
+	private final LocationListener locationListenerGeoCatch = new LocationListener() {
 	    	public void onLocationChanged(Location location){
 	           p.setLatitude(location.getLatitude());
 	           p.setLongitude(location.getLongitude());

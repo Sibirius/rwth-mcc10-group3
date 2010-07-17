@@ -46,6 +46,7 @@ public class GameState extends Activity {
 	//		Activity
 	//**********************************************************************
 	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
@@ -115,7 +116,7 @@ public class GameState extends Activity {
 		
 	}
 
-	
+	@Override
 	public void onResume(){
 		super.onResume();
 		//reset timer
@@ -125,7 +126,6 @@ public class GameState extends Activity {
 		resetViews();
 		
 		//start thread
-		
 		runBackgroundThread = true;
 		if(backgroundThread==null){
 			runBackgroundThread = true;
@@ -275,6 +275,7 @@ public class GameState extends Activity {
     	TextView textTimerView = (TextView) findViewById(R.id.textview_timer_gamestate);
     	View layoutButtonsView = (View) findViewById(R.id.layout_buttons_gamestate);
     	View layoutUpdatedView = (View) findViewById(R.id.layout_updated_gamestate);
+    	View progressMembersView = (View) findViewById(R.id.progress_members);
     	
     	//reset buttons
     	buttonStartView.setVisibility(View.GONE);
@@ -282,12 +283,16 @@ public class GameState extends Activity {
     	buttonLeaveView.setVisibility(View.GONE);
     	buttonJoinView.setVisibility(View.GONE);
     	
+    	//reset progressbar
+    	progressMembersView.setVisibility(View.GONE);
+    	
     	//make loading invisible
     	layoutLoadView.setVisibility(View.GONE);
     	//show rest
     	layoutStatesView.setVisibility(View.VISIBLE);
     	layoutButtonsView.setVisibility(View.VISIBLE);
     	layoutUpdatedView.setVisibility(View.VISIBLE);
+    	
     	
     	//chosenGame is actual !!!
     	Game chosenGame = MainMenu.chosenGame;
@@ -313,10 +318,14 @@ public class GameState extends Activity {
     					buttonStartView.setVisibility(View.VISIBLE);
     					buttonStopView.setVisibility(View.VISIBLE);
     				}else{//not enough players
+    					progressMembersView.setVisibility(View.VISIBLE);
     					buttonStopView.setVisibility(View.VISIBLE);
     				}
     			}else{//i'm not creator, but it is my game
     				buttonLeaveView.setVisibility(View.VISIBLE);
+    				if((chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount())&&chosenGame.getState()==0){
+    					progressMembersView.setVisibility(View.VISIBLE);
+    				}	
        			}
     			//start timer?
     			if((chosenGame.getState()==1) && (player.isTimerHasCountedDown()== false) && (!timerIsAlive)){
@@ -342,6 +351,7 @@ public class GameState extends Activity {
        			//not enough players and not started?
        			if(!(chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount()) || !(chosenGame.getState()==0)){
        				buttonJoinView.setVisibility(View.VISIBLE);
+       				progressMembersView.setVisibility(View.VISIBLE);
        			}else{
        				layoutButtonsView.setVisibility(View.GONE);
        			}
@@ -350,6 +360,9 @@ public class GameState extends Activity {
 	    	//i'm not in a game
 	    	if(chosenGame != null){
 	    		buttonJoinView.setVisibility(View.VISIBLE);
+	    		if((chosenGame.getPlayerCount()==chosenGame.getMaxPlayersCount())&&chosenGame.getState()==0){
+					progressMembersView.setVisibility(View.VISIBLE);
+				}
 	    		//is game stopped or finished?
 	    		if((chosenGame.getState()==2) || (chosenGame.getState()==3) ){
 	    			Toast.makeText(GameState.this,"Spiel existiert nicht mehr!",Toast.LENGTH_SHORT).show();
@@ -378,6 +391,7 @@ public class GameState extends Activity {
     	View textTimerView = (View) findViewById(R.id.textview_timer_gamestate);
     	View layoutUpdatedView = (View) findViewById(R.id.layout_updated_gamestate);
     	View layoutButtonsView = (View) findViewById(R.id.layout_buttons_gamestate);
+    	View progressMembersView = (View) findViewById(R.id.progress_members);
     	
     	layoutLoadView.setVisibility(View.VISIBLE);
     	layoutStatesView.setVisibility(View.GONE);
@@ -388,6 +402,7 @@ public class GameState extends Activity {
     	textTimerView.setVisibility(View.GONE);
     	layoutUpdatedView.setVisibility(View.GONE);
     	layoutButtonsView.setVisibility(View.GONE);
+    	progressMembersView.setVisibility(View.GONE);
     }
     
     
@@ -603,15 +618,21 @@ public class GameState extends Activity {
 	
 		return false;
 	}
+	
 	// *******************************************************************************************************
 	// something
 	// *******************************************************************************************************
 	
-	
+	/**
+	 * Blocks back button when timer is started.
+	 */
+	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) && !timerIsAlive) {
-        	return true;
-        }
+		if(timerIsAlive){
+	        if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) && !timerIsAlive) {
+	        	return true;
+	        }
+		}
         return super.onKeyDown(keyCode, event);
     }
 }

@@ -108,7 +108,7 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
         
                
     
-    
+	
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
     	TextView text_player_count = (TextView)findViewById(R.id.player_count_new_game);
     	progress+=1;  //set min to 1
@@ -117,8 +117,10 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 
     
     
-	/* Creates the menu items */
-	public boolean onCreateOptionsMenu(Menu menu) {
+	/**
+	 *  Creates the menu items .
+	 */
+    public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.newgame_options_menu, menu);
 	    
@@ -126,7 +128,9 @@ public class NewGame extends Activity implements SeekBar.OnSeekBarChangeListener
 	    return true;
 	}
 
-	/* Handles item selections */
+	/**
+	 *  Handles item selections 
+	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.new_game_options_menu_main:

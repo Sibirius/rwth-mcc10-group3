@@ -41,15 +41,27 @@
 										        
 				        		/>
 				  				
-				  				<TextView   android:id="@+id/textview_members_gamestate"
-				  							android:text="@string/members_gamestate"
-											android:layout_height="wrap_content" 
-											android:layout_width="wrap_content" 
-											android:layout_gravity="center_horizontal"
-											android:layout_margin="10px"
-											
-								/>
-				  				
+				  				<LinearLayout  	 
+							    android:orientation="horizontal"
+							    android:layout_width="wrap_content"
+							    android:layout_height="wrap_content"
+							    android:layout_gravity="center_horizontal"
+							    >
+							    		<ProgressBar 	android:id="@+id/progress_members"
+							    						style="?android:attr/progressBarStyleSmall"
+												        android:layout_width="wrap_content"
+												        android:layout_height="wrap_content" 
+												        android:layout_margin="10px"
+												        android:visibility="gone"/>
+							  			<TextView   	android:id="@+id/textview_members_gamestate"
+							  							android:text="@string/members_gamestate"
+														android:layout_height="wrap_content" 
+														android:layout_width="wrap_content" 
+														android:layout_margin="10px"
+													
+										/>
+										
+				  				</LinearLayout>
 				  				<View			android:id="@+id/line_gamestate2"
 												android:layout_width="fill_parent"
 										        android:layout_height="2dip"
