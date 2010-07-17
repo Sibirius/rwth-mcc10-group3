@@ -71,6 +71,7 @@ public class Help extends Activity{
 		private String spielVerlassen ="Du kannst jeder Zeit dein Spiel verlassen! \n\nWenn du dich im Hauptmenu befindest, " +
 				"kannst du, wenn du länger auf ein Spiel drückst, das Spiel öffnen. " +
 				"In der Spielübersicht, kannst du dein Spiel über den Button \"Verlassen!\" verlassen.";
+		//TODO color
 		private String powerUps = "Auf der Karte werden von Zeit zu Zeit verschiedene Power-Ups angezeigt. Diese können einen positive oder" +
 				" auch negative Effekt haben. \nPower-Ups werden in der Farbe \"?\" dargestellt. Um ein Power-Up zu aktivieren, musst du zu diesem hinlaufen.";
 		
