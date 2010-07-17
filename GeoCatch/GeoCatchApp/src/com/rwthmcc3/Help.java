@@ -61,7 +61,8 @@ public class Help extends Activity{
 				" du warten bis die maximale Spieleranzahl erreicht ist und der Spielersteller das Spiel gestartet hat. " +
 				"\n\nNachdem der Spielersteller das Spiel gestartet hat, fängt der Timer an runter zu zählen. Wenn dieser bei 0 angelangt ist, startet die Map und es" +
 				" kann losgehen!";
-		private String spielAnleitung = "Es gibt drei verschiedene Spielmodi. \n\nDer erste Spielmodus ist der Singleplayermodus. " +
+		private String spielAnleitung = "Es gibt drei verschiedene Spielmodi. " +
+				"\n\nDer erste Spielmodus ist der Singleplayermodus. " +
 				"\nHier ist das Ziel den auf der Karte markierten roten Punkt in möglichst kurzer Zeit zu erreichen. Der blaue Punkt auf der Karte ist deine" +
 				" aktuelle Position. Dies gilt für alle Spielmodi. \n\nIm Zweispielermodus ist das Ziel den auf der Karte markierten roten Punkt als Erster zu erreichen. " +
 				"\n\nIm Mehrspielermodus ist das Ziel eine Person zu fangen. \nDein Ziel ist als roter Punkt auf der Karte dargestellt. \n\nAber ACHTUNG:" +
@@ -71,8 +72,8 @@ public class Help extends Activity{
 		private String spielVerlassen ="Du kannst jeder Zeit dein Spiel verlassen! \n\nWenn du dich im Hauptmenu befindest, " +
 				"kannst du, wenn du länger auf ein Spiel drückst, das Spiel öffnen. " +
 				"In der Spielübersicht, kannst du dein Spiel über den Button \"Verlassen!\" verlassen.";
-		private String powerUps = "Auf der Karte werden von Zeit zu Zeit verschiedene Power-Ups angezeigt. Diese können einen positive oder" +
-				" auch negative Effekt haben. \nPower-Ups werden in der Farbe \"grün\" dargestellt. Um ein Power-Up zu aktivieren, musst du zu diesem hinlaufen.";
+		private String powerUps = "Auf der Karte werden von Zeit zu Zeit verschiedene Power-Ups angezeigt. Diese können einen positiven oder" +
+				" auch negativen Effekt haben. \nPower-Ups werden in der Farbe \"grün\" dargestellt. Um ein Power-Up zu aktivieren, musst du zu diesem hinlaufen.";
 		
 		
 		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

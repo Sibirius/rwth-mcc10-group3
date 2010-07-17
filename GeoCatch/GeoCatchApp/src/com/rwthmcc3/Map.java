@@ -174,13 +174,13 @@ public class Map extends MapActivity{
 			lm.requestLocationUpdates(provider, 20000, 0, geoUpdater);
 			
 			//init powerUps
-			powerUpMessage[0] = "Du kannst jetzt fÃ¼r drei Minuten deinen JÃ¤ger in gelb sehen!";
+			powerUpMessage[0] = "Du kannst jetzt für drei Minuten deinen Jäger in gelb sehen!";
 			powerUpMessage[1] = "Du kannst dein Ziel nicht mehr sehen!";
 			
 			gameLoop();
 			
 		} else {
-			Toast.makeText(getApplicationContext(), "Ãœbertragung der Spieldaten schlug fehl!", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Übertragung der Spieldaten schlug fehl!", Toast.LENGTH_LONG).show();
 			Map.this.finish();
 		}
 	}	
@@ -362,7 +362,7 @@ public class Map extends MapActivity{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		  builder.setMessage("Du hast " + (player.isHasWin() ? "gewonnen" : "verloren") + "\n" +
 		  		"\n" +
-		  		"ZurÃ¼ckgelegte Distanz: " + pointList.getDistance() + "m\n" +
+		  		"Zurückgelegte Distanz: " + pointList.getDistance() + "m\n" +
 		  		"Spielzeit: " + getFormattetTotalGameTime())
 		         .setCancelable(false)
 		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -393,7 +393,7 @@ public class Map extends MapActivity{
 
 	private void mapCloseAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		  builder.setMessage("MÃ¶chtest du das Spiel wirklich verlassen?")
+		  builder.setMessage("Möchtest du das Spiel wirklich verlassen?")
 		         .setCancelable(true)
 		         .setNegativeButton("Nein", new DialogInterface.OnClickListener() {
 		             public void onClick(DialogInterface dialog, int id) {
