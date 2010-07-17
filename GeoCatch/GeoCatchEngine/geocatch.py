@@ -101,8 +101,8 @@ class Path(db.Model):
 ##################### functions
 
 def closeTo(pointOne, pointTwo):
-	if abs(pointOne.lat-pointTwo.lat) < 0.0001:
-		if abs(pointOne.lon-pointTwo.lon) < 0.0001:
+	if abs(pointOne.lat-pointTwo.lat) < 0.0002:
+		if abs(pointOne.lon-pointTwo.lon) < 0.0002:
 			return True
 	return False
 
@@ -622,7 +622,8 @@ class PlayerUpdateState(webapp.RequestHandler):
 					modespecific["lon"] = game.goal.lon
 
 					#test if player close enough to goal point
-					if round(loc.lat, 5) ==  round(game.goal.lat, 5) and round(loc.lon, 5) ==  round(game.goal.lon, 5):
+					#if round(loc.lat, 5) ==  round(game.goal.lat, 5) and round(loc.lon, 5) ==  round(game.goal.lon, 5):
+					if closeTo(loc,game.goal):
 						# \o/ victory
 						#finish game, save who won
 						game.winner = player.key()
