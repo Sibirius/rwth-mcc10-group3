@@ -61,10 +61,11 @@ public class Map extends MapActivity{
 	private String[] powerUpMessage = new String[NUMOFPOWERUPS];
 	
 	private int selectedPowerUp = 0;
+	private long powerUpSetTime = 0;
 	
 	private GeoPoint prePoint = null;
 	private GeoPoint targetPoint = null;
-	private GeoPoint powerupPoint = null;
+	private GeoPoint powerUpPoint = null;
 	private GeoPoint hunterPoint = null;
 	
 	private Player player;
@@ -112,7 +113,14 @@ public class Map extends MapActivity{
     // Create runnable for creating a powerup disabled notification
     final Runnable mPowerUpDisabledNotification = new Thread(){
     	public void run(){
-    		Toast.makeText(getApplicationContext(), "PowerUp deaktiviert!", Toast.LENGTH_LONG).show();		
+    		Toast.makeText(getApplicationContext(), "PowerUp wird deaktiviert!", Toast.LENGTH_LONG).show();		
+    	}
+    };
+
+    // Create runnable for creating a powerup reset notification
+    final Runnable mPowerUpResetNotification = new Thread(){
+    	public void run(){
+    		Toast.makeText(getApplicationContext(), "PowerUp wird verschoben!", Toast.LENGTH_LONG).show();		
     	}
     };
     
@@ -186,6 +194,7 @@ public class Map extends MapActivity{
     protected void gameLoop() {
 
     	startTimeMillis = System.currentTimeMillis();
+    	powerUpSetTime = startTimeMillis;
     	welcomeAlert();
     	pointList = new GeoPointList();
     	gameFinished = false;
@@ -194,25 +203,32 @@ public class Map extends MapActivity{
         Thread t = new Thread() {
             public void run() {
             	int cnt = 0;
+            	long time;
+            	
             	while(true){
             		
             		if(gameFinished) break;
             		
-            		if(cnt == 0){
-	            		synchronized(player){
+	            	synchronized(player){
+	            		if(cnt == 0){
+	            			
+	            			//sync player data with backend service
 			            	if(player != null) {
-			            		if(Integrator.playerUpdateState(player)){ 
+			            		if(Integrator.playerUpdateState(player)){
+			            			//update targetpoint
 				            		if(player.getTargetLat() != 0.0 || player.getTargetLong() != 0.0){
 				            			targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));		            		
 				            		}
+				            		//update hunterpoint
 				            		if(player.getHunterLat() != 0.0 || player.getHunterLong() != 0.0){
 				            			hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
 				            		}
 			            		}
 			            	}
 
+			            	//player got powerUp
 		            		if(gotPowerUp()){
-		            			powerupPoint = null;
+		            			powerUpPoint = null;
 		            			if(player != null && player.getMyGame() != null && player.getMyGame().getMode() == 0){ //race
 		            				selectedPowerUp = 1;
 		            			} else { //catch
@@ -227,26 +243,38 @@ public class Map extends MapActivity{
 		            			mHandler.post(mPowerUpEnabledNotification);
 		            		}
 		            		
-		            		long time = System.currentTimeMillis() - 180000;
-		            		for(int i = 0; i < NUMOFPOWERUPS; i++){
-		            			if(powerUpEnabled[i] && powerUpTime[i] <= time) {
-		            				powerUpEnabled[i] = false;
-		            				//mHandler.post(mPowerUpDisabledNotification);
-		            			}
-		            		}
-			            	
-			            	if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){ //game has finished
-		            			mHandler.post(mWinLoose);
-		            			break;
-		            		}
 		            		
-		            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 2){ //game has stopped
-		            			mHandler.post(mClose);
-		            			break;
-		            		}
 		                }
 	                
-            		}
+	            		//disable PowerUps after 3mins
+	            		time = System.currentTimeMillis() - 180000;
+	            		for(int i = 0; i < NUMOFPOWERUPS; i++){
+	            			if(powerUpEnabled[i] && powerUpTime[i] <= time) {
+	            				powerUpEnabled[i] = false;
+	            				mHandler.post(mPowerUpDisabledNotification);
+	            			}
+	            		}
+	            		
+	            		//reset powerUp after 5mins
+	            		time = System.currentTimeMillis() - 300000;
+	            		if(powerUpSetTime <= time) {
+	            			powerUpPoint = null;
+	            			mHandler.post(mPowerUpResetNotification);
+	            		}
+		            	
+	            		//check if game has finished
+		            	if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){
+	            			mHandler.post(mWinLoose);
+	            			break;
+	            		}
+	            		
+		            	//check if game has stopped
+	            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 2){
+	            			mHandler.post(mClose);
+	            			break;
+	            		}
+	            	
+	            	}
 	                
 	                Log.d(LOGTAG, "gameLoop() -> updateMarkers()");
 	                mHandler.post(mUpdateMarkers);
@@ -255,7 +283,7 @@ public class Map extends MapActivity{
 	                
             		SystemClock.sleep(10000);
             		
-            	}
+            	}    	
             	
             }
         };
@@ -273,7 +301,7 @@ public class Map extends MapActivity{
 			
 			if(player.getLatitude() != 0.0 || player.getLongitude()!= 0.0){
 				
-				if(powerupPoint == null) setNewPowerUpMarker();
+				if(powerUpPoint == null) setNewPowerUpMarker();
 				
 				GeoPoint point = new GeoPoint((int) (player.getLatitude() * 1E6),(int) (player.getLongitude() * 1E6));
 				
@@ -307,6 +335,7 @@ public class Map extends MapActivity{
 						
 						prePoint = point;						
 					}
+					
 					Log.d(LOGTAG, "new Marker created at " + point.getLatitudeE6() + ", " + point.getLongitudeE6() );
 					
 					//mapView.getController().animateTo(point);
@@ -317,9 +346,12 @@ public class Map extends MapActivity{
 						mapOverlays.add(myTargetPositionOverlay);
 					}
 					
-					if(powerupPoint != null && myPowerUpPositionOverlay != null) mapOverlays.remove(myPowerUpPositionOverlay);
-						myPowerUpPositionOverlay = new MyOverlay(powerupPoint,null,R.drawable.point_green);
+					if(powerUpPoint != null){
+						if(myPowerUpPositionOverlay != null) mapOverlays.remove(myPowerUpPositionOverlay);
+						myPowerUpPositionOverlay = new MyOverlay(powerUpPoint,null,R.drawable.point_green);
 						mapOverlays.add(myPowerUpPositionOverlay);
+					}
+						
 					
 					if(hunterPoint != null && powerUpEnabled[0]){
 						if(myHunterPositionOverlay != null) mapOverlays.remove(myHunterPositionOverlay);
@@ -327,7 +359,7 @@ public class Map extends MapActivity{
 						mapOverlays.add(myHunterPositionOverlay);
 					}
 					
-					mapView.postInvalidate();
+					mapView.invalidate();
 					
 				}
 			}
@@ -467,17 +499,17 @@ public class Map extends MapActivity{
 	/**********************************************************************/
 	
 	private boolean gotPowerUp(){
-		if(powerupPoint != null){
+		if(powerUpPoint != null){
 			float[] results = new float[1];
-			Location.distanceBetween(powerupPoint.getLatitudeE6() / 1E6, powerupPoint.getLongitudeE6() / 1E6, player.getLatitude(), player.getLongitude(), results);
+			Location.distanceBetween(powerUpPoint.getLatitudeE6() / 1E6, powerUpPoint.getLongitudeE6() / 1E6, player.getLatitude(), player.getLongitude(), results);
 			Log.d(LOGTAG, "Distance to powerUp: " + results[0]);
 			if( results[0] < 21f) {
 				return true;
 			}
-			/*if( (powerupPoint.getLatitudeE6()   + 80) >= (int) ( player.getLatitude()   * 1E6 ) &&
-				(powerupPoint.getLatitudeE6()   - 80) <= (int) ( player.getLatitude()   * 1E6 ) &&	
-				(powerupPoint.getLongitudeE6()  + 80) <= (int) ( player.getLongitude()  * 1E6 ) &&	
-				(powerupPoint.getLongitudeE6()  - 80) <= (int) ( player.getLongitude()  * 1E6 ) ){
+			/*if( (powerUpPoint.getLatitudeE6()   + 80) >= (int) ( player.getLatitude()   * 1E6 ) &&
+				(powerUpPoint.getLatitudeE6()   - 80) <= (int) ( player.getLatitude()   * 1E6 ) &&	
+				(powerUpPoint.getLongitudeE6()  + 80) <= (int) ( player.getLongitude()  * 1E6 ) &&	
+				(powerUpPoint.getLongitudeE6()  - 80) <= (int) ( player.getLongitude()  * 1E6 ) ){
 				return true;
 			}*/
 		}
@@ -489,7 +521,8 @@ public class Map extends MapActivity{
 		double[] res = Integrator.snapToStreet( player.getLatitude()  + (randomGenerator.nextDouble()/4 - 0.125) / 100,
 												player.getLongitude() + (randomGenerator.nextDouble()/4 - 0.125) / 100);
 		if(res != null){
-			powerupPoint = new GeoPoint((int) (res[0] * 1E6),(int) (res[1] * 1E6));
+			powerUpPoint = new GeoPoint((int) (res[0] * 1E6),(int) (res[1] * 1E6));
+			powerUpSetTime = System.currentTimeMillis();
 			Log.d(LOGTAG, "setNewPowerUpMarker(): " + res[0] + " " + res[1]);
 		}
 	
