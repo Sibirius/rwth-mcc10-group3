@@ -20,22 +20,22 @@
 		
 		<activity 		android:name=".MainMenu"
 						android:screenOrientation="portrait"
-						android:theme="@android:style/Theme.Light"></activity>
+						></activity>
 						
 		<activity 		android:name=".NewGame"
 						android:screenOrientation="portrait"></activity>
 						
 		<activity		android:name=".Help"
    						android:screenOrientation="portrait"
-   						android:theme="@android:style/Theme.Light"></activity>
+   						></activity>
    						
    		<activity 		android:name=".Preferences"
    						android:screenOrientation="portrait"
-   						android:theme="@android:style/Theme.Light"></activity>
+   						></activity>
    						
    		<activity 		android:name=".GameState"
    						android:screenOrientation="portrait"
-   						android:theme="@android:style/Theme.Light"></activity>
+   						></activity>
    						   					
 
 	</application>
