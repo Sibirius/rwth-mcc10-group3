@@ -60,6 +60,8 @@ public class Map extends MapActivity{
 
 	private String[] powerUpMessage = new String[NUMOFPOWERUPS];
 	
+	private int selectedPowerUp = 0;
+	
 	private GeoPoint prePoint = null;
 	private GeoPoint targetPoint = null;
 	private GeoPoint powerupPoint = null;
@@ -103,11 +105,16 @@ public class Map extends MapActivity{
     // Create runnable for disabling powerUps
     final Runnable mDisablePowerUp = new Runnable(){
     	public void run(){
+    		Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();
     		SystemClock.sleep(185000);
     		long time = System.currentTimeMillis() - 180000;
     		for(int i = 0; i < NUMOFPOWERUPS; i++){
-    			if(powerUpTime[i] <= time) powerUpEnabled[i] = false;
+    			if(powerUpTime[i] <= time) {
+    				powerUpEnabled[i] = false;
+    				Toast.makeText(getApplicationContext(), "PowerUp deaktiviert!", Toast.LENGTH_LONG).show();
+    			}
     		}
+    		
     	}
     };
     
@@ -164,7 +171,7 @@ public class Map extends MapActivity{
 			
 			geoUpdater = new GeoUpdateHandler();
 			//lm.getLastKnownLocation(provider);
-			lm.requestLocationUpdates(provider, 0, 0, geoUpdater);
+			lm.requestLocationUpdates(provider, 20000, 0, geoUpdater);
 			
 			//init powerUps
 			powerUpMessage[0] = "Du kannst jetzt für drei Minuten deinen Jäger in gelb sehen!";
@@ -189,38 +196,58 @@ public class Map extends MapActivity{
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
             public void run() {
+            	int cnt = 0;
             	while(true){
             		
             		if(gameFinished) break;
             		
-            		synchronized(player){
-		            	if(player != null) {
-		            		if(Integrator.playerUpdateState(player)){ 
-			            		if(player.getTargetLat() != 0.0 || player.getTargetLong() != 0.0){
-			            			targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));		            		
+            		if(cnt == 0){
+	            		synchronized(player){
+			            	if(player != null) {
+			            		if(Integrator.playerUpdateState(player)){ 
+				            		if(player.getTargetLat() != 0.0 || player.getTargetLong() != 0.0){
+				            			targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));		            		
+				            		}
+				            		if(player.getHunterLat() != 0.0 || player.getHunterLong() != 0.0){
+				            			hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
+				            		}
 			            		}
-			            		if(player.getHunterLat() != 0.0 || player.getHunterLong() != 0.0){
-			            			hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
-			            		}
-		            		}
-		            	}
-            		}
-            		
-	                mHandler.post(mUpdateMarkers);
+			            	}
 
-	                synchronized(player){
-	            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){ //game has finished
-	            			mHandler.post(mWinLoose);
-	            			break;
-	            		}
-	            		
-	            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 2){ //game has stopped
-	            			mHandler.post(mClose);
-	            			break;
-	            		}
-	                }
+							//TODO: if game mode == 1 && 
+		            		if(gotPowerUp()){
+		            			setNewPowerUpMarker();
+		            			Random randomGenerator = new Random();
+		            			selectedPowerUp = randomGenerator.nextInt(NUMOFPOWERUPS);	
+		            			selectedPowerUp = 1; 
+		            			powerUpEnabled[selectedPowerUp] = true;	
+		            			powerUpTime[selectedPowerUp] = System.currentTimeMillis();
+		            			if(selectedPowerUp == 0){ //show hunter
+		            				if(!Integrator.activatePowerup(1)) Toast.makeText(getApplicationContext(), "PowerUp Aktivierung fehlgeschlagen", Toast.LENGTH_LONG).show();
+		            			}
+		            			mHandler.post(mDisablePowerUp);
+		            			       				
+		            		}
+			            	
+			            	if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){ //game has finished
+		            			mHandler.post(mWinLoose);
+		            			break;
+		            		}
+		            		
+		            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 2){ //game has stopped
+		            			mHandler.post(mClose);
+		            			break;
+		            		}
+		                }
 	                
-            		SystemClock.sleep(30000);
+            		}
+	                
+	                Log.d(LOGTAG, "gameLoop() -> updateMarkers()");
+	                mHandler.post(mUpdateMarkers);
+	                
+	                cnt = (cnt+1) % 3;
+	                
+            		SystemClock.sleep(10000);
             		
             	}
             	
@@ -278,8 +305,8 @@ public class Map extends MapActivity{
 					
 					//mapView.getController().animateTo(point);
 					
+					if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
 					if(!powerUpEnabled[1] && targetPoint != null){
-						if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
 						myTargetPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_red);
 						mapOverlays.add(myTargetPositionOverlay);
 					}
@@ -429,27 +456,30 @@ public class Map extends MapActivity{
 	/**********************************************************************/
 	
 	private boolean gotPowerUp(){
-		//float[] results = new float[1];
-		//Location.distanceBetween(powerUpLat / 1E6, powerUpLng / 1E6, player.getLatitude() / 1E6, player.getLongitude() / 1E6, results);
-		//if( results[0] < 15f) {
-		//	return true;
-		//}
 		if(powerupPoint != null){
-			if( (int) ( powerupPoint.getLatitudeE6()  / 10 + 5) == (int) (player.getLatitude()  * 1E5 + 5) &&
-				(int) ( powerupPoint.getLongitudeE6() / 10 + 5) == (int) (player.getLongitude() * 1E5 + 5) ){
+			float[] results = new float[1];
+			Location.distanceBetween(powerupPoint.getLatitudeE6() / 1E6, powerupPoint.getLongitudeE6() / 1E6, player.getLatitude(), player.getLongitude(), results);
+			Log.d(LOGTAG, "Distance to powerUp: " + results[0]);
+			if( results[0] < 15f) {
 				return true;
 			}
+			/*if( (powerupPoint.getLatitudeE6()   + 80) >= (int) ( player.getLatitude()   * 1E6 ) &&
+				(powerupPoint.getLatitudeE6()   - 80) <= (int) ( player.getLatitude()   * 1E6 ) &&	
+				(powerupPoint.getLongitudeE6()  + 80) <= (int) ( player.getLongitude()  * 1E6 ) &&	
+				(powerupPoint.getLongitudeE6()  - 80) <= (int) ( player.getLongitude()  * 1E6 ) ){
+				return true;
+			}*/
 		}
 		return false;
 	}
 	
 	private void setNewPowerUpMarker(){
 		Random randomGenerator = new Random();
-		double[] res = Integrator.snapToStreet( player.getLatitude()  + (randomGenerator.nextDouble()/2 - 0.25) / 100,
-												player.getLongitude() + (randomGenerator.nextDouble()/2 - 0.25) / 100);
+		double[] res = Integrator.snapToStreet( player.getLatitude()  + (randomGenerator.nextDouble()/4 - 0.125) / 100,
+												player.getLongitude() + (randomGenerator.nextDouble()/4 - 0.125) / 100);
 		if(res != null){
 			powerupPoint = new GeoPoint((int) (res[0] * 1E6),(int) (res[1] * 1E6));
-			Log.d(LOGTAG, "setNewPowerUP(): " + res[0] + " " + res[1]);
+			Log.d(LOGTAG, "setNewPowerUpMarker(): " + res[0] + " " + res[1]);
 		}
 	
 		
@@ -472,21 +502,8 @@ public class Map extends MapActivity{
 					player.setLatitude(lat);
 					player.setLongitude(lng);
 					
-					//TODO: if game mode == 1 && 
-            		if(gotPowerUp()){
-            			setNewPowerUpMarker();
-            			Random randomGenerator = new Random();
-            			int selectedPowerUp = randomGenerator.nextInt(NUMOFPOWERUPS);	            				
-            			powerUpEnabled[selectedPowerUp] = true;	
-            			powerUpTime[selectedPowerUp] = System.currentTimeMillis();
-            			if(selectedPowerUp == 0){ //show hunter
-            				if(!Integrator.activatePowerup(1)) Toast.makeText(getApplicationContext(), "PowerUp Aktivierung fehlgeschlagen", Toast.LENGTH_LONG).show();
-            			}
-            			mHandler.post(mDisablePowerUp);
-            			Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();       				
-            		}
-					
-            		mHandler.post(mUpdateMarkers);
+            		//Log.d(LOGTAG, "onLocationChanged() -> updateMarkers()");
+            		//mHandler.post(mUpdateMarkers);
             		
             		//Toast.makeText(getApplicationContext(), "Lat: "+lat+"\nLng: "+lng, Toast.LENGTH_LONG).show();
 				}
@@ -577,6 +594,13 @@ public class Map extends MapActivity{
 		}
 		
 		public float getDistance(){
+			if(this.size() > 1){
+				float[] results = new float[1];
+				for(int i = 0; i<this.size()-2;i++){
+					Location.distanceBetween(this.get(i).getLatitudeE6() / 1E6, this.get(i).getLongitudeE6() / 1E6, this.get(i+1).getLatitudeE6() / 1E6, this.get(i+1).getLongitudeE6() / 1E6, results);
+					distance += results[0]; 
+				}
+			}
 			return distance;
 		}
 		
