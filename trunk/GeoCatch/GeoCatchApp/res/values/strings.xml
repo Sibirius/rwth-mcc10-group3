@@ -2,7 +2,9 @@
 <resources>
     <string name="app_name">GeoCatch</string>
     <string name="click">Click To Continue...</string>
-    <string name="greeting">Mobile Cloud Computing</string>
+    <string name="lab">Mobile Cloud Computing</string>
+    <string name="greeting">Bitte drücke \"Menü\"</string>
+    <string name="greeting2">um deinen Namen zu ändern!</string>
     <string name="copyright">- © MCC10 Group3 - RWTH Aachen -</string>
     <string name="set_game_name">Spielname festlegen:</string>
     <string name="set_player_count">Spieleranzahl festlegen:</string>
