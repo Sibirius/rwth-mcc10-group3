@@ -392,6 +392,10 @@ class StartGame(webapp.RequestHandler):
 				for i,j in enumerate(game.players): #set player numbers for each player
 					p = Player.get(j)
 					p.playerNumber = i+1
+					
+					p.aboutToBeCaught = False	#set flags to false
+					p.nearlyCaught = False
+					
 					p.put()
 
 				#gamemode specific settings			
@@ -641,7 +645,7 @@ class PlayerUpdateState(webapp.RequestHandler):
 					player.put()
 					logging.info('Hunter powerup of player %s expired'%(player_key))
 				else:
-					events.append(Event("hunter", player.hunter.currentLocation.lat, player.hunter.currentLocation.lon))			
+					events.append(Event("hunter", player.hunter.lastLocation.lat, player.hunter.lastLocation.lon))			
 
 			template_values = {'state': game.status, 'mode': game.mode, 'modespecific':modespecific, 'events': events}
 
