@@ -398,8 +398,8 @@ class StartGame(webapp.RequestHandler):
 				if game.playerCount < 3: #"race to the point" game
 					#TODO: any way to make sure the marker is on a walkable place after this?
 					if game.playerCount == 1:
-						lat = player.lastLocation.lat+0.00001
-						lon = player.lastLocation.lon+0.00001 #TODO random in a certain radius range, calculating meter to lat/lon dependig on the position will sure be a lot fun
+						lat = player.lastLocation.lat+0.0005
+						lon = player.lastLocation.lon+0.0005 #TODO random in a certain radius range, calculating meter to lat/lon dependig on the position will sure be a lot fun
 					else:
 						#TODO: calculate something fair between the 2 players
 						#right now it's just the average, at least it should be but i doubt it
