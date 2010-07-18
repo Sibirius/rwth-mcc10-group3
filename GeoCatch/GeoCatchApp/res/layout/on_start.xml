@@ -9,33 +9,58 @@
     <LinearLayout  	android:orientation="vertical"
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
+					android:layout_weight="2.0"
+					>
 					
-					android:layout_weight="1.0">
-<ImageView
-            android:src="@drawable/geocatch_vorlaeufig"
-            android:id="@+id/logo"
-            android:adjustViewBounds="true"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="center"
-            android:layout_marginTop="10px"/>
-            
-
-			<Button     android:layout_height="wrap_content" 
-						android:layout_width="fill_parent" 
-						android:text="Neues Spiel"
-						android:id="@+id/button_new_game"
-						android:layout_marginTop="20px"
-						android:layout_marginRight="80px"
-						android:layout_marginLeft="80px"/>
-				
-			<Button     android:layout_height="wrap_content" 
-						android:layout_width="fill_parent" 
-						android:text="Spiel beitreten"
-						android:id="@+id/button_join_game"
-						android:layout_marginRight="80px"
-						android:layout_marginLeft="80px"
-						android:layout_marginTop="10px"/>
+					<ImageView  android:src="@drawable/geocatch_vorlaeufig"
+					            android:id="@+id/logo"
+					            android:adjustViewBounds="true"
+					            android:layout_width="fill_parent"
+					            android:layout_height="wrap_content"
+					            android:scaleType="center"
+					            android:layout_marginTop="20px"
+					            />
+					            
+		
+					<Button     android:layout_height="wrap_content" 
+								android:layout_width="fill_parent" 
+								android:text="Neues Spiel"
+								android:id="@+id/button_new_game"
+								android:layout_marginTop="30px"
+								android:layout_marginRight="80px"
+								android:layout_marginLeft="80px"
+								/>
+						
+					<Button     android:layout_height="wrap_content" 
+								android:layout_width="fill_parent" 
+								android:text="Spiel beitreten"
+								android:id="@+id/button_join_game"
+								android:layout_marginRight="80px"
+								android:layout_marginLeft="80px"
+								android:layout_marginTop="10px"
+								/>
+					
+								<LinearLayout  	android:orientation="vertical"
+												android:layout_width="fill_parent"
+												android:layout_height="wrap_content"
+												
+												>	
+					
+												<TextView 	android:text="@string/greeting"
+															android:layout_width="wrap_content"
+															android:textSize="12sp"
+															android:layout_gravity="center_horizontal"
+															android:layout_height="wrap_content"
+															android:layout_marginTop="40sp"
+																	/>
+												<TextView 	android:text="@string/greeting2"
+															android:layout_width="wrap_content"
+															android:textSize="12sp"
+															android:layout_gravity="center_horizontal"
+															android:layout_height="wrap_content"
+															android:layout_marginBottom="10px"
+																	/>
+							</LinearLayout>	
 	</LinearLayout>					
 	<LinearLayout  	android:orientation="vertical"
 					android:layout_width="fill_parent"
@@ -43,7 +68,7 @@
 					android:layout_gravity="bottom" 
 					android:layout_marginTop="10px"
 					 >	
-					<TextView 	android:text="@string/greeting"
+					<TextView 	android:text="@string/lab"
 								android:layout_width="wrap_content"
 								android:textSize="15px"
 								android:textStyle="bold"
