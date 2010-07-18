@@ -37,6 +37,9 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
+/*
+ * Map Activity
+ */
 public class Map extends MapActivity{
 
 	private static String LOGTAG = "Map";
@@ -69,7 +72,7 @@ public class Map extends MapActivity{
 	private GeoPoint hunterPoint = null;
 	
 	private Player player;
-	private boolean gameFinished;	
+	private boolean gameFinished = false;	
 	
 	private LocationManager lm;	
 	private GeoUpdateHandler geoUpdater;
@@ -106,7 +109,8 @@ public class Map extends MapActivity{
     // Create runnable for creating a powerup enabled notification
     final Runnable mPowerUpEnabledNotification = new Thread(){
     	public void run(){
-    		Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();		
+    		//Toast.makeText(getApplicationContext(), "PowerUp erhalten: " + powerUpMessage[selectedPowerUp], Toast.LENGTH_LONG).show();
+    		powerUpAlert();
     	}
     };
     
@@ -124,8 +128,12 @@ public class Map extends MapActivity{
     	}
     };
     
-    //key events
+    /*
+     * key events
+     * @see android.app.Activity#onKeyDown(int, android.view.KeyEvent)
+     */
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+    	//disable back key
         if (keyCode == KeyEvent.KEYCODE_BACK && !gameFinished) {
         	return true;
         }
@@ -133,11 +141,19 @@ public class Map extends MapActivity{
     }
 
     
+	/*
+	 * @see com.google.android.maps.MapActivity#isRouteDisplayed()
+	 */
 	@Override
 	protected boolean isRouteDisplayed() {
 	    return false;
 	}
 	
+	
+	/* 
+	 * initiates map and gps provider
+	 * @see com.google.android.maps.MapActivity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
@@ -161,6 +177,7 @@ public class Map extends MapActivity{
 		//get Player
 		player = Player.getPlayer();
 		
+		//keep screen on
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); 
 		
 		if(player != null){
@@ -176,11 +193,15 @@ public class Map extends MapActivity{
 			
 			geoUpdater = new GeoUpdateHandler();
 			//lm.getLastKnownLocation(provider);
-			lm.requestLocationUpdates(provider, 20000, 5, geoUpdater);
+			lm.requestLocationUpdates(provider, 10000, 5, geoUpdater);
 			
 			//init powerUps
 			powerUpMessage[0] = "Du kannst jetzt für drei Minuten deinen Jäger in gelb sehen!";
 			powerUpMessage[1] = "Du kannst dein Ziel nicht mehr sehen!";
+			
+			//reset player location
+			player.setLatitude(0.0);
+			player.setLongitude(0.0);
 			
 			gameLoop();
 			
@@ -190,14 +211,16 @@ public class Map extends MapActivity{
 		}
 	}	
 	
-	//background thread updating player/target position
+	
+    /**
+     *	background thread updating player/target position 
+     */
     protected void gameLoop() {
 
     	startTimeMillis = System.currentTimeMillis();
     	powerUpSetTime = startTimeMillis;
-    	welcomeAlert();
+    	if(!gameFinished) welcomeAlert();
     	pointList = new GeoPointList();
-    	gameFinished = false;
     	
         // Fire off a thread to do some work that we shouldn't do directly in the UI thread
         Thread t = new Thread() {
@@ -290,7 +313,7 @@ public class Map extends MapActivity{
 	                Log.d(LOGTAG, "gameLoop() -> updateMarkers()");
 	                mHandler.post(mUpdateMarkers);
 	                
-	                cnt = (cnt+1) % 3;
+	                //cnt = (cnt+1) % 3;
 	                
             		SystemClock.sleep(10000);
             		
@@ -302,7 +325,9 @@ public class Map extends MapActivity{
         
     }
 			
-    //redraw markers on map
+	/**
+	 * redraw marker overlays on map
+	 */
 	private void updateMarkers(){
 		Log.d(LOGTAG, "updateMarkers()");
 		
@@ -314,6 +339,7 @@ public class Map extends MapActivity{
 				
 				if(powerUpPoint == null) setNewPowerUpMarker();
 				
+				//geopoint for current location
 				GeoPoint point = new GeoPoint((int) (player.getLatitude() * 1E6),(int) (player.getLongitude() * 1E6));
 				
 				if(pointList.size() == 0){
@@ -324,6 +350,7 @@ public class Map extends MapActivity{
 					}
 				}
 				
+				//draw path and special markers for first and current position
 				if(prePoint == null || point.getLatitudeE6() != prePoint.getLatitudeE6() || point.getLongitudeE6() != prePoint.getLongitudeE6()){
 					if(myStartPositionOverlay == null || prePoint == null){
 						myStartPositionOverlay = new MyOverlay(point,null,R.drawable.point_blue);
@@ -351,24 +378,28 @@ public class Map extends MapActivity{
 					
 					//mapView.getController().animateTo(point);
 					
+					//add target overlay
 					if(myTargetPositionOverlay != null) mapOverlays.remove(myTargetPositionOverlay);
 					if(!powerUpEnabled[1] && targetPoint != null){
 						myTargetPositionOverlay = new MyOverlay(targetPoint,null,R.drawable.point_red);
 						mapOverlays.add(myTargetPositionOverlay);
 					}
 					
+					//add powerUp overlay
 					if(myPowerUpPositionOverlay != null) mapOverlays.remove(myPowerUpPositionOverlay);
 					if(powerUpPoint != null){
 						myPowerUpPositionOverlay = new MyOverlay(powerUpPoint,null,R.drawable.point_green);
 						mapOverlays.add(myPowerUpPositionOverlay);
 					}						
 					
+					//add hunter overlay if powerUp is enabled
+					if(myHunterPositionOverlay != null) mapOverlays.remove(myHunterPositionOverlay);
 					if(hunterPoint != null && powerUpEnabled[0]){
-						if(myHunterPositionOverlay != null) mapOverlays.remove(myHunterPositionOverlay);
 						myHunterPositionOverlay = new MyOverlay(hunterPoint,null,R.drawable.point_yellow);
 						mapOverlays.add(myHunterPositionOverlay);
 					}
 					
+					//redraw map
 					mapView.invalidate();
 					
 				}
@@ -376,7 +407,10 @@ public class Map extends MapActivity{
 		}
 	}
 	
-	//calculate game duration
+	/**
+	 * calculates game duration
+	 * @return game duration in minutes and seconds as a String  
+	 */
 	private String getFormattetTotalGameTime(){
 		int time = (int) (System.currentTimeMillis() - startTimeMillis) / 1000;
 		int mins = time / 60;
@@ -389,6 +423,9 @@ public class Map extends MapActivity{
 	/**                               alerts                             **/
 	/**********************************************************************/
 	
+	/**
+	 * alert to say hello to the player and describe what to do
+	 */
 	private void welcomeAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		  builder.setMessage("Hallo " + player.getName() + "!\n" +
@@ -411,6 +448,9 @@ public class Map extends MapActivity{
 		  welcomeAlert.show();
 	}
 	
+	/**
+	 * alert shown if game has been finished
+	 */
 	private void winLooseAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		  builder.setMessage("Du hast " + (player.isHasWin() ? "gewonnen" : "verloren") + "\n" +
@@ -427,6 +467,9 @@ public class Map extends MapActivity{
 		  winLooseAlert.show();
 	}
 	
+	/**
+	 * alert shown if game has been stopped
+	 */
 	private void gameClosedAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		  builder.setMessage("Das Spiel wurde beendet!")
@@ -440,6 +483,9 @@ public class Map extends MapActivity{
 		  gameClosedAlert.show();
 	}
 
+	/**
+	 * alert to ensure that the user really wants to close the map
+	 */
 	private void mapCloseAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		  builder.setMessage("Möchtest du das Spiel wirklich verlassen?")
@@ -461,6 +507,9 @@ public class Map extends MapActivity{
 		  mapCloseAlert.show();
 	}
 	
+	/**
+	 * removes geo location listener, terminates main thread and finally finishes the map activity
+	 */
 	private void closeMapView(){
 		if(!gameFinished) {
 			lm.removeUpdates(geoUpdater);
@@ -468,13 +517,30 @@ public class Map extends MapActivity{
 		gameFinished = true;
         Map.this.finish();	
 	}
+
+	/**
+	 * alert shown when player got a powerUp
+	 */
+	private void powerUpAlert(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		  builder.setMessage("PowerUp erhalten: " + powerUpMessage[selectedPowerUp])
+		         .setCancelable(false)
+		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		             public void onClick(DialogInterface dialog, int id) {
+		                  dialog.cancel();
+		             }
+		         });
+		  final AlertDialog powerUpAlert = builder.create();
+		  powerUpAlert.show();
+	}
 	
 	/**********************************************************************/
 	/**                           in game menu                           **/
 	/**********************************************************************/
 	
-	/**
-	 *  Creates the menu items. 
+	/** 
+	 * Creates the menu items. 
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -483,7 +549,8 @@ public class Map extends MapActivity{
 	}
 
 	/** 
-	 * Handles item selections 
+	 * Handles menu item selections 
+	 * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
 	 */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -508,6 +575,10 @@ public class Map extends MapActivity{
 	/**                       powerUp functions                          **/
 	/**********************************************************************/
 	
+	/**
+	 * checks if distance between user and powerUp is lower than 20 meters
+	 * @return true if player got a powerUp, else false
+	 */
 	private boolean gotPowerUp(){
 		if(powerUpPoint != null && (player.getLatitude() != 0.0 || player.getLongitude() != 0.0)){
 			float[] results = new float[1];
@@ -526,6 +597,9 @@ public class Map extends MapActivity{
 		return false;
 	}
 	
+	/**
+	 * generates new powerUp position by random and snaps it to street
+	 */
 	private void setNewPowerUpMarker(){
 		Random randomGenerator = new Random();
 		double[] res = Integrator.snapToStreet( player.getLatitude()  + (randomGenerator.nextDouble()/4 - 0.125) / 100,
@@ -543,11 +617,15 @@ public class Map extends MapActivity{
 	/**                         additional classes                       **/
 	/**********************************************************************/
 	
-	/*
+	/**
 	 * GeoLocation Update Handler
 	 */
 	public class GeoUpdateHandler implements LocationListener {
 
+		/** 
+		 * listens to location updates and writes changes into the player class
+		 * @see android.location.LocationListener#onLocationChanged(android.location.Location)
+		 */
 		public void onLocationChanged(Location location) {
 			if(location != null){
 				double lat = location.getLatitude();
@@ -575,7 +653,7 @@ public class Map extends MapActivity{
 		}
 	}
 	
-	/*
+	/**
 	 * custom overlay item class
 	 */
 	private class MyOverlay extends Overlay{
@@ -583,12 +661,21 @@ public class Map extends MapActivity{
 		GeoPoint point1;
 		GeoPoint point2;
 		
+		/**
+		 * @param gP1 first geopoint
+		 * @param gP2 second geopoint (to draw line)
+		 * @param mId marker id
+		 */
 		public MyOverlay(GeoPoint gP1, GeoPoint gP2, int mId){
 			markerId = mId;
 			point1 = gP1;
 			point2 = gP2;
 		}
 		
+	    /**
+	     * draws marker and line 
+	     * @see com.google.android.maps.Overlay#draw(android.graphics.Canvas, com.google.android.maps.MapView, boolean)
+	     */
 	    @Override
 	    public void draw(Canvas canvas, MapView mapView, boolean shadow) {
 
@@ -626,7 +713,7 @@ public class Map extends MapActivity{
 	    }		
 	}
 	
-	/*
+	/**
 	 * GeoPointList contains all geolocations visited by player
 	 * also calculates distance between first and last location in the List
 	 */
@@ -635,6 +722,10 @@ public class Map extends MapActivity{
 		private static final long serialVersionUID = 1L;
 		private float distance = 0f;
 		
+		/** 
+		 * adds new geo point to list and directly calculates distance
+		 * @see java.util.ArrayList#add(java.lang.Object)
+		 */
 		public boolean add(GeoPoint g){
 			
 			if(g != null){
@@ -650,6 +741,9 @@ public class Map extends MapActivity{
 			
 		}
 		
+		/**
+		 * @return total distance between all geo points in list
+		 */
 		public float getDistance(){
 			return distance;
 		}
