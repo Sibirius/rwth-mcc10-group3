@@ -52,7 +52,7 @@ public class Map extends MapActivity{
 	private MyOverlay myHunterPositionOverlay = null;
 	private MyOverlay myPowerUpPositionOverlay = null;
 	
-	final int NUMOFPOWERUPS = 4;
+	final int NUMOFPOWERUPS = 2;
 	private boolean[] powerUpEnabled = new boolean[NUMOFPOWERUPS]; 
 	private long[] powerUpTime = new long[NUMOFPOWERUPS]; 
 	// 0 - show hunter
@@ -126,7 +126,7 @@ public class Map extends MapActivity{
     
     //key events
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) && !gameFinished) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && !gameFinished) {
         	return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -203,7 +203,7 @@ public class Map extends MapActivity{
         Thread t = new Thread() {
             public void run() {
             	int cnt = 0;
-            	long time;
+            	long time;            	
             	
             	while(true){
             		
@@ -214,63 +214,74 @@ public class Map extends MapActivity{
 	            			
 	            			//sync player data with backend service
 			            	if(player != null) {
-			            		if(Integrator.playerUpdateState(player)){
-			            			//update targetpoint
-				            		if(player.getTargetLat() != 0.0 || player.getTargetLong() != 0.0){
-				            			targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));		            		
+			            		if(player.getLatitude() != 0.0 && player.getLongitude() != 0.0){
+				            		if(Integrator.playerUpdateState(player)){
+				            			//update targetpoint
+					            		if(player.getTargetLat() != 0.0 || player.getTargetLong() != 0.0){
+					            			targetPoint = new GeoPoint((int) ((player.getTargetLat()) * 1E6),(int) ((player.getTargetLong()) * 1E6));		            		
+					            		}
+					            		//update hunterpoint
+					            		if(player.getHunterLat() != 0.0 || player.getHunterLong() != 0.0){
+					            			hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
+					            		}
 				            		}
-				            		//update hunterpoint
-				            		if(player.getHunterLat() != 0.0 || player.getHunterLong() != 0.0){
-				            			hunterPoint = new GeoPoint((int) ((player.getHunterLat()) * 1E6), (int) ((player.getHunterLong()) * 1E6));
+					            		
+					            	//player got powerUp
+				            		if(gotPowerUp()){
+				            			powerUpPoint = null;
+				            			if(player != null && player.getMyGame() != null && player.getMyGame().getMode() == 0){ //race
+				            				selectedPowerUp = 1;
+				            			} else { //catch
+				            				Random randomGenerator = new Random();
+				            				selectedPowerUp = randomGenerator.nextInt(NUMOFPOWERUPS);
+				            			}
+				            			powerUpEnabled[selectedPowerUp] = true;	
+				            			powerUpTime[selectedPowerUp] = System.currentTimeMillis();
+				            			if(selectedPowerUp == 0){ //show hunter
+				            				if(!Integrator.activatePowerup(1)) Log.d(LOGTAG, "PowerUp Aktivierung fehlgeschlagen");
+				            			}
+				            			mHandler.post(mPowerUpEnabledNotification);
 				            		}
+				            		
+				            		//disable PowerUps after 3mins
+				            		time = System.currentTimeMillis() - 180000;
+				            		for(int i = 0; i < NUMOFPOWERUPS; i++){
+				            			if(powerUpEnabled[i]){
+				            				Log.d(LOGTAG,"PowerUp will be disabled in " + (powerUpTime[i] - time) / 1000 + "s");
+				            				if(powerUpTime[i] <= time) {
+					            				powerUpEnabled[i] = false;
+					            				mHandler.post(mPowerUpDisabledNotification);
+				            				}
+				            			}
+				            		}
+					            		
+				            		//reset powerUp after 5mins
+				            		time = System.currentTimeMillis() - 300000;
+				            		Log.d(LOGTAG,"PowerUp will be reset in " + (powerUpSetTime - time) / 1000 + "s");
+				            		if(powerUpSetTime <= time) {
+				            			powerUpPoint = null;
+				            			mHandler.post(mPowerUpResetNotification);
+				            		}	            		
+				            		
 			            		}
-			            	}
-
-			            	//player got powerUp
-		            		if(gotPowerUp()){
-		            			powerUpPoint = null;
-		            			if(player != null && player.getMyGame() != null && player.getMyGame().getMode() == 0){ //race
-		            				selectedPowerUp = 1;
-		            			} else { //catch
-		            				Random randomGenerator = new Random();
-		            				selectedPowerUp = randomGenerator.nextInt(NUMOFPOWERUPS);
-		            			}
-		            			powerUpEnabled[selectedPowerUp] = true;	
-		            			powerUpTime[selectedPowerUp] = System.currentTimeMillis();
-		            			if(selectedPowerUp == 0){ //show hunter
-		            				if(!Integrator.activatePowerup(1)) Log.d(LOGTAG, "PowerUp Aktivierung fehlgeschlagen");
-		            			}
-		            			mHandler.post(mPowerUpEnabledNotification);
-		            		}
-		            		
+			            	}	            		
 		            		
 		                }
-	                
-	            		//disable PowerUps after 3mins
-	            		time = System.currentTimeMillis() - 180000;
-	            		for(int i = 0; i < NUMOFPOWERUPS; i++){
-	            			if(powerUpEnabled[i] && powerUpTime[i] <= time) {
-	            				powerUpEnabled[i] = false;
-	            				mHandler.post(mPowerUpDisabledNotification);
-	            			}
-	            		}
-	            		
-	            		//reset powerUp after 5mins
-	            		time = System.currentTimeMillis() - 300000;
-	            		if(powerUpSetTime <= time) {
-	            			powerUpPoint = null;
-	            			mHandler.post(mPowerUpResetNotification);
-	            		}
+	                            		
 		            	
 	            		//check if game has finished
 		            	if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 3){
 	            			mHandler.post(mWinLoose);
+			                lm.removeUpdates(geoUpdater);
+			                gameFinished = true;
 	            			break;
 	            		}
 	            		
 		            	//check if game has stopped
 	            		if(player != null && player.getMyGame() != null && player.getMyGame().getState() == 2){
 	            			mHandler.post(mClose);
+			                lm.removeUpdates(geoUpdater);
+			                gameFinished = true;
 	            			break;
 	            		}
 	            	
@@ -346,12 +357,11 @@ public class Map extends MapActivity{
 						mapOverlays.add(myTargetPositionOverlay);
 					}
 					
+					if(myPowerUpPositionOverlay != null) mapOverlays.remove(myPowerUpPositionOverlay);
 					if(powerUpPoint != null){
-						if(myPowerUpPositionOverlay != null) mapOverlays.remove(myPowerUpPositionOverlay);
 						myPowerUpPositionOverlay = new MyOverlay(powerUpPoint,null,R.drawable.point_green);
 						mapOverlays.add(myPowerUpPositionOverlay);
-					}
-						
+					}						
 					
 					if(hunterPoint != null && powerUpEnabled[0]){
 						if(myHunterPositionOverlay != null) mapOverlays.remove(myHunterPositionOverlay);
@@ -411,8 +421,6 @@ public class Map extends MapActivity{
 		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 		             public void onClick(DialogInterface dialog, int id) {
 		                  dialog.cancel();
-		                  lm.removeUpdates(geoUpdater);
-		                  gameFinished = true;
 		             }
 		         });
 		  final AlertDialog winLooseAlert = builder.create();
@@ -426,8 +434,6 @@ public class Map extends MapActivity{
 		         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 		             public void onClick(DialogInterface dialog, int id) {
 		                  dialog.cancel();
-		                  lm.removeUpdates(geoUpdater);
-		                  gameFinished = true;
 		             }
 		         });
 		  final AlertDialog gameClosedAlert = builder.create();
@@ -482,7 +488,11 @@ public class Map extends MapActivity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.in_game_options_menu_leave:
-			mapCloseAlert();
+			if(!gameFinished){
+				mapCloseAlert();
+			} else {
+				Map.this.finish();				
+			}
 			return true;						
 		
 		case R.id.in_game_options_menu_help:
@@ -499,7 +509,7 @@ public class Map extends MapActivity{
 	/**********************************************************************/
 	
 	private boolean gotPowerUp(){
-		if(powerUpPoint != null){
+		if(powerUpPoint != null && (player.getLatitude() != 0.0 || player.getLongitude() != 0.0)){
 			float[] results = new float[1];
 			Location.distanceBetween(powerUpPoint.getLatitudeE6() / 1E6, powerUpPoint.getLongitudeE6() / 1E6, player.getLatitude(), player.getLongitude(), results);
 			Log.d(LOGTAG, "Distance to powerUp: " + results[0]);
