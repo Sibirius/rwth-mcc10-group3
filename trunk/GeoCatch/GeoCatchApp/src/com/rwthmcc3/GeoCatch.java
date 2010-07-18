@@ -30,7 +30,7 @@ public class GeoCatch extends Activity {
 	private  Player p = Player.getPlayer();
 	private LocationManager lmGeoCatch;
 	private String providerGeoCatch = "";
-	public static boolean debugMode = true;
+	public static boolean debugMode = false;
 	public static String debugMac = "AF:3D:AF:6A:A6:66";
 	SharedPreferences preferences;
 	
