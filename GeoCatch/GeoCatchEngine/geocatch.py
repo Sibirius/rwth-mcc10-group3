@@ -7,8 +7,8 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
 import os
-from google.appengine.ext.webapp import template
 
+from google.appengine.ext.webapp import template
 from google.appengine.ext import db
 
 from inputcheck import *
@@ -19,6 +19,7 @@ DEBUG = True
 TEMPLATE_FOLDER = os.path.join(os.path.dirname(__file__), 'templates')
 
 def respond(caller, value):
+	""" template to respond with a standard response.xml and a caller provided value as result ("error" or "done" most of the time) """
 	template_values = {'value': value,}
 	template_path = os.path.join(TEMPLATE_FOLDER, 'response.xml') #TODO: more details on what actually happened? error into own xml tag?
 
@@ -35,7 +36,7 @@ class Game(db.Model): #dummy class to be referenced by the player class, ignore 
 	pass
 
 class Player(db.Model):	
-	""" player data """
+	""" player data model """
 	lastLocation = db.GeoPtProperty()
 	currentGame = db.ReferenceProperty(Game)
 	playerNumber = db.IntegerProperty()              #starts with 1
@@ -58,7 +59,7 @@ class Player(db.Model):
 	powerUpExpires = db.DateTimeProperty()
 
 class Game(db.Model):
-	""" game data """
+	""" game data model """
 	name = db.StringProperty(multiline=False)
 	# 0 = not yet started
 	# 1 = running
@@ -92,7 +93,7 @@ class Game(db.Model):
 	starting = db.DateTimeProperty() #when it will really start eg the timer reach zero
 
 class Path(db.Model):
-	""" path points of the way a player has traveled during a game  """
+	""" path point data model (used to describe the way a player has traveled during a game) """
 	player = db.ReferenceProperty(Player)
 	game = db.ReferenceProperty(Game)
 	date = db.DateTimeProperty(auto_now_add=True)
@@ -101,6 +102,7 @@ class Path(db.Model):
 ##################### functions
 
 def closeTo(pointOne, pointTwo):
+	""" checks if two geoPoints are close to each other - less than 0.0002 difference in latitude and longitude """
 	if abs(pointOne.lat-pointTwo.lat) < 0.0002:
 		if abs(pointOne.lon-pointTwo.lon) < 0.0002:
 			return True
@@ -111,12 +113,17 @@ def closeTo(pointOne, pointTwo):
 #request handlers
 ##########################################################
 class MainPage(webapp.RequestHandler):
+	""" a humble tribute to the coding gods """
 	def get(self):
 		self.response.headers['Content-Type'] = 'text/plain'
 		self.response.out.write('Hello, World! I\'m geocatch')
 
 class GetGameList(webapp.RequestHandler):
-	""" returns an xml file with all games with vacant slots """
+	""" returns a xml file with all games yet to be started (e.g. joinable)
+	
+		request parameters:
+		none
+	"""
 	def get(self):
 		#TODO: get player key and player location, update player location and give back games close to player!
 
@@ -129,7 +136,11 @@ class GetGameList(webapp.RequestHandler):
 		self.response.out.write(template.render(template_path, template_values))
 
 class GetGamePlayerList(webapp.RequestHandler):
-	""" returns an xml file with all players in a game, only meant to be called from the lobby """
+	""" returns an xml file with all players in a game, meant to be called from the lobby
+	
+		request parameters:
+		g = game key
+	"""
 	def get(self):
 		try:
 			game_key = checkKey(self.request.get('g'))
@@ -162,7 +173,12 @@ class GetGamePlayerList(webapp.RequestHandler):
 		self.response.out.write(template.render(template_path, template_values))
 
 class PlayerActivatePowerup(webapp.RequestHandler):
-	""" activates a powerup """
+	""" activates a powerup for a given player in his current game
+	
+		request parameters:
+		p = player key
+		pow = powerup id
+	"""
 	def get(self):
 		try:
 			player_key = checkKey(self.request.get('p'))
@@ -206,10 +222,15 @@ class PlayerActivatePowerup(webapp.RequestHandler):
 
 class GetGameState(webapp.RequestHandler):
 	""" returns an xml file with the player list and game state
-		additionally the player number if a player key is provided
+		additionally the player number for a given player in the game, if a valid player key is provided, ignored otherwise
+		
 		this method is used to get lobby updates and be notified if the game is starting/has been started
+		if the game was started the current time and the time when the game will start are provided
 
-		then the time when the game will start will be additionally transmitted #TODO"""
+		request parameters:
+		g = game key
+		p = player key (optional)
+		"""
 	def get(self):
 		try:
 			game_key = checkKey(self.request.get('g'))			
@@ -278,7 +299,14 @@ class GetGameState(webapp.RequestHandler):
 #############################################		
 
 class JoinGame(webapp.RequestHandler):
-	""" calling player joins the game if it exists and he is not already in another one """
+	""" calling player joins the given game if it exists and he is not already in another one
+
+		request parameters:
+		g = game key
+		p = player key
+		lat = latitude of the player
+		lon = longitude of the player
+	"""
 	def get(self):
 		try:
 			game_key = checkKey(self.request.get('g'))
@@ -326,7 +354,11 @@ class JoinGame(webapp.RequestHandler):
 		respond(self, value)
 
 class StopGame(webapp.RequestHandler):
-	"""stops the game if called by the creator """
+	"""stops the game if player is the creator of a game
+
+		request parameters:
+		p = player key
+	"""
 	def get(self):
 		try:
 			player_key = checkKey(self.request.get('p'))
@@ -361,7 +393,11 @@ class StopGame(webapp.RequestHandler):
 			respond(self, "error")
 
 class StartGame(webapp.RequestHandler):
-	""" start an already created game, only usable by the creator """
+	""" start an already created game, only usable if player is a creator
+	
+		request parameters:
+		p = player key
+	"""
 	def get(self):		
 		try:
 			player_key = checkKey(self.request.get('p'))
@@ -454,7 +490,11 @@ class StartGame(webapp.RequestHandler):
 			respond(self, "error")
 
 class LeaveGame(webapp.RequestHandler):
-	""" a player can leave a game, game is closed if the player was the creator """
+	""" a player can leave a game he joined/created, game is closed if the player was the creator
+
+		request parameters:
+		p = player key
+	"""
 	def get(self):
 		try:
 			player_key = checkKey(self.request.get('p'))
@@ -485,6 +525,7 @@ class LeaveGame(webapp.RequestHandler):
 
 def leaveGame(game, player): # is also called in register player if THE UNPROBABLE happens (e.g. there was a crash and bobby can't come in again)
 	#check if player is in game and game exists, if the player is the creator close the game
+	""" helper function which kicks a player out of a game, has to get validated input """
 	game_key = game.key()
 	player_key = player.key()
 
@@ -525,13 +566,30 @@ def leaveGame(game, player): # is also called in register player if THE UNPROBAB
 	return value
 
 class Event: #todo: save events in the database, this is just a testing thing
+	""" internal datamodel of a meta-event, used solely in templates
+
+		currently used for 2 event types, with following var meanings:	
+		what: victory
+		who: playername
+		extra: playernumber
+
+		what: hunter
+		who: lat
+		extra: lon
+	"""
 	def __init__(self, what, who, extra):
 		self.title = what
 		self.info = who
 		self.extra = extra #TODO: wtf are these var names?
 
 class PlayerUpdateState(webapp.RequestHandler):
-	"""updates the player state and provides him with stuff he should know"""
+	"""updates the player state and provides him with the current game state (e.g. stuff he should know)
+
+		request parameters:
+		p = player key
+		lat = latitude of the player
+		lon = longitude of the player
+	"""
 	def get(self):
 		try:
 			player_key = checkKey(self.request.get('p'))
@@ -653,10 +711,15 @@ class PlayerUpdateState(webapp.RequestHandler):
 			self.response.out.write(template.render(template_path, template_values))				
 		else:
 			logging.error('Player %s sent update for game %s, game or player not found'%(player_key,game_key))
-			return #TODO: proper error message
+			return
 
 class NameChangePlayer(webapp.RequestHandler):
-	"""checks if mac address already in database, registers a new player otherwise""" #TODO: really a good idea? captcha?
+	"""checks if mac address already in database, registers a new player otherwise
+	
+		request parameters:
+		p = player key
+		n = new name
+	"""
 	def get(self):
 		try:
 			player_key = checkKey(self.request.get('p'))
@@ -678,8 +741,17 @@ class NameChangePlayer(webapp.RequestHandler):
 			logging.info('Changed player name for %s to %s'%(player.key(),player.name))
 			respond(self, "done")		
 
-class RegisterPlayer(webapp.RequestHandler):
-	"""checks if mac address already in database, registers a new player otherwise""" #TODO: really a good idea? captcha?
+class RegisterPlayer(webapp.RequestHandler): 	#TODO: really a good idea? captcha?
+	"""checks if mac address already in database, registers a new player otherwise
+
+		!!! kicks the player out of any game he might be still in, used as "come clean/reset" function
+	
+		request parameters:		
+		m = device mac
+		n = name
+		lat = latitude of the player
+		lon = longitude of the player
+	"""
 	def get(self):
 		try:
 			mac = checkMac(self.request.get('m'))
@@ -719,7 +791,18 @@ class RegisterPlayer(webapp.RequestHandler):
 		respond(self, player_key)
 
 class CreateGame(webapp.RequestHandler):
-	""" creates game and returns it's key, 0 otherwise """
+	""" creates game and returns it's key, 0 otherwise
+
+		request parameters:		
+		n = game name
+		v = program version (meant to provide backward compatibility once there are other versions)
+		lat = latitude of the creator
+		lon = longitude of the creator
+
+		p = creator player key
+		t = timer value (int seconds)
+		mpc = maximal player count ( 1 = singleplayer, 2 = 2 players, 3+ = chaincatch modes)		
+	"""
 	def get(self):
 		try:
 			name = checkName(self.request.get('n'))
