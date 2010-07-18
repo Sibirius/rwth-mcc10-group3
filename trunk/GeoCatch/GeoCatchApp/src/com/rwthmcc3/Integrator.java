@@ -53,7 +53,9 @@ public class Integrator {
 		return null;
 	}
 
-	
+	/**
+	 * @return List of active games as list of instances
+	 */
 	public static List<Game> getGameList(){
 		Log.d(LOGTAG, "getGameList()");
 		List<Game> result = new ArrayList<Game>();
@@ -98,7 +100,13 @@ public class Integrator {
 		return null;
 	}
 	
-
+	
+	/**
+	 * @param game The game instance you want to get the playerlist for
+	 * @return List of strings with names of the players in the given game 
+	 * 			or null if there was an error
+	 * 
+	 */
 	public static List<String> getPlayerList(Game game){
 		Log.d(LOGTAG, "getPlayerList()");
 		if(game != null){
@@ -137,6 +145,11 @@ public class Integrator {
 		return null;
 	}
 	
+	/**
+	 * Activates a server-side powerup
+	 * @param powerup-number: 1 = show hunter
+	 * @return true if everthing went fine, false otherwise
+	 */
 	public static boolean activatePowerup(int powerup){
 		Log.d(LOGTAG, "activatePowerup()");
 		
@@ -153,6 +166,11 @@ public class Integrator {
         return !result.contains("error");
 	}
 	
+	/**
+	 * 
+	 * @param game The game instance you want the updated gameState for
+	 * @return The updated game instance or null if there was an error
+	 */
 	public static Game getGameState(Game game){
 		Log.d(LOGTAG, "getGameState()");
 		Player player = Player.getPlayer();
@@ -232,6 +250,13 @@ public class Integrator {
 		return null;
 	}
 	
+	
+	/**
+	 * The given player joins the given game
+	 * @param player
+	 * @param game
+	 * @return true if everthing went fine, false otherwise
+	 */
 	public static boolean joinGame(Player player, Game game){
 		Log.d(LOGTAG, "joinGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -251,6 +276,11 @@ public class Integrator {
         return !result.contains("error");
 	}
 	
+	/**
+	 * The given player stops his created game
+	 * @param player The player who wants to stop his game
+	 * @return true if everthing went fine, false otherwise
+	 */
 	public static boolean stopGame(Player player){
 		Log.d(LOGTAG, "stopGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -266,6 +296,10 @@ public class Integrator {
         }
 	}
 	
+	/**
+	 * Resets the player to a defined initial state
+	 * @param player
+	 */
 	private static void resetPlayer(Player player) {
 		player.setTimerHasCountedDown(false);
     	player.setMyGame(null);
@@ -274,7 +308,12 @@ public class Integrator {
     	player.setKeyOfMyCreatedGame(null);
 	}
 
-
+	
+	/**
+	 * The player starts his created game
+	 * @param player
+	 * @return true if everthing went fine, false otherwise
+	 */
 	public static boolean startGame(Player player){
 		Log.d(LOGTAG, "startGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -285,6 +324,11 @@ public class Integrator {
         return !result.contains("error");
 	}
 	
+	/**
+	 * The player leaves his current game. If he was the creator, the game is stopped.
+	 * @param player
+	 * @return true if everthing went fine, false otherwise
+	 */
 	public static boolean leaveGame(Player player){
 		Log.d(LOGTAG, "leaveGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -299,15 +343,15 @@ public class Integrator {
 	}
 	
 	/**
-	 * 
-	 * @param player
-	 * @return true if everthing went fine, false otherwise
-	 * 
 	 * Updates the players longitude and latitude in the database.
 	 * Updates Targetlocation, gamemode and gamestate locally.
 	 * If there is a winner, then the game is finished and the winnerName is saved in the game-instance.
 	 * If the player has won the game, hasWin is set to true.
+	 * Gets powerup information and sets powerupActive:
+	 * 1 - Hunter Powerup => Hunter Location is set
 	 * 
+	 * @param player instance
+	 * @return true if everthing went fine, false otherwise
 	 */
 	public static boolean playerUpdateState(Player player){
 		Log.d(LOGTAG, "playerUpdateState()");
@@ -392,6 +436,15 @@ public class Integrator {
         
 	}
 	
+	/**
+	 * A new player is registered. If he is already registered, 
+	 * the db is updated and the player leaves his current game
+	 * @param mac Mac address to distinguish between the players
+	 * @param name
+	 * @param longitude
+	 * @param latitude
+	 * @return
+	 */
 	public static boolean registerPlayer(String mac, String name, double longitude, double latitude){
 		Log.d(LOGTAG, "registerPlayer()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -415,6 +468,15 @@ public class Integrator {
         
 	}
 	
+	/**
+	 * Creates a new Game in the db
+	 * @param player
+	 * @param name
+	 * @param maxPlayersCount
+	 * @param version
+	 * @param timer
+	 * @return true if everthing went fine, false otherwise
+	 */
 	public static boolean createGame(Player player, String name, int maxPlayersCount, int version, int timer){
 		Log.d(LOGTAG, "createGame()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -453,6 +515,12 @@ public class Integrator {
         
 	}
 	
+	/**
+	 * Changes the name of the given player to the given name
+	 * @param player
+	 * @param name
+	 * @return true if everthing went fine, false otherwise
+	 */
 	public static boolean changePlayerName(Player player, String name){
 		Log.d(LOGTAG, "changePlayerName()");
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
@@ -469,27 +537,23 @@ public class Integrator {
 
 	}
 	
+	/**
+	 * 
+	 * @param powerup The id of the powerup. 1 = show hunter
+	 * @return Returns whether the serverside powerup is active or not
+	 */
 	public static boolean powerupIsActive(int powerup){
 		if(powerup < 1 || powerup > powerupActive.length )
 			return false;
 		return powerupActive[powerup-1];
 	}
 	
-	// DEBUG FUNCTIONS
-	
-	public static void fillWithTestData(){
-		Log.d(LOGTAG, "fillWithTestData()");
-		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-        doGet("/fillWithTestData", qparams);
-	}
-	
-	public static void clearData(){
-		Log.d(LOGTAG, "clearData");
-		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-        doGet("/clearData", qparams);
-	}
-	
-	
+	/**
+	 * Performs a HTTP-Get Request
+	 * @param path The path to which you want to send your request 
+	 * @param qparams The Get parameters
+	 * @return Returns a HTTP Response or null if there was an error (no response from server)
+	 */
 	private static HttpResponse doGet(String path, List<NameValuePair> qparams){
 		Log.d(LOGTAG, "doGet()");
 		try{
@@ -509,6 +573,11 @@ public class Integrator {
 		
 	}
 	
+	/**
+	 * Parses the response.xml
+	 * @param res The HTTP Response you want to parse
+	 * @return The value of the "value" element in the xml or null if there was an error
+	 */
 	private static String getResponse(HttpResponse res){
 		Log.d(LOGTAG, "getResponse()");
 		if(res != null){
@@ -537,6 +606,11 @@ public class Integrator {
 		return "error";
 	}
 	
+	/**
+	 * Parses an XML Document
+	 * @param xmlStream The stream you want to parse
+	 * @return The DOM Document or null if there was an error
+	 */
 	private static Document parseXml(InputStream xmlStream){
 		Log.d(LOGTAG, "parseXml()");
 		//get the factory
@@ -564,6 +638,12 @@ public class Integrator {
 		return null;
 	}
 	
+	/**
+	 * Snaps the given position to the next street using google maps api
+	 * @param lat
+	 * @param lng
+	 * @return The new position on a street or null if there was an error. [0]=Latitude [1]=Longitude 
+	 */
 	public static double[] snapToStreet(double lat, double lng){
 		try{
 			List<NameValuePair> qparams = new ArrayList<NameValuePair>();
