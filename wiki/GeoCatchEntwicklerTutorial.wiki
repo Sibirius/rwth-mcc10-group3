@@ -39,7 +39,7 @@ NodeList node = doc.getElementsByTagName("state");
 Element ele = (Element) node.item(0);
 if(ele != null){
     String mode = ele.getAttribute("mode");
-    String mode = ele.getAttribute("state");
+    String state = ele.getAttribute("state");
     String lon = ele.getAttribute("lon");
     String lat = ele.getAttribute("lat");
 }
