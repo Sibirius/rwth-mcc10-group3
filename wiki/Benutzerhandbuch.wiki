@@ -1,3 +1,0 @@
-Mboard ist ein Message Board in dem Besucher Nachrichten hinterlassen können.
-
-Zusätzlich können sich Benutzer mit einem Google Account Ein- und Ausloggen sowie ein Profilbild im Unterpunkt Profil hochladen, welches daraufhin bei allen von ihnen verfassten Nachrichten angezeigt wird.
