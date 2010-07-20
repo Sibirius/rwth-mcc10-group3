@@ -48,4 +48,4 @@ if(ele != null){
 Those data can now be used, e.g. to update the markers on the map.
 
 Further documentation
-[http://rwth-mcc10-group3.googlecode.com/svn/trunk/GeoCatch/GeoCatchApp/doc/com/rwthmcc3/Integrator.html Integrator-class] - [http://rwth-mcc10-group3.googlecode.com/svn/trunk/GeoCatch/GeoCatchApp/doc/index.html complete JavaDoc (Frontend)] - [http://rwth-mcc10-group3.googlecode.com/svn/trunk/GeoCatch/engine_doc/frames.html complete PyDoc (Backend)]
+[http://rwth-mcc10-group3.googlecode.com/svn/trunk/GeoCatch/GeoCatchApp/doc/com/rwthmcc3/Integrator.html Integrator-class] - [http://rwth-mcc10-group3.googlecode.com/svn/trunk/GeoCatch/GeoCatchApp/doc/index.html entire JavaDoc (Frontend)] - [http://rwth-mcc10-group3.googlecode.com/svn/trunk/GeoCatch/engine_doc/frames.html entire PyDoc (Backend)]
