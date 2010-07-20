@@ -1,6 +1,10 @@
+#summary Complete list of backend services
+
 = Services =
 
 Here you see a complete list of the offered services with their parameters and their response XML-file.
+
+<hr>
 
 == /games ==
 Returns a list with all available games.
@@ -44,7 +48,7 @@ Returns a list with all players in the chosen game.
 </players>
 }}}
 
-
+<hr>
 
 == /gameState ==
 Returns all information about a game.
@@ -84,7 +88,7 @@ mpc = "{{game.mpc}}"
 </game>
 }}}
 
-
+<hr>
 
 == /register ==
 Registers a new player or (if already registered) kicks the player from any game and updates his name.
@@ -102,7 +106,7 @@ Registers a new player or (if already registered) kicks the player from any game
 }}}
 Annotation: `value` is the key of the registered player or 'input error' if a parameter is not well formatted
 
-
+<hr>
 
 == /name ==
 Changes the name of registered player without kicking him from any game.
@@ -119,7 +123,7 @@ Changes the name of registered player without kicking him from any game.
 Annotation: `value` is 'done' if everything went fine, 'input error' if a parameter was not well formatted or 'error' if 
  * the player does not exist
 
-
+<hr>
 
 == /activate ==
 Activates a server-side powerup.
@@ -137,7 +141,7 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
  * the player does not exist 
  * the player is in no game
 
-
+<hr>
 
 == /create ==
 Creates a new game.
@@ -160,7 +164,7 @@ Annotation: `value` is the key of the created game, 'input error' if a parameter
  * the player does not exist
  * the player already is in a game
 
-
+<hr>
 
 == /join ==
 The given player joins the given game.
@@ -181,7 +185,7 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
  * the game is full 
  * the player already is in another game
 
-
+<hr>
 
 == /start ==
 Starts a game
@@ -201,7 +205,7 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
  * the game is not full
  * the game-status is not 0
 
-
+<hr>
 
 == /stop ==
 Stops a game
@@ -219,7 +223,7 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
  * the player is in no game
  * the player is not the creator
 
-
+<hr>
 
 == /leave ==
 The player leaves his game. If he was the creator, the game is stopped.
@@ -236,7 +240,7 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
  * the player does not exist
  * the player is in no game
 
-
+<hr>
 
 == /update ==
 ==== Parameters ====
