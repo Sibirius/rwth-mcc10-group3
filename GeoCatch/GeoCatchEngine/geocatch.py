@@ -732,7 +732,7 @@ class NameChangePlayer(webapp.RequestHandler):
 		player = Player.get(player_key)
 
 		if player == None:
-			logging.info('Changing playername failed for %s with mac %s'%(player.name,player.mac))
+			logging.info('Changing playername for player %s'%(player_key))
 			respond(self, "error")
 			return
 		else:
