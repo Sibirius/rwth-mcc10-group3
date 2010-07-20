@@ -29,6 +29,7 @@ Returns a list with all players in the chosen game.
 === Parameters ===
 * g : The key of the game for which you want to get the lsit of players.
 === XML-file ===
+{{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <players>
 	{% for player in players %}
