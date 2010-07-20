@@ -4,9 +4,9 @@ Here you see a complete list of the offered services with their parameters and t
 
 == /games ==
 Returns a list with all available games.
-=== Parameters ===
+==== Parameters ====
 None
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <games>
