@@ -24,11 +24,13 @@ None
 </games>
 }}}
 
+
+
 == /gamePlayers ==
 Returns a list with all players in the chosen game.
-=== Parameters ===
+==== Parameters ====
 * g : The key of the game for which you want to get the lsit of players.
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <players>
@@ -42,12 +44,14 @@ Returns a list with all players in the chosen game.
 </players>
 }}}
 
+
+
 == /gameState ==
 Returns all information about a game.
-=== Parameters ===
+==== Parameters ====
 * g : The key of the game for which you want to get the information
 * p : The key of a player in this game to get the additional information
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <game
@@ -80,14 +84,16 @@ mpc = "{{game.mpc}}"
 </game>
 }}}
 
+
+
 == /register ==
 Registers a new player or (if already registered) kicks the player from any game and updates his name.
-=== Parameters ===
+==== Parameters ====
 * m : The mac address of the player you want to register
 * n : The name of the player
 * lat : Latitude of the player
 * lon : Longitude of the player
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <response
@@ -96,12 +102,14 @@ Registers a new player or (if already registered) kicks the player from any game
 }}}
 Annotation: `value` is the key of the registered player or 'input error' if a parameter is not well formatted
 
+
+
 == /name ==
 Changes the name of registered player without kicking him from any game.
-=== Parameters ===
+==== Parameters ====
 * p : The key of the player
 * n : The new name
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <response
@@ -111,12 +119,14 @@ Changes the name of registered player without kicking him from any game.
 Annotation: `value` is 'done' if everything went fine, 'input error' if a parameter was not well formatted or 'error' if 
 * the player does not exist
 
+
+
 == /activate ==
 Activates a server-side powerup.
-=== Parameters ===
+==== Parameters ====
 * p : The key of the player who wants to activate a powerup
 * pow : The id of the powerup that you want to activate
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <response
@@ -127,9 +137,11 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
 * the player does not exist 
 * the player is in no game
 
+
+
 == /create ==
 Creates a new game.
-=== Parameters ===
+==== Parameters ====
 * n : The name of the game
 * v : The version of the game
 * lat : The latitude of the creator 
@@ -137,7 +149,7 @@ Creates a new game.
 * p : The player-key of the creator
 * t : The timer (in seconds)
 * mpc : The maximum player count
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <response
@@ -148,14 +160,16 @@ Annotation: `value` is the key of the created game, 'input error' if a parameter
 * the player does not exist
 * the player already is in a game
 
+
+
 == /join ==
 The given player joins the given game.
-=== Parameters ===
+==== Parameters ====
 * g : The game-key
 * p : The player-key
 * lat : The player-latitude
 * lon : The player-longitude
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <response
@@ -167,11 +181,13 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
 * the game is full 
 * the player already is in another game
 
+
+
 == /start ==
 Starts a game
-=== Parameters ===
+==== Parameters ====
 * p : The player-key of the creator
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <response
@@ -185,11 +201,13 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
 * the game is not full
 * the game-status is not 0
 
+
+
 == /stop ==
 Stops a game
-=== Parameters ===
+==== Parameters ====
 * p : The player-key of the creator
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <response
@@ -201,11 +219,13 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
 * the player is in no game
 * the player is not the creator
 
+
+
 == /leave ==
 The player leaves his game. If he was the creator, the game is stopped.
-=== Parameters ===
+==== Parameters ====
 * p : The key of the player
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <response
@@ -216,12 +236,14 @@ Annotation: `value` is 'done' if everything went fine, 'input error' if a parame
 * the player does not exist
 * the player is in no game
 
+
+
 == /update ==
-=== Parameters ===
+==== Parameters ====
 * p : The key of the player you want to update
 * lat : The new latitude of the player
 * lon : The new longitude of the player
-=== XML-file ===
+==== XML-file ====
 {{{
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <wayne>
